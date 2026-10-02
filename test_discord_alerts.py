@@ -4,16 +4,11 @@ import datetime as dt
 import tempfile
 from pathlib import Path
 import unittest
-from unittest import mock
 import discord_alerts as da
 
 
 class Alerts(unittest.TestCase):
-    """The immediate-delivery machinery, kept for the future urgent tier. These
-    tests treat general/erratic as urgent purely to exercise it."""
     def setUp(self):
-        p = mock.patch.object(da, 'URGENT_CHANNELS', ('general', 'erratic'))
-        p.start(); self.addCleanup(p.stop)
         self.tmp = tempfile.TemporaryDirectory()
         self.addCleanup(self.tmp.cleanup)
         self.root = Path(self.tmp.name)
@@ -68,7 +63,7 @@ class Alerts(unittest.TestCase):
     def test_critical_escalation_bypasses_cooldown(self):
         self.tick(); self.tick(15); self.now += 60; self.tick(21)
         self.assertEqual(len(self.sent),2)
-        self.assertIn('HIGH', self.sent[-1]['embeds'][0]['title'])
+        self.assertIn('high', self.sent[-1]['embeds'][0]['title'])
         self.assertNotIn('CRITICAL', json.dumps(self.sent[-1]))
 
     def test_rate_limit_keeps_pending_and_waits(self):
@@ -128,62 +123,53 @@ class FrictionDoesNotPage(unittest.TestCase):
         self.assertNotIn('conflict', da.CHANNELS)
 
 
-class Digest(unittest.TestCase):
-    """2 Oct: everyday heat goes into one periodic digest, never an instant alert."""
+class CalmNotices(unittest.TestCase):
+    """2 Oct (Adam): everyday heat goes out live, as calm, silent notices."""
     def setUp(self):
         self.tmp = tempfile.TemporaryDirectory(); self.addCleanup(self.tmp.cleanup)
-        self.root = Path(self.tmp.name); self.sent = []; self.result = {'ok': True}
-        self.n = da.Notifier(self.root, self.root, lambda u, p: (self.sent.append(p), self.result)[1])
-        da.save(self.n.config_path, {'enabled': True, 'generation': 'g',
-                                     'webhook_url': 'https://discord.com/api/webhooks/123/test_token',
-                                     'channels': list(da.CHANNELS)})
+        self.root = Path(self.tmp.name); self.sent = []
+        self.n = da.Notifier(self.root, self.root, lambda u, p: (self.sent.append(p), {'ok': True})[1])
+        self.cfg = {'enabled': True, 'generation': 'g',
+                    'webhook_url': 'https://discord.com/api/webhooks/123/test_token',
+                    'channels': list(da.CHANNELS)}
+        da.save(self.n.config_path, self.cfg)
         self.now = 1800000000
 
     def bundle(self, heat):
-        reason = [{'channel': 'off-goal', 'added': 2.0, 'reason': 'said: pivot, maximize'}]
-        excerpt = {'k': {'text': 'AGENT TEXT SHOULD NOT APPEAR', 'time': 't', 'key': 'k', 'action': 'AGENT_TALK'}}
         return {'dashboard': {'village': 'actual-launch-1',
                 'generated_at': dt.datetime.fromtimestamp(self.now, dt.timezone.utc).isoformat(),
                 'channels': {'off-goal': {'thresholds': {'hot': 6.8, 'critical': 14.0}}},
                 'agents': {'Sonnet': {'participating': True, 'heat': {'off-goal': heat},
-                                      'contributions': reason, 'source_events': excerpt}}}}
+                                      'contributions': [], 'source_events': {}}}}}
 
-    def tick(self, h):
-        return self.n.tick(self.bundle(h), self.now)
+    def cross(self, h=20):
+        self.n.tick(self.bundle(0), self.now); self.now += 60
+        self.n.tick(self.bundle(h), self.now)
 
-    def test_everyday_crossing_sends_nothing_immediately(self):
-        self.tick(0); self.now += 60; self.tick(20)
-        self.assertEqual(self.sent, [])
-        self.assertEqual(da.URGENT_CHANNELS, ())
-
-    def test_one_digest_after_the_period_with_fixed_vocabulary_only(self):
-        self.tick(0); self.now += 60; self.tick(20); self.now += 60; self.tick(8)
-        self.now += 24 * 3600; self.tick(0)
+    def test_everyday_crossing_is_sent_live(self):
+        self.cross()
         self.assertEqual(len(self.sent), 1)
+
+    def test_calm_wording_never_critical_or_urgent(self):
+        self.cross(20)
         body = json.dumps(self.sent[0])
-        self.assertIn('Daily digest', body)
-        self.assertIn('high (20.0)', body)          # peak kept, not the later lower value
-        self.assertIn('said: pivot, maximize', body)
-        self.assertNotIn('AGENT TEXT SHOULD NOT APPEAR', body)
+        self.assertIn('Heat notice', body)
+        self.assertIn('high', body)
         self.assertNotIn('critical', body.lower())
+        self.assertNotIn('urgent', self.sent[0]['embeds'][0]['title'].lower())
         self.assertEqual(self.sent[0]['allowed_mentions'], {'parse': []})
 
-    def test_quiet_period_sends_no_digest(self):
-        self.tick(0); self.now += 24 * 3600 + 60; self.tick(0)
-        self.assertEqual(self.sent, [])
+    def test_notices_are_silent_by_default(self):
+        self.cross()
+        self.assertEqual(self.sent[0].get('flags'), da.SILENT_FLAG)
 
-    def test_failed_digest_keeps_peaks_and_retries(self):
-        self.tick(0); self.now += 60; self.tick(20)
-        self.result = {'ok': False, 'retry_after': 120, 'error': 'x'}
-        self.now += 24 * 3600; self.tick(0)
-        self.result = {'ok': True}
-        self.now += 200; self.tick(0)
-        self.assertEqual(len(self.sent), 2)        # first attempt failed, second delivered
-        self.assertIn('Sonnet', json.dumps(self.sent[1]))
+    def test_silence_can_be_turned_off(self):
+        da.save(self.n.config_path, dict(self.cfg, silent_notices=False))
+        self.cross()
+        self.assertNotIn('flags', self.sent[0])
 
-    def test_startup_baseline_does_not_count_old_heat(self):
-        self.tick(20); self.now += 24 * 3600 + 60; self.tick(0)
-        self.assertEqual(self.sent, [])
+    def test_urgent_tier_is_reserved_and_empty(self):
+        self.assertEqual(da.URGENT_CHANNELS, ())
 
 
 if __name__ == '__main__':
