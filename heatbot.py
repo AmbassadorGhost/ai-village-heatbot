@@ -79,6 +79,12 @@ DEFAULT_CONFIG = {
     # emphatic boundary messages are part of its signal), at the cost of
     # breaking the "one event never alerts" rule for that channel.
     "event_cap_overrides": {},
+    # Novelty discount (2 Oct): a lexicon term an agent already used recently
+    # counts for less each time (factor ** prior uses in the window), so a short
+    # exchange restating one point isn't scored as fresh evidence per message.
+    # OFF by default so replays stay byte-identical to the frozen E2 scorer;
+    # the live viewer turns it on in live.config.json.
+    "term_novelty": {"enabled": False, "window_minutes": 120, "repeat_factor": 0.5},
     # A multi-hour PAUSE is scheduled downtime (nights, weekends), not idling.
     "pause_cap_seconds": 3600,
     # Only page for events this recent. Older events still build heat, but a
@@ -506,6 +512,13 @@ class HeatEngine:
         self.reasoning = {a: list(v) for a, v in st.get("reasoning", {}).items()}
         self.mon_known = set(st.get("mon_known", []))
         self.mon_check = st.get("mon_check")
+        self.term_seen = collections.defaultdict(dict)      # agent -> {term: [iso times]}
+        for a, d in st.get("term_seen", {}).items():
+            self.term_seen[a] = {t: list(v) for t, v in d.items()}
+        self._now = None
+        # when novelty scoring first applied to this state (rollout boundary):
+        # heat and hourly peaks before this time were scored without it
+        self.novelty_since = st.get("novelty_since")
         self.recent = collections.defaultdict(list)
         for a, sets in st.get("recent", {}).items():
             self.recent[a] = [set(s) for s in sets]
@@ -576,15 +589,22 @@ class HeatEngine:
             tm = terms(strip_code(text))
             f["talk"] = 1
             hits = {}
+            nov = self.cfg.get("term_novelty") or {}
+            prior = self._term_priors(agent, tm) if nov.get("enabled") and self._now else {}
             for cat, lex in self.lex.items():
                 s = 0.0
                 for t, w in lex.items():
                     if t in tm:
                         ew = self.term_weight(cat, t, w)
                         if ew > 0:
+                            ew *= nov.get("repeat_factor", 0.5) ** prior.get(t, 0)
                             s += ew
                             hits.setdefault(cat, []).append(t)
                 f["lex_" + cat] = s
+            if nov.get("enabled") and self._now:
+                self._term_record(agent, {t for v in hits.values() for t in v})
+                if self.novelty_since is None:
+                    self.novelty_since = self._now.isoformat()
             self._observe_vocab(tm)
             gs = {w[:5] for w in toks(goal_text)} - self.goal_stop
             st = {w[:5] for w in toks(text)} - self.goal_stop
@@ -622,6 +642,29 @@ class HeatEngine:
         elif action == "REQUEST_HUMAN_HELPER":
             f["human_help"] = 1
         return f, {}
+
+    def _term_priors(self, agent, tm):
+        """Prior uses of each term by this agent in the event-time window (t - w, t].
+        Late-arriving events: uses stamped AFTER this event's time are not priors
+        (Astra review, 2 Oct), and are kept until they age out of the window."""
+        w = dt.timedelta(minutes=(self.cfg.get("term_novelty") or {}).get("window_minutes", 120))
+        lo, hi = (self._now - w).isoformat(), self._now.isoformat()
+        seen = self.term_seen[agent]
+        out = {}
+        for t in list(seen):
+            seen[t] = [x for x in seen[t] if x > lo or x > hi]
+            if not seen[t]:
+                del seen[t]
+            elif t in tm:
+                n = sum(1 for x in seen[t] if lo < x <= hi)
+                if n:
+                    out[t] = n
+        return out
+
+    def _term_record(self, agent, used):
+        ts = self._now.isoformat()
+        for t in used:
+            self.term_seen[agent].setdefault(t, []).append(ts)
 
     # ---- decay and feed ----------------------------------------------------
     def _decay_to(self, agent, now):
@@ -672,6 +715,7 @@ class HeatEngine:
 
     def feed(self, agent, when, action, data, goal_text=""):
         self._decay_to(agent, when)
+        self._now = when
         deltas, why = self.score_event(agent, action, data, goal_text)
         frac = self.cfg.get("event_cap_fraction", 0.95)
         over = self.cfg.get("event_cap_overrides") or {}
@@ -862,6 +906,8 @@ class HeatEngine:
             "reasoning": self.reasoning,
             "mon_known": sorted(self.mon_known), "mon_check": self.mon_check,
             "recent": {a: [sorted(s) for s in v[-8:]] for a, v in self.recent.items()},
+            "term_seen": {a: d for a, d in self.term_seen.items() if d},
+            "novelty_since": self.novelty_since,
             "reasons": {a: {c: [list(r) for r in rs] for c, rs in ch.items() if rs}
                         for a, ch in self.reasons.items()},
             "trips": {c: [(t.isoformat(), a, l) for t, a, l in tr] for c, tr in self.trips.items() if tr},
@@ -1262,6 +1308,10 @@ def write_dashboard(engine, cfg, now, village=None):
         "generated_at": now.isoformat() + "Z", "village": village or cfg.get("village_slug"),
         "framing": FRAMING,
         "scope": SCOPE,
+        # which scoring rules produced the CURRENT heat; points before
+        # novelty_since (hourly history, older state) were scored without it
+        "scoring": {"term_novelty": dict(cfg.get("term_novelty") or {}),
+                    "novelty_since": getattr(engine, "novelty_since", None)},
         "history_file": "history_7d.json",
         "half_life_minutes": cfg["half_life_minutes"],
         "channels": {c: {"label": LABEL[c], "note": CHANNEL_NOTE.get(c, ""), "pages": c not in log_only,
