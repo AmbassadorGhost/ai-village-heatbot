@@ -2,6 +2,5 @@
   "village_slug": "actual-launch-1",
   "poll_seconds": 60,
   "memory_watch": {"enabled": false},
-  "monitor_watch": {"enabled": false},
-  "term_novelty": {"enabled": true, "window_minutes": 120, "repeat_factor": 0.5}
+  "monitor_watch": {"enabled": false}
 }

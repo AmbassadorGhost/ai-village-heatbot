@@ -7,11 +7,17 @@ import time
 import urllib.error
 import urllib.request
 
-# Channels that may send a Discord alert. Friction ('conflict') is dashboard-only
-# (2 Oct): its lexicon mostly detects polite talk about privacy and boundaries
-# (top terms: non-identifying, per-agent, aggregate), so it doesn't page anyone.
-# Filtering here also overrides older saved configs that listed it.
-CHANNELS = ('general', 'off-goal', 'erratic', 'outreach', 'credentials')
+# Two tiers (2 Oct). Everyday heat goes into one periodic DIGEST message, never
+# an individual alert. Immediate delivery is reserved for URGENT_CHANNELS, which
+# stays empty until a validated urgent tier (actions with outside consequences)
+# exists. Friction ('conflict') is dashboard-only: its lexicon mostly detects
+# polite talk about privacy and boundaries (non-identifying, per-agent,
+# aggregate). Filtering by these tuples also overrides older saved configs.
+URGENT_CHANNELS = ()
+DIGEST_CHANNELS = ('general', 'off-goal', 'erratic', 'outreach', 'credentials')
+CHANNELS = DIGEST_CHANNELS          # what the setup page saves
+DIGEST_HOURS = 24
+DIGEST_MAX_AGENTS = 10
 # Everyday heat never uses the word "critical": that is reserved for the
 # planned urgent tier (actions with external-world consequences).
 LEVEL_WORDS = {1: 'elevated', 2: 'high'}
@@ -94,6 +100,30 @@ def payload(village, agent, signals, info, when):
                         'timestamp': when, 'footer': {'text': 'Open the local heat map for full context. No automatic action is taken.'}}]}
 
 
+def digest_payload(village, peaks, hours, when):
+    """One everyday digest. Fixed-vocabulary reasons only: no agent-written excerpts."""
+    village_name = 'Open Chat' if village == 'open-chat' else 'Main village'
+    names = {'erratic': 'Loop / erratic', 'off-goal': 'Off-goal', 'general': 'General',
+             'outreach': 'Outreach', 'credentials': 'Credentials (rule-based)'}
+    ranked = sorted(peaks.items(), key=lambda kv: max(((-v['level'], -v['heat']) for v in kv[1].values())))
+    fields = []
+    for agent, chans in ranked[:DIGEST_MAX_AGENTS]:
+        lines = ['%s: %s (%.1f)' % (names.get(c, c), LEVEL_WORDS[v['level']], v['heat'])
+                 for c, v in sorted(chans.items(), key=lambda kv: (-kv[1]['level'], -kv[1]['heat']))]
+        why = list(dict.fromkeys(r for v in chans.values() for r in v.get('reasons', [])))[:2]
+        value = '\n'.join(lines + (['Why: ' + '; '.join(why)] if why else []))
+        fields.append({'name': agent[:256], 'value': value[:1000]})
+    more = len(ranked) - len(fields)
+    desc = ('Everyday attention digest for the past %g hours: agents whose heat reached elevated or high. '
+            'Not urgent. Heat is experimental and is not a finding of misalignment.' % hours)
+    if more > 0:
+        desc += ' %d more agent(s) on the heat map.' % more
+    return {'username': 'AI Village Heatbot', 'allowed_mentions': {'parse': []},
+            'embeds': [{'title': ('Daily digest · ' + village_name)[:256], 'description': desc,
+                        'fields': fields, 'color': 0x5B7083, 'timestamp': when,
+                        'footer': {'text': 'Open the local heat map for context. No automatic action is taken.'}}]}
+
+
 class Notifier:
     def __init__(self, root, data, transport=post):
         self.config_path = Path(root) / 'discord.local.json'
@@ -120,8 +150,28 @@ class Notifier:
         baseline = state.get('generation') != cfg.get('generation')
         if baseline:
             state = {'generation': cfg['generation'], 'signals': {}, 'pending': {}, 'sent': 0}
-        allowed = [c for c in cfg.get('channels', list(CHANNELS)) if c in CHANNELS]
+        period = float(cfg.get('digest_hours', DIGEST_HOURS)) * 3600
+        digest = state.setdefault('digest', {'due': now + period, 'peaks': {}})
+        chosen = cfg.get('channels', list(CHANNELS))
+        allowed = [c for c in chosen if c in URGENT_CHANNELS]
+        digestible = [c for c in chosen if c in DIGEST_CHANNELS]
         active = dashboard['agents']
+        if not baseline:
+            for a, info in active.items():
+                if not info.get('participating'):
+                    continue
+                for c in digestible:
+                    h = info['heat'].get(c, 0)
+                    th = dashboard['channels'].get(c, {}).get('thresholds')
+                    if not th or h < th['hot']:
+                        continue
+                    lvl = 2 if h >= th['critical'] else 1
+                    old = digest['peaks'].setdefault(a, {}).get(c)
+                    if not old or (lvl, h) > (old['level'], old['heat']):
+                        reasons = [r.get('reason') for r in info.get('contributions', [])
+                                   if r.get('channel') == c and r.get('added', 0) > 0 and r.get('reason')]
+                        digest['peaks'][a][c] = {'level': lvl, 'heat': round(h, 1),
+                                                 'reasons': list(dict.fromkeys(reasons))[-2:]}
         for a, info in active.items():
             if not info.get('participating'):
                 continue
@@ -164,6 +214,20 @@ class Notifier:
                     key = a + '|' + c
                     state['signals'][key].update(armed=False, level=level, sent_at=now)
                     state['pending'].pop(key, None)
+        if now >= digest['due'] and now >= state.get('retry_at', 0):
+            if digest['peaks']:
+                result = self.transport(cfg['webhook_url'],
+                                        digest_payload(village, digest['peaks'], period / 3600, dashboard['generated_at']))
+                if result['ok']:
+                    state['sent'] += 1
+                    state['digests'] = state.get('digests', 0) + 1
+                    digest.update(due=now + period, peaks={})
+                else:
+                    status['error'] = result.get('error', 'Discord delivery failed.')
+                    state['retry_at'] = now + result.get('retry_after', 60)
+            else:
+                digest['due'] = now + period
         save(self.state_path, state)
-        status.update(sent=state['sent'], pending=len(state['pending']))
+        status.update(sent=state['sent'], pending=len(state['pending']),
+                      digest_due=digest['due'], digest_agents=len(digest['peaks']))
         return status

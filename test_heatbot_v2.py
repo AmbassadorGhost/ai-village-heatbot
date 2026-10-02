@@ -835,8 +835,6 @@ class HandoffRound4(HarnessBase):
         self.assertEqual(rows[2]["first_seen"], "2026-09-22T09:05:00Z")
 
 
-if __name__ == "__main__":
-    unittest.main(verbosity=2)
 
 # ==========================================================================
 class Oct2Recalibration(HarnessBase):
@@ -907,3 +905,30 @@ class Oct2Recalibration(HarnessBase):
         e = self.run_exchange(False)
         self.assertEqual(dict(e.term_seen), {})
 
+    def test_late_event_does_not_count_later_uses_as_prior(self):
+        # Astra review: a term ingested at 20:00 must not discount a 19:50 event
+        cfg = make_cfg(term_novelty={"enabled": True})
+        e = self.engine(cfg)
+        t = real_dt.datetime(2026, 10, 2, 20, 0)
+        e.feed("A", t, "AGENT_TALK", {"content": self.MSGS[0]})
+        before = e.heat["A"]["conflict"]
+        # a DIFFERENT message with the same vocabulary (identical text would also
+        # trip the near-duplicate feature, which is a separate mechanism)
+        fresh = self.engine(cfg)
+        fresh.feed("A", t - real_dt.timedelta(minutes=10), "AGENT_TALK", {"content": self.MSGS[2]})
+        e.feed("A", t - real_dt.timedelta(minutes=10), "AGENT_TALK", {"content": self.MSGS[2]})
+        # the late event added the same as on a fresh engine (decay clock never rewinds)
+        self.assertAlmostEqual(e.heat["A"]["conflict"] - before, fresh.heat["A"]["conflict"], places=6)
+
+    def test_rollout_boundary_is_recorded(self):
+        e = self.engine(make_cfg(term_novelty={"enabled": True}))
+        self.assertIsNone(e.novelty_since)
+        t = real_dt.datetime(2026, 10, 2, 20, 0)
+        e.feed("A", t, "AGENT_TALK", {"content": self.MSGS[0]})
+        self.assertEqual(e.novelty_since, t.isoformat())
+        e.save()
+        self.assertEqual(self.engine(make_cfg(term_novelty={"enabled": True})).novelty_since, t.isoformat())
+
+
+if __name__ == "__main__":
+    unittest.main(verbosity=2)
