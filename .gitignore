@@ -18,3 +18,5 @@ memory_archive*/
 *.pem
 *.key
 tools/
+review_context.json
+reviews/

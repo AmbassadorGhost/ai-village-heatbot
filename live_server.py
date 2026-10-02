@@ -53,6 +53,34 @@ def atomic_json(name, value):
     tmp.replace(p)
 
 
+def source_context(events, names, goals):
+    """Join exact public event IDs to contributions; never expose tool/reasoning payloads."""
+    sources, messages = {}, {}
+    for e in sorted(events, key=lambda e: (e.get('createdAt', ''), e.get('eventIndex', 0))):
+        d = e.get('data') or {}
+        a = names.get(d.get('agentId') or d.get('speakerId'))
+        if not a:
+            continue
+        key = hb.event_key(e)
+        if key in sources:
+            continue
+        action = d.get('actionType', 'UNKNOWN')
+        source = {'key': key, 'agent': a, 'time': e.get('createdAt'), 'action': action}
+        if action == 'AGENT_TALK' and isinstance(d.get('content'), str):
+            text = hb.scrub(d['content'])
+            source.update(text=text[:12000], truncated=len(text) > 12000,
+                          goal=hb.scrub(goals.at(a, hb.parse_ts(e['createdAt'])))[:6000])
+            messages.setdefault(a, []).append(source)
+        elif action == 'PAUSE':
+            source['summary'] = 'Pause event. A pause is not a chat message or evidence of misconduct.'
+            if isinstance(d.get('seconds'), (int, float)):
+                source['seconds'] = d['seconds']
+        else:
+            source['summary'] = 'Non-chat event. Its action type is shown; raw payload is not displayed.'
+        sources[key] = source
+    return sources, messages
+
+
 class Collector:
     def __init__(self):
         self.cfg = hb.deep_merge(hb.DEFAULT_CONFIG, read_json('live.config.json', {}))
@@ -109,7 +137,9 @@ class Collector:
         now = utc()
         eng = hb.HeatEngine(self.cfg, self.model)
         eng.set_agents(names.values())
-        hb.run_events(eng, self.cfg, events, names, hb.Goals(detail, names), live=True, now=now)
+        goals = hb.Goals(detail, names)
+        hb.run_events(eng, self.cfg, events, names, goals, live=True, now=now)
+        sources, messages = source_context(events, names, goals)
         latest_by_agent = {}
         for e in events:
             d = e.get('data') or {}
@@ -137,11 +167,18 @@ class Collector:
         for a, info in dashboard['agents'].items():
             info['last_event'] = latest_by_agent.get(a)
             info['participating'] = roster.get(a, {}).get('participating', False)
+            info['goal'] = hb.scrub(goals.at(a, now))[:6000]
+            info['source_events'] = {r['key']: sources[r['key']] for r in info['contributions']
+                                     if r.get('key') in sources}
+            info['recent_messages'] = messages.get(a, [])[-5:]
         bundle = {'dashboard': dashboard, 'history': history, 'roster': roster,
                   'latest_event': max((e.get('createdAt', '') for e in events), default=None),
                   'events_in_window': len(events), 'source_days_utc': days,
                   'model_sha256': hashlib.sha256((ROOT / 'heatbot_model.json').read_bytes()).hexdigest()}
         atomic_json('live_snapshot.json', bundle)
+        # Local review material only; excluded from Git and not a served route.
+        atomic_json('review_context.json', {'captured_at': stamp(now), 'village': self.cfg['village_slug'],
+                                           'messages': messages})
         with self.mutex:
             self.bundle = bundle
             self.status.update(last_success=stamp(now), error=None)
@@ -176,6 +213,8 @@ class Handler(BaseHTTPRequestHandler):
         route = urlsplit(self.path).path
         if route in ('/', '/index.html'):
             data, mime = (ROOT / 'index.html').read_bytes(), 'text/html; charset=utf-8'
+        elif route == '/evidence.js':
+            data, mime = (ROOT / 'evidence.js').read_bytes(), 'text/javascript; charset=utf-8'
         elif route == '/api/live':
             data, mime = json.dumps(self.server.collector.payload()).encode(), 'application/json'
         elif route == '/health':

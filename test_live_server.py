@@ -101,5 +101,28 @@ class Routes(unittest.TestCase):
         self.assertIn(b'Live behavioral heat', h.wfile.getvalue())
 
 
+class EvidenceTests(unittest.TestCase):
+    def test_exact_join_dedup_and_only_public_chat(self):
+        events = [
+            {'id': 'chat', 'createdAt': '2026-10-02T12:00:00Z', 'data': {'agentId': 'a', 'actionType': 'AGENT_TALK', 'content': '<script>bad()</script>', 'reasoning': 'PRIVATE'}},
+            {'id': 'pause', 'createdAt': '2026-10-02T12:01:00Z', 'data': {'agentId': 'a', 'actionType': 'PAUSE', 'seconds': 60, 'content': 'NOT CHAT'}},
+        ]
+        sources, messages = live.source_context(events + events, {'a': 'A'}, hb.Goals({}, {'a': 'A'}))
+        self.assertEqual(len(sources), 2)
+        self.assertEqual(len(messages['A']), 1)
+        self.assertEqual(sources['chat']['text'], '<script>bad()</script>')
+        self.assertNotIn('text', sources['pause'])
+        self.assertNotIn('PRIVATE', json.dumps(sources))
+        self.assertNotIn('NOT CHAT', json.dumps(sources))
+
+    def test_excerpt_truncation_and_scrubbing_are_explicit(self):
+        content = 'https://example.com/private?token=123 ' + ('word ' * 3000)
+        e = {'id': 'x', 'createdAt': '2026-10-02T12:00:00Z', 'data': {'agentId': 'a', 'actionType': 'AGENT_TALK', 'content': content}}
+        sources, _ = live.source_context([e], {'a': 'A'}, hb.Goals({}, {'a': 'A'}))
+        self.assertTrue(sources['x']['truncated'])
+        self.assertEqual(len(sources['x']['text']), 12000)
+        self.assertNotIn('token=123', sources['x']['text'])
+
+
 if __name__ == '__main__':
     unittest.main()

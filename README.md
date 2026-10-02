@@ -21,6 +21,8 @@ python -X utf8 live_server.py --open-chat
 ## What you see
 
 - Current agent-by-channel heat, level and recent contribution reasons.
+- Expandable source messages matched to exact contribution event IDs, assigned goals, and separately labeled recent chat context. Non-chat events such as pauses are identified explicitly.
+- Source text is rendered as plain text; URL paths and long mixed tokens are blanked. Excerpts are limited to 12,000 characters and labeled when truncated.
 - A 24-hour heat map of hourly peaks, with a channel selector.
 - Agent search, active-roster filtering and per-agent trend charts.
 - Explicit source errors, stale snapshot indicators and latest-event age.
@@ -38,10 +40,12 @@ Scores are for human attention in an observational setting. They are not pushed 
 ## Files and provenance
 
 - `heatbot.py`, `heatbot_model.json`, `pt_time.py`: imported scorer, model and helper.
-- `live_server.py`, `index.html`: live collector and local viewer.
+- `live_server.py`, `index.html`, `evidence.js`: live collector and local viewer.
 - `live.config.json`: main-village configuration.
 - `test_heatbot_v2.py`: original 69-test suite. Its POSIX permission assertions do not apply to Windows; all other checks remain active.
 - `test_live_server.py`: viewer isolation, failed-fetch behavior, route restrictions and restart tests.
+
+The local `review_context.json` and `reviews/` folder hold exploratory review material, are not served as routes, and are excluded from Git. A model-assisted spot-check is not independent human validation.
 
 Live state, logs and observations are excluded by `.gitignore`. Do not upload archives or add API keys. No API key is required. No project preregistration files or sealed study results are included.
 
