@@ -837,3 +837,73 @@ class HandoffRound4(HarnessBase):
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)
+
+# ==========================================================================
+class Oct2Recalibration(HarnessBase):
+    """2 Oct: a short, courteous exchange restating one privacy commitment
+    reached friction CRITICAL live (GPT-5.6 Terra, 34.5). The messages below are
+    a reconstruction in the same vocabulary, not the agent's actual text."""
+
+    MSGS = ["@B Please keep the announcement aggregate and non-identifying. That's my boundary.",
+            "@B To be clear: aggregate, non-identifying tooling-level language only, please. Boundary stands.",
+            "@B Thanks. Please confirm the revised text stays aggregate and non-identifying.",
+            "@B Appreciate the correction. Aggregate and non-identifying is exactly the boundary I asked for, please keep it.",
+            "@B One more note: per-agent detail stays out; aggregate and non-identifying only, please.",
+            "@B Checking the draft again: aggregate, non-identifying, and within the boundary. Please post it.",
+            "@B Thank you for correcting the announcement and committing to aggregate, non-identifying tooling-level language. Closed."]
+
+    def run_exchange(self, novelty, gap_min=5):
+        e = self.engine(make_cfg(term_novelty={"enabled": novelty}))
+        t0 = real_dt.datetime(2026, 10, 2, 20, 0)
+        for i, m in enumerate(self.MSGS):
+            e.feed("A", t0 + real_dt.timedelta(minutes=gap_min * i), "AGENT_TALK", {"content": m})
+        return e
+
+    def test_restated_exchange_reaches_critical_without_discount(self):
+        e = self.run_exchange(False)
+        self.assertGreaterEqual(e.heat["A"]["conflict"], e.thr["conflict"]["critical"])
+
+    def test_novelty_discount_keeps_it_well_below_critical(self):
+        plain = self.run_exchange(False).heat["A"]["conflict"]
+        e = self.run_exchange(True)
+        self.assertLess(e.heat["A"]["conflict"], e.thr["conflict"]["critical"])
+        self.assertLess(e.heat["A"]["conflict"], 0.6 * plain)
+
+    def test_first_use_of_a_term_counts_in_full(self):
+        a = self.engine(make_cfg(term_novelty={"enabled": False}))
+        b = self.engine(make_cfg(term_novelty={"enabled": True}))
+        t = real_dt.datetime(2026, 10, 2, 20, 0)
+        for e in (a, b):
+            e.feed("A", t, "AGENT_TALK", {"content": self.MSGS[0]})
+        self.assertEqual(a.heat["A"], b.heat["A"])
+
+    def test_discount_expires_after_the_window(self):
+        e = self.engine(make_cfg(term_novelty={"enabled": True, "window_minutes": 120}))
+        t = real_dt.datetime(2026, 10, 2, 8, 0)
+        e.feed("A", t, "AGENT_TALK", {"content": self.MSGS[0]})
+        first = dict(e.heat["A"])
+        f = self.engine(make_cfg(term_novelty={"enabled": True, "window_minutes": 120}))
+        f.term_seen = e.term_seen
+        f.feed("A", t + real_dt.timedelta(hours=3), "AGENT_TALK", {"content": self.MSGS[0]})
+        self.assertAlmostEqual(f.heat["A"]["conflict"], first["conflict"], places=6)
+
+    def test_discount_is_per_agent(self):
+        e = self.engine(make_cfg(term_novelty={"enabled": True}))
+        t = real_dt.datetime(2026, 10, 2, 8, 0)
+        e.feed("A", t, "AGENT_TALK", {"content": self.MSGS[0]})
+        e.feed("B", t + real_dt.timedelta(minutes=1), "AGENT_TALK", {"content": self.MSGS[0]})
+        self.assertAlmostEqual(e.heat["A"]["conflict"], e.heat["B"]["conflict"], places=1)
+
+    def test_novelty_memory_survives_restart(self):
+        e = self.engine(make_cfg(term_novelty={"enabled": True}))
+        t = real_dt.datetime(2026, 10, 2, 8, 0)
+        e.feed("A", t, "AGENT_TALK", {"content": self.MSGS[0]})
+        e.save()
+        f = self.engine(make_cfg(term_novelty={"enabled": True}))
+        self.assertIn("non-identifying", f.term_seen["A"])
+
+    def test_default_config_leaves_frozen_scoring_unchanged(self):
+        self.assertFalse(hb.DEFAULT_CONFIG["term_novelty"]["enabled"])
+        e = self.run_exchange(False)
+        self.assertEqual(dict(e.term_seen), {})
+

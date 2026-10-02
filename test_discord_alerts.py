@@ -1,4 +1,5 @@
 import copy
+import json
 import datetime as dt
 import tempfile
 from pathlib import Path
@@ -62,7 +63,8 @@ class Alerts(unittest.TestCase):
     def test_critical_escalation_bypasses_cooldown(self):
         self.tick(); self.tick(15); self.now += 60; self.tick(21)
         self.assertEqual(len(self.sent),2)
-        self.assertIn('CRITICAL', self.sent[-1]['embeds'][0]['title'])
+        self.assertIn('HIGH', self.sent[-1]['embeds'][0]['title'])
+        self.assertNotIn('CRITICAL', json.dumps(self.sent[-1]))
 
     def test_rate_limit_keeps_pending_and_waits(self):
         self.tick()
@@ -99,3 +101,28 @@ class Alerts(unittest.TestCase):
 
 
 if __name__=='__main__':unittest.main()
+
+
+class FrictionDoesNotPage(unittest.TestCase):
+    """2 Oct: friction is dashboard-only, even if an older saved config lists it."""
+    def test_saved_conflict_channel_is_ignored(self):
+        tmp = tempfile.TemporaryDirectory(); self.addCleanup(tmp.cleanup)
+        root = Path(tmp.name); sent = []
+        n = da.Notifier(root, root, lambda u, p: (sent.append(p), {'ok': True})[1])
+        da.save(n.config_path, {'enabled': True, 'generation': 'g',
+                                'webhook_url': 'https://discord.com/api/webhooks/123/test_token',
+                                'channels': ['conflict']})
+        now = 1800000000
+        def b(h):
+            return {'dashboard': {'village': 'actual-launch-1',
+                    'generated_at': dt.datetime.fromtimestamp(now, dt.timezone.utc).isoformat(),
+                    'channels': {'conflict': {'thresholds': {'hot': 15.4, 'critical': 31.3}}},
+                    'agents': {'Terra': {'participating': True, 'heat': {'conflict': h},
+                                         'contributions': [], 'source_events': {}}}}}
+        n.tick(b(0), now); n.tick(b(34.5), now)
+        self.assertEqual(sent, [])
+        self.assertNotIn('conflict', da.CHANNELS)
+
+
+if __name__ == '__main__':
+    unittest.main()
