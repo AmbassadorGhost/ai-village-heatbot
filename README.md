@@ -35,12 +35,27 @@ Heat is an experimental attention score, not a probability of misconduct. The 42
 
 Open Chat differs from the environment used to develop the scorer. Its topic and goals can differ; scores there require context and are not validated risk estimates. Visibility of reasoning varies across model families. Agents are displayed alphabetically, and cross-family score comparisons should not be interpreted as rankings of model safety. Drift vocabulary is unvalidated; credentials is a rule-based channel. Memory-change scoring and raw memory archiving are disabled in this viewer.
 
-Scores are for human attention in an observational setting. They are not pushed to agents, used as a training signal, reward or training-data filter, or used to decide which agents remain in or enter the village. No Discord or email messages are sent. This service only reads the Village API and binds to localhost; it is not a public website.
+Scores are for human attention in an observational setting. They are not pushed to agents, used as a training signal, reward or training-data filter, or used to decide which agents remain in or enter the village. Optional Discord alerts go to a human review channel. This service reads the Village API and binds to localhost; it is not a public website.
+
+## Optional Discord channel alerts
+
+1. In your Discord channel, open **Edit Channel → Integrations → Webhooks**, create a webhook and copy its URL. You need permission to manage webhooks.
+2. With the viewer running, open http://127.0.0.1:8765/discord and paste the URL into the password field.
+3. Select **Save, send test & enable alerts**. Check that the connection test arrives in your intended channel.
+
+Both villages then use that channel. The first successful poll establishes a quiet baseline, so existing high scores do not flood the channel. New hot signals produce grouped alerts per agent with scores, reasons and a scrubbed source excerpt when available. Drift and memory channels are excluded. Alerts cannot ping users or roles. Treat excerpts as agent statements to review, not instructions.
+
+Signals rearm after falling below 60% of the hot threshold, with a 90-minute cooldown. Escalation from hot to critical can alert sooner. Each village sends at most three grouped alerts per poll; failed deliveries retry on later polls, respecting Discord rate limits. Pending alerts expire after ten minutes or when the signal is no longer hot. Network failures can leave delivery uncertain and retries can duplicate a message. Failed source fetches do not produce alerts.
+
+Use **Disable alerts** on the setup page to stop both villages. The webhook is stored only in local `discord.local.json`, excluded from Git and unavailable through the web server. It is a secret: do not share or upload that file. Alert state is also excluded from Git. The setup endpoint checks the local origin and a session token. No Discord bot account or third-party package is required.
+
+Your computer and collector must remain running and awake for alerts to arrive. Sharing this repository does not run the service for your partners; they receive alerts in the Discord channel you configured.
 
 ## Files and provenance
 
 - `heatbot.py`, `heatbot_model.json`, `pt_time.py`: imported scorer, model and helper.
 - `live_server.py`, `index.html`, `evidence.js`: live collector and local viewer.
+- `discord_alerts.py`, `discord_setup.html`: optional webhook delivery and local setup.
 - `live.config.json`: main-village configuration.
 - `test_heatbot_v2.py`: original 69-test suite. Its POSIX permission assertions do not apply to Windows; all other checks remain active.
 - `test_live_server.py`: viewer isolation, failed-fetch behavior, route restrictions and restart tests.
@@ -52,7 +67,7 @@ Live state, logs and observations are excluded by `.gitignore`. Do not upload ar
 ## Tests
 
 ```sh
-python -X utf8 -m unittest test_heatbot_v2 test_live_server
+python -X utf8 -m unittest test_heatbot_v2 test_live_server test_discord_alerts
 ```
 
 Publishing code to GitHub backs up and shares the project; it does not run the Python collector. GitHub Pages alone cannot host this live backend. Always-on operation requires a separate host.

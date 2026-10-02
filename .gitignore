@@ -20,3 +20,5 @@ memory_archive*/
 tools/
 review_context.json
 reviews/
+discord.local.json
+discord.state.json

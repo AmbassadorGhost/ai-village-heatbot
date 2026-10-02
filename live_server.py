@@ -4,6 +4,7 @@ import hashlib
 import json
 import os
 import sys
+import secrets
 from pathlib import Path
 import threading
 import time
@@ -12,12 +13,14 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import urlsplit
 
 import heatbot as hb
+import discord_alerts
 
 ROOT = Path(__file__).resolve().parent
 OPEN_CHAT = '--open-chat' in sys.argv
 DATA = ROOT / 'open-chat' if OPEN_CHAT else ROOT
 PORT = 8766 if OPEN_CHAT else 8765
 APP = 'ai-village-heat-live-v1'
+SETUP_TOKEN = secrets.token_urlsafe(32)
 SCOPE = ('For human attention in an observational setting. Scores are not pushed to agents, '
          'used for training, rewards, training-data filtering, or agent admission/removal.')
 NOTES = {
@@ -87,7 +90,7 @@ class Collector:
         if OPEN_CHAT:
             self.cfg['village_slug'] = 'open-chat'
             self.cfg['poll_seconds'] = 60
-        # This service has no external message sinks or raw memory collection.
+        # Disable legacy sinks and raw memory collection; optional alerts use Notifier.
         self.cfg['memory_watch'] = {'enabled': False}
         self.cfg['channels_enabled'] = list(NOTES)
         self.cfg['sinks'] = {'console': False, 'jsonl': True,
@@ -102,6 +105,7 @@ class Collector:
         self.detail = None
         self.roster_time = 0
         self.day_cache = {}
+        self.discord = discord_alerts.Notifier(ROOT, DATA)
 
     def fetch(self, path):
         return hb.http_json(hb.API + path, timeout=60, tries=2)
@@ -182,6 +186,12 @@ class Collector:
         with self.mutex:
             self.bundle = bundle
             self.status.update(last_success=stamp(now), error=None)
+        try:
+            discord_status = self.discord.tick(bundle)
+        except Exception:
+            discord_status = {'enabled': True, 'error': 'Discord notifier encountered a local error; check configuration.'}
+        with self.mutex:
+            self.status['discord'] = discord_status
         print(stamp(), 'updated', len(events), 'events;', len(dashboard['agents']), 'agents', flush=True)
 
     def loop(self):
@@ -215,6 +225,9 @@ class Handler(BaseHTTPRequestHandler):
             data, mime = (ROOT / 'index.html').read_bytes(), 'text/html; charset=utf-8'
         elif route == '/evidence.js':
             data, mime = (ROOT / 'evidence.js').read_bytes(), 'text/javascript; charset=utf-8'
+        elif route == '/discord':
+            data = (ROOT / 'discord_setup.html').read_text(encoding='utf-8').replace('__CSRF_TOKEN__', SETUP_TOKEN).encode()
+            mime = 'text/html; charset=utf-8'
         elif route == '/api/live':
             data, mime = json.dumps(self.server.collector.payload()).encode(), 'application/json'
         elif route == '/health':
@@ -233,6 +246,55 @@ class Handler(BaseHTTPRequestHandler):
 
     def log_message(self, *args):
         pass
+
+    def do_POST(self):
+        host = self.headers.get('Host', '')
+        if (host not in ('127.0.0.1:' + str(PORT), 'localhost:' + str(PORT)) or
+                self.headers.get('Origin') != 'http://' + host or self.path != '/api/discord-config'):
+            self.send_error(403)
+            return
+        result, code = {}, 200
+        try:
+            size = int(self.headers.get('Content-Length', '0'))
+            if size < 1 or size > 12000:
+                raise ValueError('Invalid request size.')
+            body = json.loads(self.rfile.read(size))
+            if not isinstance(body, dict):
+                raise ValueError('Invalid request.')
+            if not secrets.compare_digest(str(body.get('csrf', '')), SETUP_TOKEN):
+                self.send_error(403)
+                return
+            path = ROOT / 'discord.local.json'
+            if body.get('action') == 'disable':
+                cfg = discord_alerts.load(path, {})
+                cfg['enabled'] = False
+                discord_alerts.save(path, cfg)
+                result = {'message': 'Alerts disabled for both villages. Any in-flight request may finish.'}
+            elif body.get('action') == 'enable':
+                url = discord_alerts.validate_url(str(body.get('webhook_url', '')).strip())
+                test = {'username': 'AI Village Heatbot', 'allowed_mentions': {'parse': []},
+                        'content': 'Heatbot connection test: human-review alerts are now being configured for Main Village and Open Chat. This is a test, not a heat alert.'}
+                delivery = discord_alerts.post(url, test)
+                if not delivery['ok']:
+                    raise ValueError(delivery.get('error', 'Test message delivery failed.'))
+                discord_alerts.save(path, {'enabled': True, 'webhook_url': url,
+                                          'generation': secrets.token_hex(16),
+                                          'villages': ['actual-launch-1', 'open-chat'],
+                                          'channels': list(discord_alerts.CHANNELS)})
+                result = {'message': 'Test delivered. Alerts enabled for both villages. The first poll establishes a quiet baseline; subsequent new hot signals can alert.'}
+            else:
+                raise ValueError('Unknown action.')
+        except (ValueError, TypeError):
+            code, result = 400, {'message': 'Setup failed. Check the webhook URL and Discord permissions, then retry. Existing configuration was not changed.'}
+        except OSError:
+            code, result = 500, {'message': 'Could not save configuration. Check local file permissions.'}
+        data = json.dumps(result).encode()
+        self.send_response(code)
+        self.send_header('Content-Type', 'application/json')
+        self.send_header('Content-Length', str(len(data)))
+        self.send_header('Cache-Control', 'no-store')
+        self.end_headers()
+        self.wfile.write(data)
 
 
 def main():

@@ -26,6 +26,7 @@ class CollectorTests(unittest.TestCase):
         p.start()
         self.addCleanup(p.stop)
         self.collector = live.Collector()
+        self.collector.discord.config_path = self.folder / 'discord.local.json'
 
     def source(self, path):
         if path.startswith('/villages?'):
@@ -84,7 +85,7 @@ class Routes(unittest.TestCase):
         return h
 
     def test_private_files_and_traversal_not_served(self):
-        for p in ['/heatbot.state.json', '/live_snapshot.json', '/../heatbot_model.json', '/.git/config']:
+        for p in ['/heatbot.state.json', '/live_snapshot.json', '/../heatbot_model.json', '/.git/config', '/discord.local.json', '/discord.state.json']:
             h = self.handler(p)
             h.do_GET()
             self.assertEqual(h.code, 404)
@@ -99,6 +100,47 @@ class Routes(unittest.TestCase):
         h.do_GET()
         self.assertEqual(h.code, 200)
         self.assertIn(b'Live behavioral heat', h.wfile.getvalue())
+
+    def post_handler(self, body, origin='http://127.0.0.1:8765'):
+        h = self.handler('/api/discord-config')
+        raw = json.dumps(body).encode()
+        h.headers.update({'Origin': origin, 'Content-Length': str(len(raw))})
+        h.rfile = io.BytesIO(raw)
+        return h
+
+    def test_setup_rejects_foreign_origin_and_missing_token(self):
+        for body, origin in [({'csrf': live.SETUP_TOKEN}, 'https://example.com'), ({}, 'http://127.0.0.1:8765')]:
+            h = self.post_handler(body, origin)
+            with patch.object(live.discord_alerts, 'post') as send:
+                h.do_POST()
+                self.assertEqual(h.code, 403)
+                send.assert_not_called()
+
+    def test_setup_only_enables_after_success_and_never_echoes_secret(self):
+        with tempfile.TemporaryDirectory() as folder, patch.object(live, 'ROOT', Path(folder)):
+            path = Path(folder) / 'discord.local.json'
+            body = {'csrf': live.SETUP_TOKEN, 'action': 'enable', 'webhook_url': 'https://discord.com/api/webhooks/123/test-secret'}
+            with patch.object(live.discord_alerts, 'post', return_value={'ok': False}):
+                h = self.post_handler(body)
+                h.do_POST()
+                self.assertEqual(h.code, 400)
+                self.assertFalse(path.exists())
+            with patch.object(live.discord_alerts, 'post', return_value={'ok': True}):
+                h = self.post_handler(body)
+                h.do_POST()
+                self.assertEqual(h.code, 200)
+                self.assertTrue(json.loads(path.read_text())['enabled'])
+                self.assertNotIn(b'test-secret', h.wfile.getvalue())
+            h = self.post_handler({'csrf': live.SETUP_TOKEN, 'action': 'disable'})
+            h.do_POST()
+            self.assertFalse(json.loads(path.read_text())['enabled'])
+
+    def test_setup_rejects_non_discord_url_without_delivery(self):
+        h = self.post_handler({'csrf': live.SETUP_TOKEN, 'action': 'enable', 'webhook_url': 'https://example.com/secret'})
+        with patch.object(live.discord_alerts, 'post') as send:
+            h.do_POST()
+            self.assertEqual(h.code, 400)
+            send.assert_not_called()
 
 
 class EvidenceTests(unittest.TestCase):
