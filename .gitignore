@@ -1,0 +1,20 @@
+# Live data and local process state must stay on the collector computer.
+__pycache__/
+*.pyc
+*.log
+*.jsonl
+*.tmp
+*.lock
+heatbot.state.json
+heatbot.config.json
+dashboard.json
+history_7d.json
+live_snapshot.json
+live_process.json
+open-chat/
+memory_archive*/
+.env
+.env.*
+*.pem
+*.key
+tools/

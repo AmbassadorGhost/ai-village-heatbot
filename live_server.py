@@ -1,0 +1,219 @@
+"""Local, read-only live viewer around the unmodified round-7 heat scorer."""
+import datetime as dt
+import hashlib
+import json
+import os
+import sys
+from pathlib import Path
+import threading
+import time
+import traceback
+from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+from urllib.parse import urlsplit
+
+import heatbot as hb
+
+ROOT = Path(__file__).resolve().parent
+OPEN_CHAT = '--open-chat' in sys.argv
+DATA = ROOT / 'open-chat' if OPEN_CHAT else ROOT
+PORT = 8766 if OPEN_CHAT else 8765
+APP = 'ai-village-heat-live-v1'
+SCOPE = ('For human attention in an observational setting. Scores are not pushed to agents, '
+         'used for training, rewards, training-data filtering, or agent admission/removal.')
+NOTES = {
+    'general': 'Combined behavioral heat. Experimental attention signal, not a probability or finding of misalignment.',
+    'off-goal': 'Language associated with drifting away from a goal; read the context.',
+    'erratic': 'Repetition, looping and status-report patterns.',
+    'conflict': 'Boundary and friction language; disagreement can be appropriate.',
+    'outreach': 'Language about contacting people or platforms; outreach can be appropriate.',
+    'deceptive': 'Unvalidated drift vocabulary. Not evidence of deception.',
+    'credentials': 'Rule-based mentions of tokens, cookies or browser storage; not calibrated.',
+}
+
+
+def utc():
+    return dt.datetime.now(dt.timezone.utc).replace(tzinfo=None)
+
+
+def stamp(t=None):
+    return (t or utc()).isoformat() + 'Z'
+
+
+def read_json(name, fallback):
+    try:
+        return json.loads((DATA / name).read_text(encoding='utf-8'))
+    except (OSError, ValueError):
+        return fallback
+
+
+def atomic_json(name, value):
+    p = DATA / name
+    tmp = p.with_suffix(p.suffix + '.tmp')
+    tmp.write_text(json.dumps(value, ensure_ascii=True), encoding='utf-8')
+    tmp.replace(p)
+
+
+class Collector:
+    def __init__(self):
+        self.cfg = hb.deep_merge(hb.DEFAULT_CONFIG, read_json('live.config.json', {}))
+        if OPEN_CHAT:
+            self.cfg['village_slug'] = 'open-chat'
+            self.cfg['poll_seconds'] = 60
+        # This service has no external message sinks or raw memory collection.
+        self.cfg['memory_watch'] = {'enabled': False}
+        self.cfg['channels_enabled'] = list(NOTES)
+        self.cfg['sinks'] = {'console': False, 'jsonl': True,
+                             'discord': {'enabled': False}, 'email': {'enabled': False},
+                             'village': {'enabled': True}}
+        self.model = hb.load_model()
+        self.mutex = threading.Lock()
+        self.bundle = read_json('live_snapshot.json', {})
+        self.status = {'app': APP, 'running': True, 'polling': False,
+                       'last_success': None, 'error': None, 'poll_seconds': self.cfg['poll_seconds'],
+                       'village_name': 'Open Chat' if OPEN_CHAT else 'Main village'}
+        self.detail = None
+        self.roster_time = 0
+        self.day_cache = {}
+
+    def fetch(self, path):
+        return hb.http_json(hb.API + path, timeout=60, tries=2)
+
+    def collect(self):
+        if self.detail is None or time.monotonic() - self.roster_time > 900:
+            village = self.fetch('/villages?slug=' + self.cfg['village_slug'])
+            detail = self.fetch('/villages/' + village['id'])
+            if not isinstance(detail.get('agents'), list) or not detail['agents']:
+                raise ValueError('Village roster is empty or has changed format')
+            self.detail = detail
+            self.roster_time = time.monotonic()
+        detail = self.detail
+        names = {a['id']: a['name'] for a in detail['agents']}
+        roster = {a['name']: {'id': a['id'], 'participating': bool(a.get('isParticipating'))}
+                  for a in detail['agents']}
+        now = utc()
+        days = [(now - dt.timedelta(days=1)).strftime('%Y-%m-%d'), now.strftime('%Y-%m-%d')]
+        events = []
+        for day in days:
+            if day == days[-1] or day not in self.day_cache:
+                page = self.fetch('/events?villageId=' + detail['id'] + '&date=' + day)
+                if not isinstance(page.get('events'), list):
+                    raise ValueError('Events endpoint returned an unexpected format')
+                if day != days[-1]:
+                    self.day_cache[day] = page['events']
+                rows = page['events']
+            else:
+                rows = self.day_cache[day]
+            events.extend(rows)
+        self.day_cache = {k: v for k, v in self.day_cache.items() if k in days}
+        # No scoring occurs until every required source request succeeds.
+        now = utc()
+        eng = hb.HeatEngine(self.cfg, self.model)
+        eng.set_agents(names.values())
+        hb.run_events(eng, self.cfg, events, names, hb.Goals(detail, names), live=True, now=now)
+        latest_by_agent = {}
+        for e in events:
+            d = e.get('data') or {}
+            a = names.get(d.get('agentId') or d.get('speakerId'))
+            if a:
+                latest_by_agent[a] = max(latest_by_agent.get(a, ''), e.get('createdAt', ''))
+        cutoff = (now - dt.timedelta(days=3)).isoformat()
+        eng.seen = {k: v for k, v in eng.seen.items() if (v or '')[:19] >= cutoff[:19]}
+        eng.decay_all(now)
+        hb.flush_situation(eng, self.cfg, now)
+        hb.flush_heat_hourly(eng, self.cfg, now)
+        hb.write_dashboard(eng, self.cfg, now)
+        hb.write_history(eng, self.cfg, now)
+        eng.save()
+        dashboard = read_json('dashboard.json', {})
+        history = read_json('history_7d.json', {'agents': {}})
+        # Include the incomplete current hour with an explicit hourly-peak meaning.
+        for key, value in eng.hh.items():
+            a, hour = key.rsplit('|', 1)
+            history['agents'].setdefault(a, {'heat_peak': {}, 'situation': {}})['heat_peak'][hour + ':00Z'] = value['peak']
+        dashboard['scope'] = SCOPE
+        for c, info in dashboard['channels'].items():
+            info['note'] = NOTES[c]
+            info['pages'] = False
+        for a, info in dashboard['agents'].items():
+            info['last_event'] = latest_by_agent.get(a)
+            info['participating'] = roster.get(a, {}).get('participating', False)
+        bundle = {'dashboard': dashboard, 'history': history, 'roster': roster,
+                  'latest_event': max((e.get('createdAt', '') for e in events), default=None),
+                  'events_in_window': len(events), 'source_days_utc': days,
+                  'model_sha256': hashlib.sha256((ROOT / 'heatbot_model.json').read_bytes()).hexdigest()}
+        atomic_json('live_snapshot.json', bundle)
+        with self.mutex:
+            self.bundle = bundle
+            self.status.update(last_success=stamp(now), error=None)
+        print(stamp(), 'updated', len(events), 'events;', len(dashboard['agents']), 'agents', flush=True)
+
+    def loop(self):
+        while True:
+            with self.mutex:
+                self.status.update(polling=True, last_attempt=stamp())
+            try:
+                self.collect()
+            except Exception as exc:
+                with self.mutex:
+                    self.status['error'] = str(exc)
+                traceback.print_exc()
+            finally:
+                with self.mutex:
+                    self.status['polling'] = False
+            time.sleep(self.cfg['poll_seconds'])
+
+    def payload(self):
+        with self.mutex:
+            return dict(self.bundle, status=dict(self.status))
+
+
+class Handler(BaseHTTPRequestHandler):
+    def do_GET(self):
+        # Exact routes only: state, logs, archives and source files are never served.
+        if self.headers.get('Host', '').split(':')[0] not in ('127.0.0.1', 'localhost'):
+            self.send_error(403)
+            return
+        route = urlsplit(self.path).path
+        if route in ('/', '/index.html'):
+            data, mime = (ROOT / 'index.html').read_bytes(), 'text/html; charset=utf-8'
+        elif route == '/api/live':
+            data, mime = json.dumps(self.server.collector.payload()).encode(), 'application/json'
+        elif route == '/health':
+            data, mime = json.dumps({'app': APP, 'pid': os.getpid()}).encode(), 'application/json'
+        else:
+            self.send_error(404)
+            return
+        self.send_response(200)
+        self.send_header('Content-Type', mime)
+        self.send_header('Content-Length', str(len(data)))
+        self.send_header('Cache-Control', 'no-store')
+        self.send_header('X-Content-Type-Options', 'nosniff')
+        self.send_header('Content-Security-Policy', "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; frame-ancestors 'none'")
+        self.end_headers()
+        self.wfile.write(data)
+
+    def log_message(self, *args):
+        pass
+
+
+def main():
+    os.chdir(ROOT)
+    DATA.mkdir(exist_ok=True)
+    hb.STATE_PATH = str(DATA / 'heatbot.state.json')
+    hb.LOG_PATH = str(DATA / 'heatbot.log.jsonl')
+    lock = hb.RunLock()
+    if not lock.acquire():
+        raise SystemExit('A heatbot collector is already using this state directory.')
+    try:
+        server = ThreadingHTTPServer(('127.0.0.1', PORT), Handler)
+        server.collector = Collector()
+        atomic_json('live_process.json', {'pid': os.getpid(), 'app': APP})
+        threading.Thread(target=server.collector.loop, daemon=True).start()
+        print('Live viewer: http://127.0.0.1:' + str(PORT), flush=True)
+        server.serve_forever()
+    finally:
+        lock.release()
+
+
+if __name__ == '__main__':
+    main()
