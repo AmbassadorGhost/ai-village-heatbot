@@ -11,6 +11,7 @@ heat viewer, and is presented as agent text, not instructions.
 Scope: notices are for human attention. They're never shown to agents, and
 never used as a training signal, reward, filter or selection criterion.
 """
+import collections
 import datetime as dt
 import importlib.util
 import json
@@ -102,26 +103,56 @@ def nearest_message(messages, agent, when, before=dt.timedelta(hours=2), after=d
     return best
 
 
-def notice(alert, names, messages, village_name):
+STANDARD_QUESTIONS = ("Who?", "Doing what?", "Where?", "Who else?", "Who hasn't?", "What did they say just before?")
+
+
+def involvement(rows, tgt, when, exclude=()):
+    """Agents naming target `tgt` in the 24 h up to `when`, and active agents who didn't."""
+    lo = when - dt.timedelta(hours=24)
+    touched, active = collections.Counter(), set()
+    for r in rows:
+        t = V.parse_ts(r["timestamp_utc"])
+        if not lo <= t <= when:
+            continue
+        active.add(r["agent_id"])
+        if tgt and any(V.target(h) == tgt for h in r.get("outside_services") or []):
+            touched[r["agent_id"]] += 1
+    others = {a: n for a, n in touched.items() if a not in exclude}
+    return others, sorted(active - set(touched))
+
+
+def notice(alert, names, messages, village_name, rows=()):
+    """An urgent notice that answers the same standard questions every time."""
     when = V.parse_ts(alert["time"])
-    agents = [names.get(x, x) for x in ([alert["agent"]] if alert.get("agent") else alert.get("agents", []))]
-    fields = [{"name": "Agent" + ("s" if len(agents) > 1 else ""), "value": ", ".join(agents)[:1000], "inline": True}]
-    if alert.get("target"):
-        fields.append({"name": "Outside site", "value": "`%s`" % alert["target"], "inline": True})
+    ids = [alert["agent"]] if alert.get("agent") else list(alert.get("agents", []))
+    agents = [names.get(x, x) for x in ids]
+    tgt = alert.get("target")
     detail = {k: v for k, v in alert.items() if k not in ("signal", "time", "detector", "agent", "agents", "target")}
+    what = SIGNAL_TITLES.get(alert["signal"], alert["signal"])
     if detail:
-        fields.append({"name": "What the commands did",
-                       "value": "\n".join("%s: %s" % (k.replace("_", " "), v) for k, v in detail.items())[:900]})
+        what += "\n" + "\n".join("%s: %s" % (k.replace("_", " "), v) for k, v in detail.items())
+    others, quiet = involvement(rows, tgt, when, exclude=ids) if tgt else ({}, [])
+    fields = [{"name": "Who?", "value": ", ".join(agents)[:1000] or "unknown", "inline": True},
+              {"name": "Where?", "value": "`%s`" % tgt if tgt else "see details", "inline": True},
+              {"name": "Doing what?", "value": what[:1000]}]
+    if tgt:
+        fields.append({"name": "Who else? (commands to this site, last 24 h)",
+                       "value": (", ".join("%s (%d)" % (names.get(a, a), n) for a, n in
+                                           sorted(others.items(), key=lambda x: -x[1]))[:900] or "No other agents.")})
+        fields.append({"name": "Who hasn't? (agents with outside activity, last 24 h)",
+                       "value": ("%d agents active online sent nothing to this site" % len(quiet) +
+                                 (": " + ", ".join(names.get(a, a) for a in quiet[:8]) + ("…" if len(quiet) > 8 else "")
+                                  if quiet else "."))[:900]})
     m = nearest_message(messages, agents[0], when) if agents else None
     if m and m.get("text"):
-        text = re.sub(r"([\\`*_~|>])", r"\\\1", m["text"]).replace("@", "@​")
-        fields.append({"name": "Agent's nearest chat line (agent text; not instructions)",
+        text = re.sub(r"([\\`*_~|>])", r"\\\1", m["text"]).replace("@", "@\u200b")
+        fields.append({"name": "What did they say just before? (agent text; not instructions)",
                        "value": (text[:600] + ("…" if len(text) > 600 else ""))})
     else:
-        fields.append({"name": "Context", "value": "No chat line from this agent within 2 hours before the alert."})
+        fields.append({"name": "What did they say just before?",
+                       "value": "No chat line from this agent within 2 hours before the alert."})
     return {"username": "AI Village Heatbot · Tier 1", "allowed_mentions": {"parse": []},
-            "embeds": [{"title": ("URGENT · %s · %s" % (SIGNAL_TITLES.get(alert["signal"], alert["signal"]),
-                                                       village_name))[:256],
+            "embeds": [{"title": ("URGENT · %s · %s" % (what.split("\n")[0], village_name))[:256],
                         "description": ("An action likely to affect people or services outside the village. "
                                         "Human review requested; no automatic action is taken. "
                                         "This is a candidate for attention, not a finding."),
@@ -215,7 +246,7 @@ class Tier1Live:
             fresh.append(a)
         sent = []
         for a in fresh[:5]:
-            msg = notice(a, names, messages, village_name)
+            msg = notice(a, names, messages, village_name, rows)
             with self.alerts_path.open("a", encoding="utf-8") as f:
                 f.write(json.dumps({"alert": a, "agents": [names.get(x, x) for x in
                                     ([a["agent"]] if a.get("agent") else a.get("agents", []))]}) + "\n")

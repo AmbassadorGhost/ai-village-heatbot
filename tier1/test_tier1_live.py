@@ -83,6 +83,9 @@ class Live(unittest.TestCase):
         self.assertIn("new directory site", blob)
         self.assertIn("submit.example", blob)
         self.assertEqual(self.sent[0]["allowed_mentions"], {"parse": []})
+        names = [f["name"] for f in emb["fields"]]
+        for q in ("Who?", "Where?", "Doing what?", "Who else?", "Who hasn't?", "What did they say just before?"):
+            self.assertTrue(any(n.startswith(q) for n in names), q)
 
     def test_same_alert_not_paged_twice(self):
         live = self.live()
@@ -125,6 +128,20 @@ class Live(unittest.TestCase):
         first = self.api.calls
         live.tick("v1", "Main village", {}, {}, now=NOW + dt.timedelta(minutes=11))
         self.assertEqual(self.api.calls - first, 1)     # only today again
+
+
+class StandardQuestions(unittest.TestCase):
+    def test_who_else_and_who_hasnt(self):
+        rows = [{"agent_id": a, "timestamp_utc": "2026-10-03T11:%02d:00Z" % i, "outside_services": h}
+                for i, (a, h) in enumerate([("a1", ["api.site.example"]), ("a2", ["x.site.example"]),
+                                            ("a2", ["site.example"]), ("a3", ["docs.other.example"])])]
+        alert = {"signal": "U3_automated_writes", "time": "2026-10-03T12:00:00Z", "detector": "v",
+                 "agent": "a1", "target": "site.example", "write_commands": 20}
+        n = L.notice(alert, {"a1": "One", "a2": "Two", "a3": "Three"}, {}, "Main village", rows)
+        f = {x["name"].split(" (")[0]: x["value"] for x in n["embeds"][0]["fields"]}
+        self.assertEqual(f["Who else?"], "Two (2)")
+        self.assertTrue(f["Who hasn't?"].startswith("1 agents active online sent nothing to this site: Three"))
+        self.assertEqual(f["Who?"], "One")
 
 
 class Nearest(unittest.TestCase):
