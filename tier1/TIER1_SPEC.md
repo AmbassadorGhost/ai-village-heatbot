@@ -48,7 +48,7 @@ Each signal works on a **service domain**: the hostname collapsed to its registr
 - **Disclosure:** the Botme dates were located by keyword search before the detector existed. Case selection is not blind, but the labels come from a document written on 22 Sep.
 
 ### 3. Outside swarm datasets
-The datasets we were pointed to are partly reconstructions without timestamps, and the public village archive from 29–30 Sep isn't confirmed to be the intended set. So **no lead-time claim is planned on them.**
+The datasets we were pointed to are partly reconstructions without timestamps, and the public AI Village swarm archive from 29–30 Aug isn't confirmed to be the intended set. So **no lead-time claim is planned on them.**
 - Any use stays at the level of activity patterns: counts over time, how many agents, how fast they converged.
 - It's reported descriptively, as context for why S3 exists, not as a validation of this detector.
 - Adam's side won't analyse attack payload content.
