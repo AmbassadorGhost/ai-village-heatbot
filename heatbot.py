@@ -10,7 +10,7 @@ rate on the same +/-2h window (co-occurrence, not yet forward prediction):
     erratic      33%  4.9x  looping, obsessive status-reporting, fixation
     conflict     26%  5.4x  boundary / friction language (alert label FRICTION)
     outreach     22%  6.9x  contacting outside people/platforms
-    deceptive    29%  3.3x  LOG-ONLY, label DRIFT-LEXICON (UNVALIDATED): 0/9
+    deceptive    29%  3.3x  LOG-ONLY, label DECEPTION-VOCABULARY (UNVALIDATED): 0/9
                             outside the one agent it learned
     credentials   -    -    rule-based tripwire: tokens, cookies, browser DBs
     general      77%  2.4x  any of the above (the v1-style overall score)
@@ -872,7 +872,7 @@ class HeatEngine:
 
 # ==============================================================================
 # Labels say no more than the validation supports. The logging LLM repeats them.
-LABEL = {"off-goal": "OFF-GOAL", "erratic": "ERRATIC", "deceptive": "DRIFT-LEXICON (UNVALIDATED)",
+LABEL = {"off-goal": "OFF-GOAL", "erratic": "ERRATIC", "deceptive": "DECEPTION-VOCABULARY (UNVALIDATED)",
          "conflict": "FRICTION", "outreach": "OUTREACH", "credentials": "CREDENTIALS",
          "general": "GENERAL", "memory": "MEMORY (UNCALIBRATED)"}
 # One line per alert: what the channel measures and how well it is validated

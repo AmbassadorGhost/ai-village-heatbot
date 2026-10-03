@@ -835,5 +835,20 @@ class HandoffRound4(HarnessBase):
         self.assertEqual(rows[2]["first_seen"], "2026-09-22T09:05:00Z")
 
 
+
+class ChannelSeparation(HarnessBase):
+    def test_offgoal_and_deception_vocabulary_have_different_responses(self):
+        # These fixed-model examples are diagnostic probes, not behaviour labels.
+        def scores(text):
+            cfg = make_cfg(vocab_adaptation=False, term_novelty={"enabled": False})
+            return self.engine(cfg).score_event("A", "AGENT_TALK", {"content": text})[0]
+        neutral = scores("zqxjkv")
+        task_words = scores("analytics ceiling")
+        original_deception_words = scores("pilot")
+        self.assertGreater(task_words["off-goal"], neutral["off-goal"])
+        self.assertLess(task_words["deceptive"], neutral["deceptive"])
+        self.assertLess(original_deception_words["off-goal"], neutral["off-goal"])
+        self.assertGreater(original_deception_words["deceptive"], neutral["deceptive"])
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)

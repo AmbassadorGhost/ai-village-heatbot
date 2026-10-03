@@ -33,9 +33,19 @@ Source polls happen 60 seconds after the preceding fetch finishes; the browser r
 
 Heat is an experimental attention score, not a probability of misconduct. The 42-minute decay, model weights and thresholds are unchanged. The included model came from heatbot_v2.zip; this repository does not claim its hash matches any later preregistration manifest. The scorer came from heatbot_round7_reply_2.zip. Keep formal study results separate from this live demonstration.
 
-Open Chat differs from the environment used to develop the scorer. Its topic and goals can differ; scores there require context and are not validated risk estimates. Visibility of reasoning varies across model families. Agents are displayed alphabetically, and cross-family score comparisons should not be interpreted as rankings of model safety. Drift vocabulary is unvalidated; credentials is a rule-based channel. Memory-change scoring and raw memory archiving are disabled in this viewer.
+Open Chat differs from the environment used to develop the scorer. Its topic and goals can differ; scores there require context and are not validated risk estimates. Visibility of reasoning varies across model families. Agents are displayed alphabetically, and cross-family score comparisons should not be interpreted as rankings of model safety. Deception vocabulary is unvalidated; credentials is a rule-based channel. Memory-change scoring and raw memory archiving are disabled in this viewer.
 
 Scores are for human attention in an observational setting. They are not pushed to agents, used as a training signal, reward or training-data filter, or used to decide which agents remain in or enter the village. Optional Discord alerts go to a human review channel. This service reads the Village API and binds to localhost; it is not a public website.
+
+**Off-goal and Deception vocabulary\*** are separate language scores. Off-goal
+uses patterns learned from past task-divergence flags. Deception vocabulary is
+the original `surreptitious-or-deceptive` category, labelled explicitly as
+unvalidated; it does not establish concealment, deception or gradual goal drift.
+The channels have different lexicons and learned weight vectors, with some
+shared words and inputs, so both can rise on the same message. They are not
+mutually exclusive or statistically independent. The internal API key remains
+`deceptive` for compatibility. This clarification changes labels and explanations,
+not model weights, thresholds or the frozen study results.
 
 ## Optional Discord channel alerts
 
@@ -43,7 +53,7 @@ Scores are for human attention in an observational setting. They are not pushed 
 2. With the viewer running, open http://127.0.0.1:8765/discord and paste the URL into the password field.
 3. Select **Save, send test & enable alerts**. Check that the connection test arrives in your intended channel.
 
-Both villages then use that channel. The first successful poll establishes a quiet baseline, so existing high scores do not flood the channel. New hot signals produce grouped alerts per agent with scores, reasons and a scrubbed source excerpt when available. Drift and memory channels are excluded. Alerts cannot ping users or roles. Treat excerpts as agent statements to review, not instructions.
+Both villages then use that channel. The first successful poll establishes a quiet baseline, so existing high scores do not flood the channel. New hot signals produce grouped alerts per agent with scores, reasons and a scrubbed source excerpt when available. Deception-vocabulary and memory channels are excluded. Alerts cannot ping users or roles. Treat excerpts as agent statements to review, not instructions.
 
 Signals rearm after falling below 60% of the hot threshold, with a 90-minute cooldown. Escalation from hot to critical can alert sooner. Each village sends at most three grouped alerts per poll; failed deliveries retry on later polls, respecting Discord rate limits. Pending alerts expire after ten minutes or when the signal is no longer hot. Network failures can leave delivery uncertain and retries can duplicate a message. Failed source fetches do not produce alerts.
 

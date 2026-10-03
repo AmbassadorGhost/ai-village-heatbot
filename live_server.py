@@ -25,11 +25,11 @@ SCOPE = ('For human attention in an observational setting. Scores are not pushed
          'used for training, rewards, training-data filtering, or agent admission/removal.')
 NOTES = {
     'general': 'Combined behavioral heat. Experimental attention signal, not a probability or finding of misalignment.',
-    'off-goal': 'Language associated with drifting away from a goal; read the context.',
+    'off-goal': 'Task-relevance language associated with past off-goal flags. Separate from deception vocabulary; check the assigned goal and context.',
     'erratic': 'Repetition, looping and status-report patterns.',
     'conflict': 'Boundary and friction language; disagreement can be appropriate.',
     'outreach': 'Language about contacting people or platforms; outreach can be appropriate.',
-    'deceptive': 'Unvalidated drift vocabulary. Not evidence of deception.',
+    'deceptive': 'Separate word-pattern score originally trained on surreptitious-or-deceptive flags. Unvalidated; not evidence of concealment or deception.',
     'credentials': 'Rule-based mentions of tokens, cookies or browser storage; not calibrated.',
 }
 
