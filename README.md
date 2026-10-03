@@ -18,6 +18,18 @@ python -X utf8 live_server.py
 python -X utf8 live_server.py --open-chat
 ```
 
+## Updating an installation
+
+START_HEATMAP.cmd does not download changes, and it leaves collectors that are already running untouched. Merging on GitHub therefore does not update a running installation. To update:
+
+1. Run STOP_HEATMAP.cmd.
+2. Copy the updated files into the folder you run from. Your local state, logs and `discord.local.json` are not in the repository; do not delete them. If that folder has local changes that are not on GitHub, reconcile them first rather than overwriting them.
+3. Run START_HEATMAP.cmd, then check both villages and any public gateway.
+
+## Sharing through a gateway or tunnel
+
+The page reads its data URL from `<meta name="heat-feed" content="/api/live">` in `index.html`; the scripts never hard-code it. A gateway that serves both villages from one address should rewrite that tag for each village (for example to an Open Chat feed path) and must serve `/app.js` and `/evidence.js` as well as the page.
+
 ## What you see
 
 - Current agent-by-channel heat, level and recent contribution reasons.

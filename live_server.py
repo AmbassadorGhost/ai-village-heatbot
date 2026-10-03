@@ -3,6 +3,7 @@ import datetime as dt
 import hashlib
 import json
 import os
+import re
 import sys
 import secrets
 from pathlib import Path
@@ -59,9 +60,21 @@ def atomic_json(name, value):
 
 
 # Append-only logs and the timestamp field each row is keyed by. history_7d.json
-# only reads the last 7 days, so older rows are kept for 30 days and then dropped.
+# only reads the last 7 days. Rows older than 30 days are deleted, not archived;
+# rows that cannot be dated are always kept.
 LOGS = {'heatbot.log.jsonl': 'ts', 'situation.jsonl': 'hour', 'heat_hourly.jsonl': 'hour'}
 LOG_KEEP_DAYS = 30
+_STAMP = re.compile(r'\d{4}-\d{2}-\d{2}T\d{2}')
+
+
+def row_hour(line, field):
+    """'YYYY-MM-DDTHH' for a JSON object row with a valid timestamp, else None."""
+    try:
+        row = json.loads(line)
+    except ValueError:
+        return None
+    value = row.get(field) if isinstance(row, dict) else None
+    return value[:13] if isinstance(value, str) and _STAMP.match(value) else None
 
 
 def trim_logs(now):
@@ -72,14 +85,16 @@ def trim_logs(now):
             lines = p.read_text(encoding='utf-8').splitlines(keepends=True)
         except OSError:
             continue
-        keep = []
+        keep, undated = [], 0
         for line in lines:
-            try:
-                if str(json.loads(line).get(field, ''))[:13] < cutoff:
-                    continue
-            except ValueError:
-                pass            # keep anything unparseable rather than lose it silently
+            hour = row_hour(line, field)
+            if hour is None:
+                undated += line.strip() != ''
+            elif hour < cutoff:
+                continue
             keep.append(line)
+        if undated:
+            print(stamp(), name + ': kept', undated, 'row(s) without a valid', repr(field), 'timestamp', flush=True)
         if len(keep) < len(lines):
             tmp = p.with_suffix(p.suffix + '.tmp')
             tmp.write_text(''.join(keep), encoding='utf-8')

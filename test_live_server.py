@@ -123,6 +123,14 @@ class Routes(unittest.TestCase):
             self.assertNotRegex(page, r'<script>|<script(?![^>]*\ssrc=)[^>]*>')
         self.assertIn('<meta name="csrf" content="%s">' % live.SETUP_TOKEN, page)
 
+    def test_feed_url_is_page_configuration_not_script_constant(self):
+        h = self.handler('/')
+        h.do_GET()
+        self.assertIn(b'<meta name="heat-feed" content="/api/live">', h.wfile.getvalue())
+        script = (live.ROOT / 'app.js').read_text(encoding='utf-8')
+        self.assertIn('meta[name="heat-feed"]', script)
+        self.assertNotIn("fetch('/api/live'", script)
+
     def test_discord_setup_unavailable_through_tunnel(self):
         for header in live.PROXY_HEADERS:
             h = self.handler('/discord')
@@ -200,6 +208,17 @@ class LogTrimTests(unittest.TestCase):
                 self.assertNotIn(old, text)
                 self.assertIn(new, text)
                 self.assertIn('not json', text)
+
+    def test_undated_and_non_object_rows_kept_without_crashing(self):
+        with tempfile.TemporaryDirectory() as folder, patch.object(live, 'DATA', Path(folder)):
+            odd = ['{"hour": "2026-08-01T10:00Z"}', '{}', '{"hour": ""}', '{"hour": null}', '{"hour": 7}',
+                   '{"hour": "yesterday"}', 'null', '[1, 2]', '"text"', '42', '{"hour": "2026-09-30T10:00Z"}']
+            (Path(folder) / 'situation.jsonl').write_text('\n'.join(odd) + '\n', encoding='utf-8')
+            with patch('builtins.print') as log:
+                live.trim_logs(dt.datetime(2026, 10, 2, 17, 0))
+            kept = (Path(folder) / 'situation.jsonl').read_text(encoding='utf-8').splitlines()
+            self.assertEqual(kept, odd[1:])
+            self.assertIn(9, log.call_args.args)
 
 
 class EvidenceTests(unittest.TestCase):
