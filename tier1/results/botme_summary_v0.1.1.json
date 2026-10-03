@@ -1,0 +1,29 @@
+{
+  "detector": "tier1-v0.1.1",
+  "rules": {
+    "S1_MIN_BLOCKED": 3,
+    "S1_BLOCK_WINDOW_min": 60,
+    "S1_SWITCH_WINDOW_min": 60,
+    "OUTSIDE_FAILURES": [
+      "captcha",
+      "forbidden",
+      "http_error"
+    ],
+    "S2_MIN_TURNS": 10,
+    "S2_WINDOW_min": 60,
+    "S3_MIN_AGENTS": 3,
+    "S3_WINDOW_h": 6,
+    "BURN_IN_DAYS": 7,
+    "COOLDOWN_h": 24
+  },
+  "observed_days": 15,
+  "observed_weeks": 2.143,
+  "rows": 104899,
+  "alerts": 9,
+  "alerts_by_signal": {
+    "S2_new_service_at_volume": 5,
+    "S3_convergence": 4
+  },
+  "alerts_per_observed_week": 4.2,
+  "note": "Alert BURDEN on observed days only. Not a false-alarm rate until each alert is independently adjudicated. Failed or missing days are not zero."
+}
