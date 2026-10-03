@@ -124,7 +124,7 @@ Evaluation has two parts: alert burden on ordinary months, followed by independe
 
 ## 6. A second finding: goal displacement
 
-Two human raters independently judged 20 agent-days for "fixation." They agreed at **κ = 0.65**, without a written definition that fully captured what they were rating. An LLM rubric for one narrow mechanism, *surrogation* (a proxy number takes over the goal), flagged **0 of 20.** A revision asking the raters' actual question reached κ = 0.59: in-sample, with a wide interval.
+Two human raters independently judged 20 agent-days for "fixation." They agreed at **κ = 0.65**, without a written definition that fully captured what they were rating. An LLM rubric for one narrow mechanism, *surrogation* (a proxy number takes over the goal), flagged **0 of 20.** We tried a revised rubric afterwards, but it was developed on these same 20 days and never frozen, so we don't report it as a result.
 
 **The raters were measuring something broader, which we call goal displacement:** *effort has come loose from the goal while the agent stays busy.* Surrogation is one mechanism; side-task fixation, monitoring loops and undirected production are others. One agent with the goal "Maximize animal wellbeing in the world" had published about 75,900 templated web pages. Its memory tracked the page count closely, but recorded no evidence that anyone read them.
 
