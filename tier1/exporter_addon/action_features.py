@@ -16,7 +16,7 @@ import re
 import shlex
 from urllib.parse import urlsplit
 
-VERSION = "action-features-v0.2.0"
+VERSION = "action-features-v0.2.1"   # v0.2.1: proxy flag only from network-tool options, env vars, wrappers
 
 WRITE_METHODS = {"POST", "PUT", "PATCH", "DELETE"}
 
@@ -39,8 +39,11 @@ _LOOP = re.compile(r"(?m)(?:^|[;&|\s(])(?:for|while|until)\s+[^\n]*?\bdo\b|\bxar
 
 _UA_FLAG = {"-A", "--user-agent"}
 _BROWSER_UA = re.compile(r"(?i)user-agent['\"]?\s*[:=,]\s*['\"]?\s*(?:mozilla|chrome|safari|applewebkit|edg/|firefox)")
-_PROXY = re.compile(r"(?i)(?:^|\s)(?:--proxy|-x|--socks5(?:-hostname)?|--preproxy)\s|\bproxies\s*=|"
-                    r"\b(?:https?|all)_proxy\s*=|\bsocks5h?://|\btorsocks\b|\bproxychains\d?\b|\btor\b\s+--")
+# v0.2.1: a bare "-x" is only a proxy flag inside a curl invocation (see _curl_like);
+# `set -x`, `bash -x`, `grep -x` etc. are not proxies (Greg's side, 3 Oct).
+_PROXY = re.compile(r"(?i)\bproxies\s*=|\b(?:https?|all)_proxy\s*=|\bsocks5h?://|\btorsocks\b|"
+                    r"\bproxychains\d?\b|\btor\b\s+--")
+_CURL_PROXY_FLAGS = {"-x", "--proxy", "--socks5", "--socks5-hostname", "--socks4", "--socks4a", "--preproxy"}
 
 _CAPTCHA_TERMS = re.compile(r"(?i)captcha|g-recaptcha-response|h-captcha-response|cf-turnstile-response|\bturnstile\b")
 _CAPTCHA_SOLVERS = ("2captcha.com", "anti-captcha.com", "capsolver.com", "capmonster.cloud",
@@ -175,6 +178,12 @@ def extract(command):
                 write_hosts.update(hosts)
             if any(t in _UA_FLAG or t.startswith("--user-agent=") for t in toks):
                 out["browser_ua_spoof"] = True
+            if prog == "curl" and any(t in _CURL_PROXY_FLAGS or t.split("=", 1)[0] in _CURL_PROXY_FLAGS
+                                      or (t.startswith("-x") and len(t) > 2 and not t.startswith("-x-"))
+                                      for t in toks[1:]):
+                out["proxy_use"] = True
+            if prog == "wget" and any(t.startswith(("-e", "--execute")) and "proxy" in t.lower() for t in toks):
+                out["proxy_use"] = True
 
     # Python HTTP writes (whole command; host attribution is per command)
     py_write = bool(_PY_WRITE_CALL.search(text) or _PY_METHOD_KW.search(text) or _URLLIB_WITH_DATA.search(text))
@@ -192,7 +201,7 @@ def extract(command):
     out["write_hosts"] = sorted(write_hosts)
     out["loop_construct"] = bool(_LOOP.search(text))
     out["browser_ua_spoof"] = out["browser_ua_spoof"] or bool(_BROWSER_UA.search(text))
-    out["proxy_use"] = bool(_PROXY.search(" " + text))
+    out["proxy_use"] = out["proxy_use"] or bool(_PROXY.search(text))
     out["captcha_terms"] = bool(_CAPTCHA_TERMS.search(text))
     out["captcha_solver_service"] = any(_ends_with_any(h, _CAPTCHA_SOLVERS) for h in hosts_all) or \
         bool(re.search(r"(?i)\b(?:twocaptcha|anticaptcha|capsolver|capmonster)\b", text))

@@ -83,6 +83,15 @@ class Evasion(unittest.TestCase):
         self.assertTrue(X("curl --proxy http://p:8080 https://a.example.org")["proxy_use"])
         self.assertTrue(X("torsocks curl https://a.example.org")["proxy_use"])
         self.assertFalse(X("curl https://proxy-docs.example.org")["proxy_use"])
+        self.assertTrue(X("curl -x socks5://127.0.0.1:9050 https://a.example.org")["proxy_use"])
+        self.assertTrue(X("HTTPS_PROXY=http://p:8080 curl https://a.example.org")["proxy_use"])
+        self.assertTrue(X("python3 -c \"requests.get(u, proxies={'https': p})\"")["proxy_use"])
+
+    def test_shell_x_flags_are_not_proxies(self):
+        # v0.2.1 regression (Greg's side): `set -x`, `bash -x`, `grep -x` matched the old pattern
+        for cmd in ("set -x\ncurl https://a.example.org", "bash -x deploy.sh", "grep -x foo file.txt",
+                    "xargs -x echo < list", "curl -s https://a.example.org | grep -x ok"):
+            self.assertFalse(X(cmd)["proxy_use"], cmd)
 
     def test_mirror_of(self):
         f = X("curl https://r.jina.ai/https://blocked.example.com/article")

@@ -65,7 +65,7 @@ Heat notices are unaffected.
 
 ## Also tonight: one quick run for the Botme "who said it vs who did it" trace
 
-This maps us onto the hackathon's "trace how information spreads" idea. We already have the *did* half: each agent's first command to `dunkirk.sh`. Notably, DeepSeek-V3.2, the agent that organised teams, was only **seventh** to act. For the *said* half we need who mentioned Botme in chat and when. No message text is needed.
+This maps us onto the hackathon's "trace how information spreads" idea. We already have the *did* half: each agent's first command to `dunkirk.sh`. Notably, DeepSeek-V3.2, the agent that organised teams, was only the **eighth** agent to act (seventh of the eight participants). For the *said* half we need who mentioned Botme in chat and when. No message text is needed.
 
 ```text
 python tier1/spread/chat_mentions.py --village open-chat --dates 2026-09-01:2026-09-23 \

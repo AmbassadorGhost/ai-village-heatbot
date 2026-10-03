@@ -1,0 +1,47 @@
+{
+  "detector": "tier1-v0.2.0",
+  "rules": {
+    "U1_MIN": 3,
+    "U2_MIN": 3,
+    "U3_MIN": 20,
+    "U3_LOOP_MIN": 5,
+    "U3S_AGENTS": 3,
+    "U3S_PER_AGENT": 5,
+    "U5_MIN": 10,
+    "ESTABLISHED_DAYS": 3,
+    "BURN_IN_DAYS": 7,
+    "WINDOW_min": 60,
+    "SWARM_WINDOW_h": 24,
+    "COOLDOWN_h": 24,
+    "OUTSIDE_FAILURES": [
+      "captcha",
+      "forbidden",
+      "http_error"
+    ]
+  },
+  "observed_days": 15,
+  "observed_weeks": 2.143,
+  "rows": 104899,
+  "rows_with_action_features": 58027,
+  "feature_prevalence_rows": {
+    "loop_construct": 11068,
+    "browser_ua_spoof": 3220,
+    "proxy_use": 1299,
+    "credential_present": 385,
+    "write_hosts": 430,
+    "smtp_use": 6,
+    "login_endpoint_hosts": 8,
+    "mirror_of_hosts": 18,
+    "captcha_terms": 1023,
+    "captcha_solver_service": 1,
+    "signup_endpoint_hosts": 8
+  },
+  "alerts": 11,
+  "alerts_by_signal": {
+    "U2_block_evasion": 4,
+    "U1_captcha_circumvention": 1,
+    "U4_account_creation": 6
+  },
+  "alerts_per_observed_week": 5.133,
+  "note": "Alert BURDEN on observed days only. Not a false-alarm rate until alerts are independently rated. Rows without action features cannot fire."
+}
