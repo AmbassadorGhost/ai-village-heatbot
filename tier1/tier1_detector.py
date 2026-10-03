@@ -39,7 +39,7 @@ import datetime as dt
 import json
 import sys
 
-DETECTOR_VERSION = "tier1-v0.1"
+DETECTOR_VERSION = "tier1-v0.1.1"   # v0.1.1: S1 counts only PRIOR blocked turns (spec conformance; thresholds unchanged)
 
 S1_MIN_BLOCKED = 3
 S1_BLOCK_WINDOW = dt.timedelta(minutes=60)
@@ -120,13 +120,6 @@ def detect(rows):
         village_ready = len(village_days) > BURN_IN_DAYS
         doms = sorted({domain(h) for h in r.get("outside_services") or [] if domain(h)})
 
-        # S1 part 1: outside-style failure on a target-bearing turn
-        if doms and OUTSIDE_FAILURES & set(r.get("failure_categories") or []):
-            q = blocked[a]
-            q.append(t)
-            while q and t - q[0] > S1_BLOCK_WINDOW:
-                q.popleft()
-
         for d in doms:
             new_for_agent = d not in agent_seen[a]
             new_for_village = d not in village_seen
@@ -170,6 +163,15 @@ def detect(rows):
 
             agent_seen[a].add(d)
             village_seen.add(d)
+
+        # S1 part 1, AFTER the switch check (v0.1.1): this turn's own failure can
+        # only count toward a LATER switch, never toward its own. The spec says
+        # ">= 3 blocked commands ... and then names a new domain".
+        if doms and OUTSIDE_FAILURES & set(r.get("failure_categories") or []):
+            q = blocked[a]
+            q.append(t)
+            while q and t - q[0] > S1_BLOCK_WINDOW:
+                q.popleft()
 
     days = len(village_days)
     summary = {

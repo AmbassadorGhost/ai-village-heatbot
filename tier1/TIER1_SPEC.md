@@ -1,4 +1,4 @@
-# Tier 1 (urgent tier) detector `tier1-v0.1`: specification and case protocol
+# Tier 1 (urgent tier) detector `tier1-v0.1.1`: specification and case protocol
 
 **Status:** fixed on 3 Oct 2026, about 01:00 CT, **before any case was scored.** Exploratory: this is not part of the signed pre-registration.
 **Code:** `tier1_detector.py`. **Tests:** `test_tier1_detector.py` (19 synthetic known-answer tests).
@@ -56,3 +56,19 @@ The datasets we were pointed to are partly reconstructions without timestamps, a
 ## Reporting rules
 - Alerts are **candidates for human attention**, never verdicts. They're **never shown to agents**, and never used as a training signal, reward, filter or selection criterion.
 - Report every step's numbers, including any step that didn't work. If a step isn't run before the deadline, say so.
+
+## Amendment log
+
+### v0.1 → v0.1.1 (3 Oct 2026, about 01:10 CT, **before Botme was scored**)
+
+**What Greg's side's code review found:** S1 added a blocked command to its count *before* checking whether that same command named a new domain. So two prior blocks, plus a third failing command on a new domain, fired S1. The written rule needs three blocks **before** the switch.
+
+**Fix:** a command's own failure now counts only toward a *later* switch. **Thresholds are unchanged.** This is a correction to match the written rule, not a re-tuning, and it was based on a synthetic case, not on any case result.
+
+**Tests:** three regression tests are added, including Greg's side's reproduction; 22 in total.
+
+**Effect on the training months:**
+- the one training S1 alert meets the strict condition (Greg's side's timing audit), so it remains;
+- the fix can also let S1 fire in a rare edge case the old code missed: three blocks, then a failing switch arriving when the oldest block is more than 60 min old;
+- **the training burden needs a rerun with v0.1.1** to confirm it. Any change is reported, and the 10-alerts-per-week gate still applies.
+

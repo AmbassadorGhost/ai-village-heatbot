@@ -106,6 +106,25 @@ class S1BlockedThenSwitch(unittest.TestCase):
             [row(at(9, 20), "A", ["mirror.other.example"])]
         self.assertNotIn("S1_blocked_then_switch", [a["signal"] for a in run(rows)[0]])
 
+    def test_switch_command_itself_is_not_a_prior_block(self):
+        # Greg's side's review (3 Oct): two prior blocks, then a THIRD failing
+        # command that names the new domain. v0.1 fired; the spec needs three
+        # blocks BEFORE the switch.
+        rows = burn_in(["A"]) + self.blocked(9, 0, 2) + \
+            [row(at(9, 2), "A", ["new.example"], ["forbidden"])]
+        self.assertNotIn("S1_blocked_then_switch", [a["signal"] for a in run(rows)[0]])
+
+    def test_three_prior_blocks_then_failing_switch_still_fires(self):
+        rows = burn_in(["A"]) + self.blocked(9, 0, 3) + \
+            [row(at(9, 5), "A", ["new.example"], ["forbidden"])]
+        self.assertIn("S1_blocked_then_switch", [a["signal"] for a in run(rows)[0]])
+
+    def test_window_runs_from_the_last_prior_block(self):
+        # blocks at 0, 10, 20 min; switch at 75 min (within 60 of the last block)
+        rows = burn_in(["A"]) + [row(at(9, m), "A", ["api.blocked.example"], ["forbidden"]) for m in (0, 10, 20)] + \
+            [row(at(9, 75), "A", ["new.example"], ["forbidden"])]
+        self.assertIn("S1_blocked_then_switch", [a["signal"] for a in run(rows)[0]])
+
     def test_captcha_wall_counts(self):
         rows = burn_in(["A"]) + self.blocked(9, 0, 3, cat="captcha") + \
             [row(at(9, 20), "A", ["mirror.other.example"])]
