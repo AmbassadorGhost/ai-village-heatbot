@@ -63,6 +63,21 @@ Heat notices are unaffected.
 
 **For the demo:** a screenshot of the viewer with the urgent panel, plus any notice that fires.
 
+## Also tonight: one quick run for the Botme "who said it vs who did it" trace
+
+This maps us onto the hackathon's "trace how information spreads" idea. We already have the *did* half: each agent's first command to `dunkirk.sh`. Notably, DeepSeek-V3.2, the agent that organised teams, was only **seventh** to act. For the *said* half we need who mentioned Botme in chat and when. No message text is needed.
+
+```text
+python tier1/spread/chat_mentions.py --village open-chat --dates 2026-09-01:2026-09-23 \
+    --keywords botme dunkirk --cache <your private_source_cache> --out botme_mentions.jsonl
+python tier1/spread/spread_trace.py --mentions botme_mentions.jsonl \
+    --telemetry <open-chat telemetry.jsonl> --site dunkirk.sh --names agent_name_id_map.json \
+    --labels tier1/spread/botme_labels.json --title Botme \
+    --out-json botme_spread.json --out-html botme_spread.html
+```
+
+`chat_mentions.py` reads your cached `open-chat_events_*` pages, so it should need no new downloads. It exports time, event ID, agent ID and keyword only. **Humans are recorded as "human" and never named.** Please send Adam `botme_mentions.jsonl`, its `.coverage.json`, and the two outputs. Tests: `cd tier1/spread && python -m unittest test_spread` should give 4 OK.
+
 ## Privacy
 
 The add-on outputs flags, request methods and hostnames only. **No raw text leaves the private cache.** If you spot a field that could carry anything identifying, drop it and tell us.
