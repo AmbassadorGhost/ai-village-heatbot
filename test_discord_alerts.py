@@ -73,6 +73,24 @@ class Alerts(unittest.TestCase):
         self.assertEqual(len(self.sent),2)
         self.assertEqual(da.load(self.n.state_path,{})['pending'],{})
 
+    def test_pending_survives_long_outage_while_hot(self):
+        self.tick()
+        self.result = {'ok': False, 'retry_after': 900}
+        self.tick(15)
+        self.now += 1000
+        self.result = {'ok': True}
+        self.assertEqual(self.tick(15)['pending'], 0)
+        self.assertEqual(len(self.sent), 2)
+
+    def test_pending_dropped_when_signal_cools(self):
+        self.tick()
+        self.result = {'ok': False, 'retry_after': 900}
+        self.tick(15)
+        self.now += 1000
+        self.result = {'ok': True}
+        self.assertEqual(self.tick(9)['pending'], 0)
+        self.assertEqual(len(self.sent), 1)
+
     def test_stale_does_not_send(self):
         self.tick(); b=self.bundle(15)
         self.n.tick(b,self.now+181)

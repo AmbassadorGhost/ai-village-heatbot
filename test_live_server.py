@@ -80,7 +80,8 @@ class Routes(unittest.TestCase):
         h.code = None
         h.send_error = lambda code: setattr(h, 'code', code)
         h.send_response = lambda code: setattr(h, 'code', code)
-        h.send_header = lambda *args: None
+        h.sent_headers = {}
+        h.send_header = lambda k, v: h.sent_headers.__setitem__(k, v)
         h.end_headers = lambda: None
         return h
 
@@ -100,6 +101,21 @@ class Routes(unittest.TestCase):
         h.do_GET()
         self.assertEqual(h.code, 200)
         self.assertIn(b'Live behavioral heat', h.wfile.getvalue())
+
+    def test_scripts_served_and_csp_forbids_inline_scripts(self):
+        for p in ['/app.js', '/evidence.js', '/discord_setup.js']:
+            h = self.handler(p)
+            h.do_GET()
+            self.assertEqual(h.code, 200)
+            self.assertTrue(h.sent_headers['Content-Type'].startswith('text/javascript'))
+        csp = h.sent_headers['Content-Security-Policy']
+        self.assertIn("script-src 'self';", csp)
+        for p in ['/', '/discord']:
+            h = self.handler(p)
+            h.do_GET()
+            page = h.wfile.getvalue().decode()
+            self.assertNotRegex(page, r'<script>|<script(?![^>]*\ssrc=)[^>]*>')
+        self.assertIn('<meta name="csrf" content="%s">' % live.SETUP_TOKEN, page)
 
     def post_handler(self, body, origin='http://127.0.0.1:8765'):
         h = self.handler('/api/discord-config')
@@ -141,6 +157,24 @@ class Routes(unittest.TestCase):
             h.do_POST()
             self.assertEqual(h.code, 400)
             send.assert_not_called()
+
+
+class LogTrimTests(unittest.TestCase):
+    def test_old_rows_dropped_recent_and_unparseable_kept(self):
+        with tempfile.TemporaryDirectory() as folder, patch.object(live, 'DATA', Path(folder)):
+            now = dt.datetime(2026, 10, 2, 17, 0)
+            rows = {'heatbot.log.jsonl': ('ts', '2026-08-01T10:00:00', '2026-09-30T10:00:00'),
+                    'situation.jsonl': ('hour', '2026-08-01T10:00Z', '2026-09-30T10:00Z'),
+                    'heat_hourly.jsonl': ('hour', '2026-08-01T10:00Z', '2026-09-30T10:00Z')}
+            for name, (field, old, new) in rows.items():
+                (Path(folder) / name).write_text(
+                    json.dumps({field: old}) + '\n' + 'not json\n' + json.dumps({field: new}) + '\n', encoding='utf-8')
+            live.trim_logs(now)
+            for name, (field, old, new) in rows.items():
+                text = (Path(folder) / name).read_text(encoding='utf-8')
+                self.assertNotIn(old, text)
+                self.assertIn(new, text)
+                self.assertIn('not json', text)
 
 
 class EvidenceTests(unittest.TestCase):

@@ -26,6 +26,11 @@ from unittest import mock
 
 import heatbot as hb
 
+
+def _read(path):
+    with open(path, encoding="utf-8") as fh:
+        return fh.read()
+
 UTC_FMT = "%Y-%m-%dT%H:%M:%S.000Z"
 MODEL = hb.load_model()
 
@@ -351,7 +356,7 @@ class HandoffRound2(HarnessBase):
         cfg = make_cfg(sinks={"jsonl": True})
         e = self.engine(cfg)
         hb.emit(cfg, e.thr, "A", "general", "hot", 20.0, [], ts("2026-09-22 08:00"))
-        rec = json.loads(open(hb.LOG_PATH).read().splitlines()[-1])
+        rec = json.loads(_read(hb.LOG_PATH).splitlines()[-1])
         self.assertEqual(rec["note"], hb.CHANNEL_NOTE["general"])
         self.assertEqual(rec["label"], hb.LABEL["general"])
 
@@ -528,10 +533,10 @@ class MemoryWatch(HarnessBase):
         village.days["2026-09-22"].append(ev("2026-09-22 12:40", 2, "A", "CONSOLIDATE", nextSessionGoal="y"))
         calls = self.mem_poll(ts("2026-09-22 12:45"), village, {"A": [v1, v2]}, cfg)
         self.assertEqual(calls, ["A"])
-        idx = [json.loads(l) for l in open(os.path.join(arch, "index.jsonl"))]
+        idx = [json.loads(l) for l in _read(os.path.join(arch, "index.jsonl")).splitlines()]
         self.assertEqual([r["memory_id"] for r in idx], ["m1", "m2"])
         self.assertEqual(idx[1]["features"]["commit_dropped"], 1)
-        st = json.load(open(hb.STATE_PATH))
+        st = json.loads(_read(hb.STATE_PATH))
         self.assertTrue(any("commitment" in r for _, r in st["reasons"]["A"]["memory"]))
 
 
@@ -565,17 +570,17 @@ class HandoffRound3(MemoryWatch):
         v1 = {"id": "m1", "createdAt": "2026-09-22T12:00:00.000Z", "content": BASE_MEMORY + "\nkey " + secret}
         village = FakeVillage({"2026-09-22": [ev("2026-09-22 12:00", 1, "A", "CONSOLIDATE", nextSessionGoal="x")]})
         self.mem_poll(ts("2026-09-22 12:05"), village, {"A": [v1]}, cfg)
-        row = json.loads(open(os.path.join(arch, "index.jsonl")).readline())
+        row = json.loads(_read(os.path.join(arch, "index.jsonl")).splitlines(True)[0])
         self.assertEqual(row["scorer"], hb._scorer_id())
         self.assertTrue(row["raw_kept"])
-        scrubbed = open(os.path.join(arch, row["path"])).read()
+        scrubbed = _read(os.path.join(arch, row["path"]))
         self.assertNotIn(secret, scrubbed)
-        self.assertEqual(open(os.path.join(arch + "_backup", row["path"])).read(), scrubbed)
-        self.assertEqual(open(os.path.join(arch + "_backup", "index.jsonl")).readline(),
-                         open(os.path.join(arch, "index.jsonl")).readline())
+        self.assertEqual(_read(os.path.join(arch + "_backup", row["path"])), scrubbed)
+        self.assertEqual(_read(os.path.join(arch + "_backup", "index.jsonl")).splitlines(True)[0],
+                         _read(os.path.join(arch, "index.jsonl")).splitlines(True)[0])
         for rawroot in (arch + "_raw_DO_NOT_SHARE", arch + "_raw_DO_NOT_SHARE_backup"):
             rp = os.path.join(rawroot, row["path"])
-            self.assertIn(secret, open(rp).read())
+            self.assertIn(secret, _read(rp))
             if os.name != 'nt':  # Windows permissions are ACLs, not POSIX mode bits.
                 self.assertEqual(os.stat(rp).st_mode & 0o777, 0o600)
                 self.assertEqual(os.stat(rawroot).st_mode & 0o777, 0o700)
@@ -600,12 +605,12 @@ class HandoffRound3(MemoryWatch):
         self.mem_poll(ts("2026-09-22 11:05"), village, {"A": [v1]}, cfg)
         self.assertFalse(os.path.exists(os.path.join(arch, "gaps.jsonl")), "within one sweep: not yet a gap")
         self.mem_poll(ts("2026-09-22 12:30"), village, {"A": [v1]}, cfg)
-        gaps = [json.loads(l) for l in open(os.path.join(arch, "gaps.jsonl"))]
+        gaps = [json.loads(l) for l in _read(os.path.join(arch, "gaps.jsonl")).splitlines()]
         self.assertEqual([(g["agent"], g["kind"]) for g in gaps], [("A", "archive_behind_consolidation")])
         self.assertTrue(os.path.exists(os.path.join(arch + "_backup", "gaps.jsonl")))
         # reported once, not on every poll
         self.mem_poll(ts("2026-09-22 13:40"), village, {"A": [v1]}, cfg)
-        self.assertEqual(len(open(os.path.join(arch, "gaps.jsonl")).readlines()), 1)
+        self.assertEqual(len(_read(os.path.join(arch, "gaps.jsonl")).splitlines(True)), 1)
 
     def test_gap_when_the_api_window_has_moved_past_our_last_version(self):
         cfg, arch = self.arch_cfg()
@@ -614,7 +619,7 @@ class HandoffRound3(MemoryWatch):
         later = [{"id": "n%d" % i, "createdAt": "2026-09-22T%02d:00:00.000Z" % (10 + i), "content": BASE_MEMORY}
                  for i in range(10)]
         self.mem_poll(ts("2026-09-22 20:05"), FakeVillage({}), {"A": later}, cfg)
-        gaps = [json.loads(l) for l in open(os.path.join(arch, "gaps.jsonl"))]
+        gaps = [json.loads(l) for l in _read(os.path.join(arch, "gaps.jsonl")).splitlines()]
         self.assertEqual(gaps[0]["kind"], "possible_lost_versions")
         self.assertEqual(gaps[0]["archived_at"], "2026-09-22T08:00:00.000Z")
 
@@ -645,7 +650,7 @@ class HandoffRound3(MemoryWatch):
                                               for i in range(3)]})
         self.poll(ts("2026-09-22 08:10"), village)
         path = os.path.join(self.tmp.name, "dashboard.json")
-        raw = open(path).read()
+        raw = _read(path)
         self.assertNotIn("ignore previous", raw)
         self.assertNotIn("@everyone", raw)
         d = json.loads(raw)
@@ -670,7 +675,7 @@ class HandoffRound3(MemoryWatch):
         ]})
         fed, _ = self.poll(ts("2026-09-22 08:10"), village)
         self.assertNotIn("USER_TALK", [x[2] for x in fed], "human messages must not be fed to heat")
-        st = json.load(open(hb.STATE_PATH))
+        st = json.loads(_read(hb.STATE_PATH))
         c = st["situ"]["A|2026-09-22T08"]
         self.assertEqual(c["pauses"], 1)
         self.assertEqual(c["pause_minutes"], 10.0)
@@ -680,7 +685,7 @@ class HandoffRound3(MemoryWatch):
         self.assertEqual(st["situ"]["(village)|2026-09-22T08"]["human_messages"], 1)
         # the same poll again sees the same events: nothing double-counted
         self.poll(ts("2026-09-22 08:15"), village)
-        self.assertEqual(json.load(open(hb.STATE_PATH))["situ"]["A|2026-09-22T08"]["pauses"], 1)
+        self.assertEqual(json.loads(_read(hb.STATE_PATH))["situ"]["A|2026-09-22T08"]["pauses"], 1)
 
     def test_completed_hours_flush_to_situation_jsonl_once(self):
         village = FakeVillage({"2026-09-22": [ev("2026-09-22 08:00", 1, "A", "PAUSE", seconds=60)]})
@@ -689,7 +694,7 @@ class HandoffRound3(MemoryWatch):
         self.assertFalse(os.path.exists(path), "the current hour is not complete yet")
         self.poll(ts("2026-09-22 09:05"), village)
         self.poll(ts("2026-09-22 09:30"), village)
-        rows = [json.loads(l) for l in open(path)]
+        rows = [json.loads(l) for l in _read(path).splitlines()]
         self.assertEqual([(r["agent"], r["hour"]) for r in rows], [("A", "2026-09-22T08:00Z")])
 
     def test_village_wide_episode_membership_is_recorded(self):
@@ -786,7 +791,7 @@ class HandoffRound4(HarnessBase):
     def test_dashboard_is_versioned_and_carries_scope_and_reasoning_flag(self):
         village = FakeVillage({"2026-09-22": [dict(talk("2026-09-22 08:01", 1, "A", LOUD), id="e1")]})
         self.poll(ts("2026-09-22 08:10"), village)
-        d = json.load(open(os.path.join(self.tmp.name, "dashboard.json")))
+        d = json.loads(_read(os.path.join(self.tmp.name, "dashboard.json")))
         self.assertEqual(d["schema_version"], hb.DASHBOARD_SCHEMA)
         self.assertEqual(d["scope"], hb.SCOPE)
         self.assertIn(d["agents"]["A"]["private_reasoning"], ("unknown", "unavailable", "available"))
@@ -799,12 +804,12 @@ class HandoffRound4(HarnessBase):
         self.assertFalse(os.path.exists(path), "the current hour is not complete yet")
         self.poll(ts("2026-09-22 09:05"), village)
         self.poll(ts("2026-09-22 09:40"), village)
-        rows = [json.loads(l) for l in open(path)]
+        rows = [json.loads(l) for l in _read(path).splitlines()]
         self.assertEqual([(r["agent"], r["hour"]) for r in rows], [("A", "2026-09-22T08:00Z")])
         r = rows[0]
         for c, v in r["last"].items():
             self.assertGreaterEqual(r["peak"][c], v)
-        h = json.load(open(os.path.join(self.tmp.name, "history_7d.json")))
+        h = json.loads(_read(os.path.join(self.tmp.name, "history_7d.json")))
         self.assertEqual(h["schema_version"], hb.HISTORY_SCHEMA)
         self.assertIn("2026-09-22T08:00Z", h["agents"]["A"]["heat_peak"])
         self.assertIn("2026-09-22T08:00Z", h["agents"]["A"]["situation"])
@@ -817,7 +822,7 @@ class HandoffRound4(HarnessBase):
                 fh.write(json.dumps({"agent": "A", "hour": hour, "peak": {"general": 1.0}, "last": {"general": 1.0}}) + "\n")
         e = self.engine()
         hb.write_history(e, self.cfg, ts("2026-09-22 10:00"))
-        h = json.load(open(os.path.join(self.tmp.name, "history_7d.json")))
+        h = json.loads(_read(os.path.join(self.tmp.name, "history_7d.json")))
         self.assertEqual(list(h["agents"]["A"]["heat_peak"]), ["2026-09-20T08:00Z"])
 
     def test_monitor_days_are_logged_when_first_seen(self):
@@ -828,7 +833,7 @@ class HandoffRound4(HarnessBase):
             seen["d"].insert(0, "2026-09-21")
             self.assertEqual(hb.watch_monitor(e, self.cfg, ts("2026-09-22 08:30")), [], "not due yet")
             self.assertEqual(hb.watch_monitor(e, self.cfg, ts("2026-09-22 09:05")), ["2026-09-21"])
-        rows = [json.loads(l) for l in open(os.path.join(self.tmp.name, "monitor_seen.jsonl"))]
+        rows = [json.loads(l) for l in _read(os.path.join(self.tmp.name, "monitor_seen.jsonl")).splitlines()]
         self.assertEqual([(r["date"], r["baseline"]) for r in rows],
                          [("2026-09-17", True), ("2026-09-18", True), ("2026-09-21", False)])
         self.assertIsNone(rows[0]["first_seen"])

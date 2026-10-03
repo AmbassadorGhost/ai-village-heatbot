@@ -23,6 +23,8 @@ APP = 'ai-village-heat-live-v1'
 SETUP_TOKEN = secrets.token_urlsafe(32)
 SCOPE = ('For human attention in an observational setting. Scores are not pushed to agents, '
          'used for training, rewards, training-data filtering, or agent admission/removal.')
+# Scripts are separate files so the CSP needs no inline-script allowance.
+SCRIPTS = {'/evidence.js': 'evidence.js', '/app.js': 'app.js', '/discord_setup.js': 'discord_setup.js'}
 NOTES = {
     'general': 'Combined behavioral heat. Experimental attention signal, not a probability or finding of misalignment.',
     'off-goal': 'Language associated with drifting away from a goal; read the context.',
@@ -54,6 +56,34 @@ def atomic_json(name, value):
     tmp = p.with_suffix(p.suffix + '.tmp')
     tmp.write_text(json.dumps(value, ensure_ascii=True), encoding='utf-8')
     tmp.replace(p)
+
+
+# Append-only logs and the timestamp field each row is keyed by. history_7d.json
+# only reads the last 7 days, so older rows are kept for 30 days and then dropped.
+LOGS = {'heatbot.log.jsonl': 'ts', 'situation.jsonl': 'hour', 'heat_hourly.jsonl': 'hour'}
+LOG_KEEP_DAYS = 30
+
+
+def trim_logs(now):
+    cutoff = (now - dt.timedelta(days=LOG_KEEP_DAYS)).isoformat()[:13]
+    for name, field in LOGS.items():
+        p = DATA / name
+        try:
+            lines = p.read_text(encoding='utf-8').splitlines(keepends=True)
+        except OSError:
+            continue
+        keep = []
+        for line in lines:
+            try:
+                if str(json.loads(line).get(field, ''))[:13] < cutoff:
+                    continue
+            except ValueError:
+                pass            # keep anything unparseable rather than lose it silently
+            keep.append(line)
+        if len(keep) < len(lines):
+            tmp = p.with_suffix(p.suffix + '.tmp')
+            tmp.write_text(''.join(keep), encoding='utf-8')
+            tmp.replace(p)
 
 
 def source_context(events, names, goals):
@@ -89,7 +119,7 @@ class Collector:
         self.cfg = hb.deep_merge(hb.DEFAULT_CONFIG, read_json('live.config.json', {}))
         if OPEN_CHAT:
             self.cfg['village_slug'] = 'open-chat'
-            self.cfg['poll_seconds'] = 60
+            self.cfg['poll_seconds'] = 120
         # Disable legacy sinks and raw memory collection; optional alerts use Notifier.
         self.cfg['memory_watch'] = {'enabled': False}
         self.cfg['channels_enabled'] = list(NOTES)
@@ -105,6 +135,7 @@ class Collector:
         self.detail = None
         self.roster_time = 0
         self.day_cache = {}
+        self.trimmed = 0
         self.discord = discord_alerts.Notifier(ROOT, DATA)
 
     def fetch(self, path):
@@ -158,6 +189,9 @@ class Collector:
         hb.write_dashboard(eng, self.cfg, now)
         hb.write_history(eng, self.cfg, now)
         eng.save()
+        if not self.trimmed or time.monotonic() - self.trimmed > 86400:
+            trim_logs(now)
+            self.trimmed = time.monotonic()
         dashboard = read_json('dashboard.json', {})
         history = read_json('history_7d.json', {'agents': {}})
         # Include the incomplete current hour with an explicit hourly-peak meaning.
@@ -223,8 +257,8 @@ class Handler(BaseHTTPRequestHandler):
         route = urlsplit(self.path).path
         if route in ('/', '/index.html'):
             data, mime = (ROOT / 'index.html').read_bytes(), 'text/html; charset=utf-8'
-        elif route == '/evidence.js':
-            data, mime = (ROOT / 'evidence.js').read_bytes(), 'text/javascript; charset=utf-8'
+        elif route in SCRIPTS:
+            data, mime = (ROOT / SCRIPTS[route]).read_bytes(), 'text/javascript; charset=utf-8'
         elif route == '/discord':
             data = (ROOT / 'discord_setup.html').read_text(encoding='utf-8').replace('__CSRF_TOKEN__', SETUP_TOKEN).encode()
             mime = 'text/html; charset=utf-8'
@@ -240,7 +274,7 @@ class Handler(BaseHTTPRequestHandler):
         self.send_header('Content-Length', str(len(data)))
         self.send_header('Cache-Control', 'no-store')
         self.send_header('X-Content-Type-Options', 'nosniff')
-        self.send_header('Content-Security-Policy', "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; frame-ancestors 'none'")
+        self.send_header('Content-Security-Policy', "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; connect-src 'self'; frame-ancestors 'none'")
         self.end_headers()
         self.wfile.write(data)
 
