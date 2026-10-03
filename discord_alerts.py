@@ -7,7 +7,22 @@ import time
 import urllib.error
 import urllib.request
 
-CHANNELS = ('general', 'off-goal', 'erratic', 'conflict', 'outreach', 'credentials')
+# Two tiers (2 Oct, Adam). Everyday heat is sent LIVE as calm, silent notices:
+# they tip a human off to open the dashboard, without drama, pings or push
+# notifications. "Urgent" wording is reserved for URGENT_CHANNELS, which stays
+# empty until a validated urgent tier (actions with outside consequences)
+# exists. Friction ('conflict') is dashboard-only: its lexicon mostly detects
+# polite talk about privacy and boundaries (non-identifying, per-agent,
+# aggregate). Filtering by these tuples also overrides older saved configs.
+EVERYDAY_CHANNELS = ('general', 'off-goal', 'erratic', 'outreach', 'credentials')
+URGENT_CHANNELS = ()
+CHANNELS = EVERYDAY_CHANNELS + URGENT_CHANNELS     # what the setup page saves
+# Discord message flag SUPPRESS_NOTIFICATIONS ("@silent"): the message appears
+# and marks the channel unread, but sends no push notification or sound.
+SILENT_FLAG = 4096
+# Everyday heat never uses the word "critical": that is reserved for the
+# planned urgent tier (actions with external-world consequences).
+LEVEL_WORDS = {1: 'elevated', 2: 'high'}
 WEBHOOK = re.compile(r'https://discord\.com/api(?:/v\d+)?/webhooks/\d+/[A-Za-z0-9_-]+\Z')
 
 
@@ -57,14 +72,15 @@ def post(url, payload):
         return {'ok': False, 'retry_after': 60, 'error': 'Discord connection failed; delivery is unconfirmed.'}
 
 
-def payload(village, agent, signals, info, when):
+def payload(village, agent, signals, info, when, silent=True):
     critical = any(level == 2 for _, _, level in signals)
-    label = 'CRITICAL' if critical else 'HOT'
+    urgent = any(c in URGENT_CHANNELS for c, _, _ in signals)
+    label = ('URGENT · ' if urgent else 'Heat notice · ') + LEVEL_WORDS[2 if critical else 1]
     village_name = 'Open Chat' if village == 'open-chat' else 'Main village'
     source = 'https://theaidigest.org/village' + ('/open-chat' if village == 'open-chat' else '')
     names = {'conflict': 'Friction', 'erratic': 'Loop / erratic', 'off-goal': 'Off-goal',
              'general': 'General', 'outreach': 'Outreach', 'credentials': 'Credentials (rule-based)'}
-    fields = [{'name': names[c], 'value': 'Heat %.1f · %s' % (value, 'critical' if level == 2 else 'hot'), 'inline': True}
+    fields = [{'name': names[c], 'value': 'Heat %.1f · %s' % (value, LEVEL_WORDS[2 if level == 2 else 1]), 'inline': True}
               for c, value, level in signals]
     contributing = [r for r in info.get('contributions', [])
                     if r['channel'] in {s[0] for s in signals} and r.get('added', 0) > 0]
@@ -82,9 +98,11 @@ def payload(village, agent, signals, info, when):
         fields.append({'name': 'Source event', 'value': (str(event.get('time')) + '\n' + str(event.get('key')))[:300]})
     return {'username': 'AI Village Heatbot', 'allowed_mentions': {'parse': []},
             'embeds': [{'title': (label + ' · ' + agent + ' · ' + village_name)[:256],
-                        'url': source, 'description': 'Human review requested. Heat is an experimental attention signal, not a finding of misalignment. Related channels can share the same evidence.',
-                        'fields': fields, 'color': 0xBD3C57 if critical else 0xDD7B31,
-                        'timestamp': when, 'footer': {'text': 'Open the local heat map for full context. No automatic action is taken.'}}]}
+                        'url': source, 'description': ('Urgent review requested.' if urgent else 'Everyday heat notice: worth a look when convenient, not an emergency.') + ' Heat is experimental and is not a finding of misalignment. Related channels can share the same evidence.',
+                        # calm colours for everyday notices; red only for the urgent tier
+                        'fields': fields, 'color': 0xBD3C57 if urgent else 0xB8862E if critical else 0x6B7F99,
+                        'timestamp': when, 'footer': {'text': 'Open the local heat map for full context. No automatic action is taken.'}}],
+            **({'flags': SILENT_FLAG} if silent and not urgent else {})}
 
 
 class Notifier:
@@ -120,7 +138,9 @@ class Notifier:
                 continue
             for c in allowed:
                 h = info['heat'].get(c, 0)
-                thresholds = dashboard['channels'][c]['thresholds']
+                thresholds = dashboard['channels'].get(c, {}).get('thresholds')
+                if not thresholds:
+                    continue
                 level = 2 if h >= thresholds['critical'] else 1 if h >= thresholds['hot'] else 0
                 key = a + '|' + c
                 entry = state['signals'].setdefault(key, {'armed': True, 'level': 0, 'sent_at': 0})
@@ -147,7 +167,8 @@ class Notifier:
         status = {'enabled': True, 'baseline_only': baseline, 'sent': state['sent']}
         if now >= state.get('retry_at', 0):
             for a, signals in list(groups.items())[:3]:
-                result = self.transport(cfg['webhook_url'], payload(village, a, signals, active[a], dashboard['generated_at']))
+                result = self.transport(cfg['webhook_url'], payload(village, a, signals, active[a], dashboard['generated_at'],
+                                                                   silent=cfg.get('silent_notices', True)))
                 if not result['ok']:
                     status['error'] = result.get('error', 'Discord delivery failed.')
                     state['retry_at'] = now + result.get('retry_after', 60)
