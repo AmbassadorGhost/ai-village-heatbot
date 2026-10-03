@@ -6,7 +6,7 @@
 *Team: Adam (measurement and validity) and Gregory Kasper (data and live system), working with AI collaborators: Claude (Anthropic) on Adam's side, and Claude and later Astra/Codex (OpenAI) on Greg's side.*
 *Repo: `AmbassadorGhost/ai-village-heatbot`*
 
-> **DRAFT, 3 Oct, 18:15 CT.** ⏳ marks what's still to come: screenshots, deployment status and the `study/` folder.
+> **DRAFT, 3 Oct, 18:45 CT.** ⏳ marks what's still to come: screenshots and deployment status. Everything is on the `submission` branch.
 
 ---
 
@@ -250,4 +250,4 @@ Two human raters independently judged 20 agent-days for "fixation." They agreed 
   - `tier1_v02.py`, `tier1_live.py`, and `exporter_addon/`;
   - `spread/`: the spread trace;
   - round 2's record: `TIER1_SPEC.md`, `BOTME_RESULT.md`, `RATING_RESULT.md` and the raw ratings.
-- `study/` ⏳: the frozen round-1 evaluation code with synthetic known-answer tests, the signed pre-registration and deviation record, the freeze manifest, and the sealed results with hashes.
+- `study/`: the frozen round-1 evaluation code with known-answer tests, the signed pre-registration and deviation record, the freeze manifest, the sealed results with their manifests and `verify_seal.py`, and both teams' categorisation. Start with `study/README.md`, which gives the three commands that check it.
