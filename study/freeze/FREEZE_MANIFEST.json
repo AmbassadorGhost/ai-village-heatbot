@@ -1,0 +1,211 @@
+{
+  "status": "FINAL SIGNED DOCUMENTS AND SPECIFIED ANALYSIS CODE FROZEN; SEALS NOT UNSEALED",
+  "created_at_utc": "2026-10-03T02:20:09.417131+00:00",
+  "client_date": "2026-10-02",
+  "client_timezone": "America/New_York",
+  "versions": {
+    "preregistration": "v1.2",
+    "deviations": "v3.1"
+  },
+  "all_four_current_agreement_rows_present": true,
+  "signatures_as_saved": {
+    "PREREGISTRATION_SIGNOFF_v1.2.md": [
+      {
+        "party": "Adam",
+        "agreement": "agreed",
+        "date_as_saved": "10-2-26"
+      },
+      {
+        "party": "Greg",
+        "agreement": "Gregory Kasper Signed",
+        "date_as_saved": "10/02/2026"
+      },
+      {
+        "party": "Claude (measurement and validity, Adam's side; Anthropic)",
+        "agreement": "Agreed to v1.2 and DEVIATIONS v3.1, within my reviewer scope and the uncertainties recorded",
+        "date_as_saved": "2 Oct 2026 (US Central)"
+      },
+      {
+        "party": "Data and live-system reviewer (Astra/Codex, Greg's side; OpenAI)",
+        "agreement": "Agreed to v1.2 and DEVIATIONS v3.1, within the reviewer scope and uncertainties recorded",
+        "date_as_saved": "2 Oct 2026"
+      }
+    ],
+    "DEVIATIONS_v3.1.md": [
+      {
+        "party": "Adam",
+        "agreement": "agreed",
+        "date_as_saved": "10-2-26"
+      },
+      {
+        "party": "Greg",
+        "agreement": "Signed Gregory Kasper",
+        "date_as_saved": "10/02/2026"
+      },
+      {
+        "party": "Claude (measurement and validity, Adam's side; Anthropic)",
+        "agreement": "Agreed to D1–D6, v3.1, within my reviewer scope and the uncertainties recorded",
+        "date_as_saved": "2 Oct 2026 (US Central)"
+      },
+      {
+        "party": "Data and live-system reviewer (Astra/Codex, Greg's side; OpenAI)",
+        "agreement": "Agreed to D1–D6, v3.1, within the reviewer scope and uncertainties recorded",
+        "date_as_saved": "2 Oct 2026"
+      }
+    ]
+  },
+  "signed_document_bytes_preserved": true,
+  "header_note": "Proposed/awaiting-agreement headers are preserved as signed; all four current agreement rows are present. No wording was rewritten after signatures.",
+  "code_crosscheck": "Five code files match both existing full hashes and byte-identical round 8 archive entries; these also match Claude's supplied shortened hashes. P8-related full hashes additionally match its pre-run addendum.",
+  "round8_archive": {
+    "source": "C:\\Users\\gkgho\\Downloads\\heatbot_round8.zip",
+    "sha256": "c2fcc5ea297945135960bc5c15ac1b32cdd2f0e0efbd621d0e5c35d875f2618d"
+  },
+  "pr_head_reviewed": "c39042ad365ff271c290957099cd9854c201a9d3",
+  "latest_pr_merged_or_installed": false,
+  "result_contents_interpreted_or_displayed_during_freeze": false,
+  "unsealing_performed": false,
+  "not_completed_by_this_freeze": [
+    "E2 result-manifest verification (container prefix checked; full sender ZIP digest not supplied)",
+    "Joint E2/P8 unsealing and identical-file distribution",
+    "Independent categorisation",
+    "H1/H1b training power statement and prospective roster prerequisites"
+  ],
+  "files": [
+    {
+      "path": "SEAL_HASH_CHECK.json",
+      "sha256": "1f9a4e919777d5e5dafc805fcbf1a02ea044538e2fde42b47fb5453376984c47",
+      "bytes": 1402,
+      "provenance": {}
+    },
+    {
+      "path": "analysis/forward_eval.py",
+      "sha256": "ef18724c4e42c7fab6a1ee83b545c4fa3e92375c09c37d0b85b9b6045ac80c12",
+      "bytes": 16398,
+      "provenance": {
+        "source": "C:\\Users\\gkgho\\Documents\\AIVillageReports\\study_review_round8\\forward_eval.py",
+        "round8_archive_entry": "forward_eval.py",
+        "round8_byte_identical": true,
+        "matches_claude_supplied_hash_prefix_and_suffix": true,
+        "full_expected_hash_source": "Existing provisional inventory, cross-checked against round 8 archive"
+      }
+    },
+    {
+      "path": "analysis/h1_telemetry.py",
+      "sha256": "7dd39faa3292df153c3f2066f44ef97698a81c32f5b14433e039f8f434558a64",
+      "bytes": 12244,
+      "provenance": {
+        "source": "C:\\Users\\gkgho\\Documents\\AIVillageReports\\study_review_round8\\h1_telemetry.py",
+        "round8_archive_entry": "h1_telemetry.py",
+        "round8_byte_identical": true,
+        "matches_claude_supplied_hash_prefix_and_suffix": true,
+        "full_expected_hash_source": "Existing provisional inventory, cross-checked against round 8 archive"
+      }
+    },
+    {
+      "path": "analysis/heatbot_model.json",
+      "sha256": "107192d5fe60abe1884bdc807ac5f040d880466a1fb53fafb166b42f67170213",
+      "bytes": 15768,
+      "provenance": {
+        "source": "C:\\Users\\gkgho\\AI village\\heatbot\\heatbot_model.json",
+        "matches_p8_addendum": true
+      }
+    },
+    {
+      "path": "analysis/p8_auc.py",
+      "sha256": "8abb2773f89365cd0694133e48212267471d362341222068fe5920b7f0fc2757",
+      "bytes": 9375,
+      "provenance": {
+        "source": "C:\\Users\\gkgho\\Documents\\AIVillageReports\\study_review_round8\\p8_auc.py",
+        "round8_archive_entry": "p8_auc.py",
+        "round8_byte_identical": true,
+        "matches_claude_supplied_hash_prefix_and_suffix": true,
+        "full_expected_hash_source": "Existing provisional inventory, cross-checked against round 8 archive"
+      }
+    },
+    {
+      "path": "analysis/p8_run.py",
+      "sha256": "6258e07725c5ff3bf8556c6de1690c34a375a20e3f759fde22f90a492e47911f",
+      "bytes": 4280,
+      "provenance": {
+        "source": "C:\\Users\\gkgho\\Downloads\\heatbot_round7_reply_2.zip",
+        "archive_entry": "p8/p8_run.py",
+        "matches_p8_addendum": true
+      }
+    },
+    {
+      "path": "analysis/test_h1_telemetry.py",
+      "sha256": "6dc902c97f49b995e38c8d61903002acb252612ce46a2bf43615e2e14d8b1009",
+      "bytes": 11421,
+      "provenance": {
+        "source": "C:\\Users\\gkgho\\Documents\\AIVillageReports\\study_review_round8\\test_h1_telemetry.py",
+        "round8_archive_entry": "test_h1_telemetry.py",
+        "round8_byte_identical": true,
+        "matches_claude_supplied_hash_prefix_and_suffix": true,
+        "full_expected_hash_source": "Existing provisional inventory, cross-checked against round 8 archive"
+      }
+    },
+    {
+      "path": "analysis/test_p8_auc.py",
+      "sha256": "8cde61a4a8443a13f318820f415c458c8915183fcb2392681d3287815891fed0",
+      "bytes": 6423,
+      "provenance": {
+        "source": "C:\\Users\\gkgho\\Documents\\AIVillageReports\\study_review_round8\\test_p8_auc.py",
+        "round8_archive_entry": "test_p8_auc.py",
+        "round8_byte_identical": true,
+        "matches_claude_supplied_hash_prefix_and_suffix": true,
+        "full_expected_hash_source": "Existing provisional inventory, cross-checked against round 8 archive"
+      }
+    },
+    {
+      "path": "documents/DEVIATIONS_v3.1.md",
+      "sha256": "8ee4660df414653d32d290e60a28275cc0cdc8bf0161d1354313e6507abd1538",
+      "bytes": 13095,
+      "provenance": {
+        "source": "C:\\Users\\gkgho\\Downloads\\DEVIATIONS (3).md",
+        "terms_unchanged_except_added_signatures": true
+      }
+    },
+    {
+      "path": "documents/PREREGISTRATION_SIGNOFF_v1.2.md",
+      "sha256": "1e202c1d0b104baf2a801e98f5b9921961706de6251f2aed1ebcaba86290132f",
+      "bytes": 13575,
+      "provenance": {
+        "source": "C:\\Users\\gkgho\\Downloads\\preregistration signoff (2).md",
+        "terms_unchanged_except_added_signatures": true
+      }
+    },
+    {
+      "path": "provenance/P8_ADDENDUM_MANIFEST.txt",
+      "sha256": "d5984d5d192ddaea968ad20e397d7f5d86d0d8d05d1096d871a2f167ac1234b7",
+      "bytes": 847,
+      "provenance": {}
+    },
+    {
+      "path": "provenance/P8_SEAL_MANIFEST.txt",
+      "sha256": "9b2709033a56340bc56ce033950679b1ceb6c0426accc08bef29cdd70503665e",
+      "bytes": 9128,
+      "provenance": {}
+    },
+    {
+      "path": "provenance/WINDOWS_HEATBOT_REFERENCE.py",
+      "sha256": "e50c56c663a8a8b1eb2a173839992f6d4a57c0230abc929a32d2914381d7376b",
+      "bytes": 75445,
+      "provenance": {
+        "source": "C:\\Users\\gkgho\\Downloads\\heatbot_round7_reply_2.zip",
+        "archive_entry": "heatbot_win/heatbot.py",
+        "role": "Historical Windows-build provenance; not a replacement for the analysis named in the signed rules"
+      }
+    },
+    {
+      "path": "provenance/same_output_check_r7.log",
+      "sha256": "a4cf69ebe36b87afeb5107058494c04d444e16f2c6da6a05a2e743f3d4777daf",
+      "bytes": 186,
+      "provenance": {
+        "source": "C:\\Users\\gkgho\\Downloads\\heatbot_round7_reply_2.zip",
+        "archive_entry": "heatbot_win/same_output_check_r7.log",
+        "role": "Historical Windows-build provenance; not a replacement for the analysis named in the signed rules"
+      }
+    }
+  ]
+}

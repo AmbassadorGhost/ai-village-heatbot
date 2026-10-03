@@ -1,0 +1,147 @@
+{
+  "status": "INDEPENDENT CATEGORISATIONS COMPARED; ALL DECIDING CATEGORIES AND SEQUENCE AGREE",
+  "created_at_utc": "2026-10-03T03:01:27.289062+00:00",
+  "client_date": "2026-10-02",
+  "client_timezone": "America/New_York",
+  "rules": {
+    "preregistration": "v1.2 Part A",
+    "deviations": "v3.1"
+  },
+  "freeze_manifest_sha256": "6f11cc2685ee6aa4aa0338306233ab1478f05e98eb70856f9c758874c4990ad4",
+  "sources": {
+    "greg_independent_rating_sha256": "2affc701adf0dc31825dd31ee6589d8ac92e256744c6054501ab79465e2bb3bf",
+    "greg_independent_rating_completed_at_utc": "2026-10-03T02:38:44.589365+00:00",
+    "greg_original_lock_rechecked": true,
+    "adam_received_filename": "CATEGORISATION ADAM SIDE 2026-10-02.md",
+    "adam_received_sha256": "70fc2399d2442af99fc19af57e5f3449d9992ccb4eda60ef5f26be45196b6f20",
+    "adam_independence_and_custody": "Attested in the supplied Adam-side record; not independently certified by Greg's reviewer",
+    "adam_reported_preparation_time": "2 Oct 2026, about 21:35 US Central, before seeing Greg-side categorisation"
+  },
+  "claims": [
+    {
+      "claim": "symmetric",
+      "greg_category": "ruled_out",
+      "adam_category": "ruled_out",
+      "categories_agree": true,
+      "greg_estimates": {
+        "auc_within": 0.4803,
+        "ci95": [
+          0.4098,
+          0.561
+        ],
+        "counted_folds": 5,
+        "held_folds": 3
+      },
+      "adam_reported_estimates": {
+        "claim": "symmetric",
+        "auc_within": 0.48,
+        "ci95": [
+          0.41,
+          0.561
+        ],
+        "counted_folds": 5,
+        "held_folds": 3,
+        "category": "ruled_out"
+      },
+      "reported_numbers_agree_allowing_three_decimal_rounding": true,
+      "fold_counts_agree": true,
+      "formal_sequence_status": "tested"
+    },
+    {
+      "claim": "forward",
+      "greg_category": "ruled_out",
+      "adam_category": "ruled_out",
+      "categories_agree": true,
+      "greg_estimates": {
+        "auc_within": 0.4726,
+        "ci95": [
+          0.4155,
+          0.5419
+        ],
+        "counted_folds": 5,
+        "held_folds": 3
+      },
+      "adam_reported_estimates": {
+        "claim": "forward",
+        "auc_within": 0.473,
+        "ci95": [
+          0.416,
+          0.542
+        ],
+        "counted_folds": 5,
+        "held_folds": 3,
+        "category": "ruled_out"
+      },
+      "reported_numbers_agree_allowing_three_decimal_rounding": true,
+      "fold_counts_agree": true,
+      "formal_sequence_status": "descriptive_only_after_sequence_stopped"
+    },
+    {
+      "claim": "onset",
+      "greg_category": "ruled_out",
+      "adam_category": "ruled_out",
+      "categories_agree": true,
+      "greg_estimates": {
+        "auc_within": 0.4703,
+        "ci95": [
+          0.4,
+          0.5555
+        ],
+        "counted_folds": 5,
+        "held_folds": 3
+      },
+      "adam_reported_estimates": {
+        "claim": "onset",
+        "auc_within": 0.47,
+        "ci95": [
+          0.4,
+          0.556
+        ],
+        "counted_folds": 5,
+        "held_folds": 3,
+        "category": "ruled_out"
+      },
+      "reported_numbers_agree_allowing_three_decimal_rounding": true,
+      "fold_counts_agree": true,
+      "formal_sequence_status": "descriptive_only_after_sequence_stopped"
+    }
+  ],
+  "sequence_and_e2_checks": {
+    "adam_says_sequence_stops_at_symmetric": true,
+    "adam_says_no_claim_headlined": true,
+    "adam_says_forward_onset_descriptive": true,
+    "greg_stops_at_symmetric_no_passing_headline": true,
+    "adam_e2_untestable": true,
+    "adam_e2_nine_fold_counts_match": true,
+    "greg_e2_untestable": true
+  },
+  "category_disagreements": [],
+  "numerical_differences": "Presentation rounding only: Adam's table uses three decimal places; original Greg-side P8 values use four.",
+  "reporting_scope": {
+    "symmetric": "Formal first claim: ruled_out at the preregistered AUC 0.60 threshold",
+    "forward_and_onset": "Same ruled_out categories, but descriptive only because the sequence stopped at symmetric",
+    "e2_alerts": "Untestable, as predeclared; descriptive estimates cannot rescue the P8 claim",
+    "headline": "No positive passing headline; no demonstrated early-warning claim",
+    "wording_note": "Adam's sentence referring to ruled-out effects for all three modes must retain its accompanying descriptive-only qualification for forward/onset; do not promote those to later formal tests."
+  },
+  "scope_and_limits": [
+    "Independent reviewer agreement is not a second raw-data recomputation or independent human statistical validation.",
+    "The reported interval excludes the agreed useful-size threshold; it does not establish that heat carries no information or all smaller effects are absent.",
+    "The findings concern the older frozen model, specified agents and held-out period, not the later exploratory live novelty update.",
+    "The signed record's access-history and family-measurement caveats remain in force."
+  ],
+  "remaining_evidence_gaps": [
+    "Complete original event/monitor/calibration inputs are unavailable locally, so bootstrap estimates, fold assignment and replay were not independently reproduced from raw data.",
+    "Option C (any paging channel at warm+) is required as a descriptive by the sign-off but is not present in the provided E2/P8 result schemas; aggregated per-channel summaries cannot reconstruct the union. Mark missing rather than invent it.",
+    "DeepSeek-included E2 sensitivity is available in configurations 2 and 5. A corresponding DeepSeek-included within-agent P8 sensitivity is not present in the single provided P8 held-out file.",
+    "H1/H1b have not been scored or categorised. Their training power statement, roster prerequisites and original implementation/data availability still need completion before prospective scoring."
+  ],
+  "next_steps": [
+    "Share this comparison with Adam; agree on accurate write-up wording while preserving both original assessments.",
+    "Describe the live heat display as exploratory; validation of a useful early-warning system is not demonstrated by this study.",
+    "Before H1/H1b prospective scoring, complete the pre-agreed training power statement, roster review and implementation/input prerequisites.",
+    "Any post-unsealing model redesign is exploratory and needs a separate evaluation with its own fixed rules."
+  ],
+  "changes_to_original_ratings_signed_rules_or_analysis": false,
+  "shared_externally_by_assistant": false
+}

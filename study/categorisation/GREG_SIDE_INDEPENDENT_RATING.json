@@ -1,0 +1,1183 @@
+{
+  "status": "GREG-SIDE INDEPENDENT RATING RECORDED BEFORE CROSS-TEAM COMPARISON",
+  "completed_at_utc": "2026-10-03T02:38:44.589365+00:00",
+  "client_date": "2026-10-02",
+  "client_timezone": "America/New_York",
+  "reviewer": "Astra/Codex (OpenAI), Greg-side data and live-system reviewer",
+  "other_team_ratings_or_conclusions_seen": false,
+  "distribution_reported_by_greg": "Sent; Adam replied: cool, looking at it",
+  "freeze_manifest_sha256": "6f11cc2685ee6aa4aa0338306233ab1478f05e98eb70856f9c758874c4990ad4",
+  "signed_rules": {
+    "preregistration": "v1.2 Part A",
+    "deviations": "v3.1"
+  },
+  "inputs": [
+    {
+      "path": "P8_SEALED/p8_heldout_medhigh_roster_noDS.json",
+      "sha256": "158b7db5d9fc998756f81a51b913feb76149f40279c151f8a8a9015734012721"
+    },
+    {
+      "path": "E2_SEALED/e2_1_medhigh_roster_noDS.json",
+      "sha256": "01c23fd105f40e5afcfbf5751bf42457c02326ea0c7a8cfc176dadf47dfe00d3"
+    },
+    {
+      "path": "E2_SEALED/e2_2_medhigh_roster_all.json",
+      "sha256": "05d21af0fc983e5d50de44f0d9b27aa566948b314b18bb2d8e139d2736aa342a"
+    },
+    {
+      "path": "E2_SEALED/e2_3_medhigh_proxy_noDS.json",
+      "sha256": "081587e2cdecde9e1f91d32e8313970ce7dd0a4a117923a39093f6bbf466fabf"
+    },
+    {
+      "path": "E2_SEALED/e2_4_all_roster_noDS.json",
+      "sha256": "5ee5794785f8c4031ffa78e77d6b6190c654b5ee1ef0be36d45add2fec50e4f6"
+    },
+    {
+      "path": "E2_SEALED/e2_5_all_proxy_all.json",
+      "sha256": "b126a1fb442d1a51c5ec342ed6699c4083c46963e7754facc042199416297f0d"
+    },
+    {
+      "path": "E2_SEALED/e2_6_all_proxy_noDS.json",
+      "sha256": "a2b0c8b9ed224669762a9db0fbe7183ab2c69ec94201c9e79429f1731e1b9a8a"
+    }
+  ],
+  "analysis": "Independent application of signed category/sequence rules to the sealed reported estimates, with fold-summary and source-hash cross-checks. No refitting or raw-data recomputation.",
+  "p8_claims": [
+    {
+      "claim": "symmetric",
+      "auc_within": 0.4803,
+      "ci95": [
+        0.4098,
+        0.561
+      ],
+      "counted_folds": 5,
+      "held_folds": 3,
+      "independent_category": "ruled_out",
+      "formal_sequence_status": "tested",
+      "reason": "All five folds count, but only three hold; CI lower is below 0.5 and CI upper is below the agreed 0.60 threshold. The ordered rule assigns ruled_out.",
+      "stored_category_matches": true,
+      "folds": [
+        {
+          "agents": 7,
+          "positives": 826,
+          "auc": 0.3688,
+          "counts": true,
+          "holds": false
+        },
+        {
+          "agents": 6,
+          "positives": 242,
+          "auc": 0.5473,
+          "counts": true,
+          "holds": true
+        },
+        {
+          "agents": 6,
+          "positives": 358,
+          "auc": 0.4844,
+          "counts": true,
+          "holds": false
+        },
+        {
+          "agents": 6,
+          "positives": 724,
+          "auc": 0.5203,
+          "counts": true,
+          "holds": true
+        },
+        {
+          "agents": 6,
+          "positives": 557,
+          "auc": 0.5959,
+          "counts": true,
+          "holds": true
+        }
+      ],
+      "positives": 2707,
+      "moments": 27222,
+      "agents_contributing": 23
+    },
+    {
+      "claim": "forward",
+      "auc_within": 0.4726,
+      "ci95": [
+        0.4155,
+        0.5419
+      ],
+      "counted_folds": 5,
+      "held_folds": 3,
+      "independent_category": "ruled_out",
+      "formal_sequence_status": "descriptive_only_after_sequence_stopped",
+      "reason": "All five folds count, but only three hold; CI lower is below 0.5 and CI upper is below the agreed 0.60 threshold. The ordered rule assigns ruled_out.",
+      "stored_category_matches": true,
+      "folds": [
+        {
+          "agents": 7,
+          "positives": 378,
+          "auc": 0.3811,
+          "counts": true,
+          "holds": false
+        },
+        {
+          "agents": 6,
+          "positives": 128,
+          "auc": 0.5244,
+          "counts": true,
+          "holds": true
+        },
+        {
+          "agents": 6,
+          "positives": 179,
+          "auc": 0.5057,
+          "counts": true,
+          "holds": true
+        },
+        {
+          "agents": 6,
+          "positives": 342,
+          "auc": 0.4854,
+          "counts": true,
+          "holds": false
+        },
+        {
+          "agents": 6,
+          "positives": 250,
+          "auc": 0.5716,
+          "counts": true,
+          "holds": true
+        }
+      ],
+      "positives": 1277,
+      "moments": 27222,
+      "agents_contributing": 23
+    },
+    {
+      "claim": "onset",
+      "auc_within": 0.4703,
+      "ci95": [
+        0.4,
+        0.5555
+      ],
+      "counted_folds": 5,
+      "held_folds": 3,
+      "independent_category": "ruled_out",
+      "formal_sequence_status": "descriptive_only_after_sequence_stopped",
+      "reason": "All five folds count, but only three hold; CI lower is below 0.5 and CI upper is below the agreed 0.60 threshold. The ordered rule assigns ruled_out.",
+      "stored_category_matches": true,
+      "folds": [
+        {
+          "agents": 7,
+          "positives": 302,
+          "auc": 0.3699,
+          "counts": true,
+          "holds": false
+        },
+        {
+          "agents": 6,
+          "positives": 103,
+          "auc": 0.523,
+          "counts": true,
+          "holds": true
+        },
+        {
+          "agents": 6,
+          "positives": 147,
+          "auc": 0.5899,
+          "counts": true,
+          "holds": true
+        },
+        {
+          "agents": 6,
+          "positives": 274,
+          "auc": 0.4671,
+          "counts": true,
+          "holds": false
+        },
+        {
+          "agents": 6,
+          "positives": 186,
+          "auc": 0.5116,
+          "counts": true,
+          "holds": true
+        }
+      ],
+      "positives": 1012,
+      "moments": 24460,
+      "agents_contributing": 23
+    }
+  ],
+  "sequence": {
+    "tested_in_sequence": [
+      "symmetric"
+    ],
+    "passed": [],
+    "headline": null
+  },
+  "headline": "The real-time within-agent AUC claim is ruled out at the preregistered 0.60 threshold in this held-out period. The fixed sequence stops at symmetric; no early-warning claim is demonstrated.",
+  "interpretation_boundary": "ruled_out refers to the agreed 0.60 effect threshold. It does not mean every possible useful signal is absent, every detector would fail, or the current exploratory live novelty product was evaluated here.",
+  "power_statement_from_signed_rules": {
+    "at_auc_0_60": {
+      "event_count_bound": "61-78%",
+      "agent_count_bound": "98-100%"
+    },
+    "at_auc_0_55": {
+      "event_count_bound": "20-28%",
+      "agent_count_bound": "50-67%"
+    },
+    "scope": "Training-period, in-sample estimates described as optimistic in the signed document; not recomputed held-out power."
+  },
+  "e2_alert_claim": {
+    "category": "untestable",
+    "status": "predeclared before unsealing",
+    "general_hot_alerts": 9,
+    "seed_zero_fired_counts": [
+      4,
+      3,
+      2,
+      0,
+      0
+    ],
+    "minimum_fired_per_fold": 20,
+    "folds_meeting_minimum": 0,
+    "config_1_descriptives": {
+      "file": "e2_1_medhigh_roster_noDS.json",
+      "config": {
+        "order": 1,
+        "labels": "medhigh",
+        "reviewed": "roster",
+        "agents": "noDS",
+        "decides": true
+      },
+      "source_sha256": "01c23fd105f40e5afcfbf5751bf42457c02326ea0c7a8cfc176dadf47dfe00d3",
+      "forward_1h": {
+        "n": 9,
+        "precision": 0.0,
+        "base_event": 0.047,
+        "base_hour": 0.03,
+        "lift_event": 0.0,
+        "lift_hour": 0.0,
+        "ci95_lift_event": [
+          0.0,
+          0.0
+        ],
+        "folds": {
+          "used": 0,
+          "lifts": [],
+          "mean": null,
+          "min": null,
+          "max": null,
+          "skipped": [
+            "fold 0: 4 fired < 20",
+            "fold 1: 3 fired < 20",
+            "fold 2: 2 fired < 20",
+            "fold 3: 0 fired < 20",
+            "fold 4: 0 fired < 20"
+          ]
+        }
+      },
+      "symmetric_1h": {
+        "n": 9,
+        "precision": 0.222,
+        "base_event": 0.099,
+        "base_hour": 0.066,
+        "lift_event": 2.23,
+        "lift_hour": 3.38,
+        "ci95_lift_event": [
+          0.0,
+          9.75
+        ],
+        "folds": {
+          "used": 0,
+          "lifts": [],
+          "mean": null,
+          "min": null,
+          "max": null,
+          "skipped": [
+            "fold 0: 4 fired < 20",
+            "fold 1: 3 fired < 20",
+            "fold 2: 2 fired < 20",
+            "fold 3: 0 fired < 20",
+            "fold 4: 0 fired < 20"
+          ]
+        }
+      },
+      "onset_1h": {
+        "n": 6,
+        "precision": 0.0,
+        "base_event": 0.041,
+        "base_hour": 0.027,
+        "lift_event": 0.0,
+        "lift_hour": 0.0,
+        "ci95_lift_event": [
+          0.0,
+          0.0
+        ],
+        "folds": {
+          "used": 0,
+          "lifts": [],
+          "mean": null,
+          "min": null,
+          "max": null,
+          "skipped": [
+            "fold 0: 3 fired < 20",
+            "fold 1: 2 fired < 20",
+            "fold 2: 1 fired < 20",
+            "fold 3: 0 fired < 20",
+            "fold 4: 0 fired < 20"
+          ]
+        }
+      },
+      "lead_minutes": {
+        "forward": {
+          "n": 0,
+          "within": "4h",
+          "median": null,
+          "q1": null,
+          "q3": null
+        },
+        "onset": {
+          "n": 0,
+          "within": "4h",
+          "median": null,
+          "q1": null,
+          "q3": null
+        }
+      },
+      "raw_general_auc": {
+        "forward": {
+          "30m": 0.491,
+          "1h": 0.515,
+          "2h": 0.52,
+          "4h": 0.506
+        },
+        "onset": {
+          "30m": 0.491,
+          "1h": 0.513,
+          "2h": 0.519,
+          "4h": 0.505
+        }
+      },
+      "status": "descriptive_only"
+    }
+  },
+  "e2_six_configuration_descriptives": [
+    {
+      "file": "e2_1_medhigh_roster_noDS.json",
+      "config": {
+        "order": 1,
+        "labels": "medhigh",
+        "reviewed": "roster",
+        "agents": "noDS",
+        "decides": true
+      },
+      "source_sha256": "01c23fd105f40e5afcfbf5751bf42457c02326ea0c7a8cfc176dadf47dfe00d3",
+      "forward_1h": {
+        "n": 9,
+        "precision": 0.0,
+        "base_event": 0.047,
+        "base_hour": 0.03,
+        "lift_event": 0.0,
+        "lift_hour": 0.0,
+        "ci95_lift_event": [
+          0.0,
+          0.0
+        ],
+        "folds": {
+          "used": 0,
+          "lifts": [],
+          "mean": null,
+          "min": null,
+          "max": null,
+          "skipped": [
+            "fold 0: 4 fired < 20",
+            "fold 1: 3 fired < 20",
+            "fold 2: 2 fired < 20",
+            "fold 3: 0 fired < 20",
+            "fold 4: 0 fired < 20"
+          ]
+        }
+      },
+      "symmetric_1h": {
+        "n": 9,
+        "precision": 0.222,
+        "base_event": 0.099,
+        "base_hour": 0.066,
+        "lift_event": 2.23,
+        "lift_hour": 3.38,
+        "ci95_lift_event": [
+          0.0,
+          9.75
+        ],
+        "folds": {
+          "used": 0,
+          "lifts": [],
+          "mean": null,
+          "min": null,
+          "max": null,
+          "skipped": [
+            "fold 0: 4 fired < 20",
+            "fold 1: 3 fired < 20",
+            "fold 2: 2 fired < 20",
+            "fold 3: 0 fired < 20",
+            "fold 4: 0 fired < 20"
+          ]
+        }
+      },
+      "onset_1h": {
+        "n": 6,
+        "precision": 0.0,
+        "base_event": 0.041,
+        "base_hour": 0.027,
+        "lift_event": 0.0,
+        "lift_hour": 0.0,
+        "ci95_lift_event": [
+          0.0,
+          0.0
+        ],
+        "folds": {
+          "used": 0,
+          "lifts": [],
+          "mean": null,
+          "min": null,
+          "max": null,
+          "skipped": [
+            "fold 0: 3 fired < 20",
+            "fold 1: 2 fired < 20",
+            "fold 2: 1 fired < 20",
+            "fold 3: 0 fired < 20",
+            "fold 4: 0 fired < 20"
+          ]
+        }
+      },
+      "lead_minutes": {
+        "forward": {
+          "n": 0,
+          "within": "4h",
+          "median": null,
+          "q1": null,
+          "q3": null
+        },
+        "onset": {
+          "n": 0,
+          "within": "4h",
+          "median": null,
+          "q1": null,
+          "q3": null
+        }
+      },
+      "raw_general_auc": {
+        "forward": {
+          "30m": 0.491,
+          "1h": 0.515,
+          "2h": 0.52,
+          "4h": 0.506
+        },
+        "onset": {
+          "30m": 0.491,
+          "1h": 0.513,
+          "2h": 0.519,
+          "4h": 0.505
+        }
+      },
+      "status": "descriptive_only"
+    },
+    {
+      "file": "e2_2_medhigh_roster_all.json",
+      "config": {
+        "order": 2,
+        "labels": "medhigh",
+        "reviewed": "roster",
+        "agents": "all",
+        "decides": false
+      },
+      "source_sha256": "05d21af0fc983e5d50de44f0d9b27aa566948b314b18bb2d8e139d2736aa342a",
+      "forward_1h": {
+        "n": 31,
+        "precision": 0.226,
+        "base_event": 0.079,
+        "base_hour": 0.038,
+        "lift_event": 2.87,
+        "lift_hour": 5.94,
+        "ci95_lift_event": [
+          0.0,
+          3.65
+        ],
+        "folds": {
+          "used": 1,
+          "lifts": [
+            1.7
+          ],
+          "mean": 1.7,
+          "min": 1.7,
+          "max": 1.7,
+          "skipped": [
+            "fold 1: 3 fired < 20",
+            "fold 2: 3 fired < 20",
+            "fold 3: 2 fired < 20",
+            "fold 4: 0 fired < 20"
+          ]
+        }
+      },
+      "symmetric_1h": {
+        "n": 31,
+        "precision": 0.452,
+        "base_event": 0.152,
+        "base_hour": 0.081,
+        "lift_event": 2.96,
+        "lift_hour": 5.6,
+        "ci95_lift_event": [
+          0.0,
+          5.42
+        ],
+        "folds": {
+          "used": 1,
+          "lifts": [
+            1.73
+          ],
+          "mean": 1.73,
+          "min": 1.73,
+          "max": 1.73,
+          "skipped": [
+            "fold 1: 3 fired < 20",
+            "fold 2: 3 fired < 20",
+            "fold 3: 2 fired < 20",
+            "fold 4: 0 fired < 20"
+          ]
+        }
+      },
+      "onset_1h": {
+        "n": 21,
+        "precision": 0.286,
+        "base_event": 0.066,
+        "base_hour": 0.032,
+        "lift_event": 4.32,
+        "lift_hour": 9.0,
+        "ci95_lift_event": [
+          0.0,
+          5.69
+        ],
+        "folds": {
+          "used": 0,
+          "lifts": [],
+          "mean": null,
+          "min": null,
+          "max": null,
+          "skipped": [
+            "fold 0: 15 fired < 20",
+            "fold 1: 3 fired < 20",
+            "fold 2: 2 fired < 20",
+            "fold 3: 1 fired < 20",
+            "fold 4: 0 fired < 20"
+          ]
+        }
+      },
+      "lead_minutes": {
+        "forward": {
+          "n": 15,
+          "within": "4h",
+          "median": 72.4,
+          "q1": 36.7,
+          "q3": 94.7
+        },
+        "onset": {
+          "n": 12,
+          "within": "4h",
+          "median": 57.6,
+          "q1": 33.5,
+          "q3": 92.4
+        }
+      },
+      "raw_general_auc": {
+        "forward": {
+          "30m": 0.618,
+          "1h": 0.614,
+          "2h": 0.606,
+          "4h": 0.601
+        },
+        "onset": {
+          "30m": 0.653,
+          "1h": 0.629,
+          "2h": 0.608,
+          "4h": 0.599
+        }
+      },
+      "status": "descriptive_only"
+    },
+    {
+      "file": "e2_3_medhigh_proxy_noDS.json",
+      "config": {
+        "order": 3,
+        "labels": "medhigh",
+        "reviewed": "proxy",
+        "agents": "noDS",
+        "decides": false
+      },
+      "source_sha256": "081587e2cdecde9e1f91d32e8313970ce7dd0a4a117923a39093f6bbf466fabf",
+      "forward_1h": {
+        "n": 9,
+        "precision": 0.0,
+        "base_event": 0.049,
+        "base_hour": 0.033,
+        "lift_event": 0.0,
+        "lift_hour": 0.0,
+        "ci95_lift_event": [
+          0.0,
+          0.0
+        ],
+        "folds": {
+          "used": 0,
+          "lifts": [],
+          "mean": null,
+          "min": null,
+          "max": null,
+          "skipped": [
+            "fold 0: 4 fired < 20",
+            "fold 1: 3 fired < 20",
+            "fold 2: 2 fired < 20",
+            "fold 3: 0 fired < 20",
+            "fold 4: 0 fired < 20"
+          ]
+        }
+      },
+      "symmetric_1h": {
+        "n": 9,
+        "precision": 0.222,
+        "base_event": 0.103,
+        "base_hour": 0.072,
+        "lift_event": 2.16,
+        "lift_hour": 3.11,
+        "ci95_lift_event": [
+          0.0,
+          9.45
+        ],
+        "folds": {
+          "used": 0,
+          "lifts": [],
+          "mean": null,
+          "min": null,
+          "max": null,
+          "skipped": [
+            "fold 0: 4 fired < 20",
+            "fold 1: 3 fired < 20",
+            "fold 2: 2 fired < 20",
+            "fold 3: 0 fired < 20",
+            "fold 4: 0 fired < 20"
+          ]
+        }
+      },
+      "onset_1h": {
+        "n": 6,
+        "precision": 0.0,
+        "base_event": 0.043,
+        "base_hour": 0.029,
+        "lift_event": 0.0,
+        "lift_hour": 0.0,
+        "ci95_lift_event": [
+          0.0,
+          0.0
+        ],
+        "folds": {
+          "used": 0,
+          "lifts": [],
+          "mean": null,
+          "min": null,
+          "max": null,
+          "skipped": [
+            "fold 0: 3 fired < 20",
+            "fold 1: 2 fired < 20",
+            "fold 2: 1 fired < 20",
+            "fold 3: 0 fired < 20",
+            "fold 4: 0 fired < 20"
+          ]
+        }
+      },
+      "lead_minutes": {
+        "forward": {
+          "n": 0,
+          "within": "4h",
+          "median": null,
+          "q1": null,
+          "q3": null
+        },
+        "onset": {
+          "n": 0,
+          "within": "4h",
+          "median": null,
+          "q1": null,
+          "q3": null
+        }
+      },
+      "raw_general_auc": {
+        "forward": {
+          "30m": 0.491,
+          "1h": 0.516,
+          "2h": 0.521,
+          "4h": 0.507
+        },
+        "onset": {
+          "30m": 0.49,
+          "1h": 0.514,
+          "2h": 0.52,
+          "4h": 0.506
+        }
+      },
+      "status": "descriptive_only"
+    },
+    {
+      "file": "e2_4_all_roster_noDS.json",
+      "config": {
+        "order": 4,
+        "labels": "all",
+        "reviewed": "roster",
+        "agents": "noDS",
+        "decides": false
+      },
+      "source_sha256": "5ee5794785f8c4031ffa78e77d6b6190c654b5ee1ef0be36d45add2fec50e4f6",
+      "forward_1h": {
+        "n": 9,
+        "precision": 0.111,
+        "base_event": 0.125,
+        "base_hour": 0.077,
+        "lift_event": 0.89,
+        "lift_hour": 1.45,
+        "ci95_lift_event": [
+          0.0,
+          3.67
+        ],
+        "folds": {
+          "used": 0,
+          "lifts": [],
+          "mean": null,
+          "min": null,
+          "max": null,
+          "skipped": [
+            "fold 0: 4 fired < 20",
+            "fold 1: 3 fired < 20",
+            "fold 2: 2 fired < 20",
+            "fold 3: 0 fired < 20",
+            "fold 4: 0 fired < 20"
+          ]
+        }
+      },
+      "symmetric_1h": {
+        "n": 9,
+        "precision": 0.444,
+        "base_event": 0.248,
+        "base_hour": 0.164,
+        "lift_event": 1.79,
+        "lift_hour": 2.7,
+        "ci95_lift_event": [
+          1.28,
+          4.2
+        ],
+        "folds": {
+          "used": 0,
+          "lifts": [],
+          "mean": null,
+          "min": null,
+          "max": null,
+          "skipped": [
+            "fold 0: 4 fired < 20",
+            "fold 1: 3 fired < 20",
+            "fold 2: 2 fired < 20",
+            "fold 3: 0 fired < 20",
+            "fold 4: 0 fired < 20"
+          ]
+        }
+      },
+      "onset_1h": {
+        "n": 5,
+        "precision": 0.0,
+        "base_event": 0.115,
+        "base_hour": 0.069,
+        "lift_event": 0.0,
+        "lift_hour": 0.0,
+        "ci95_lift_event": [
+          0.0,
+          0.0
+        ],
+        "folds": {
+          "used": 0,
+          "lifts": [],
+          "mean": null,
+          "min": null,
+          "max": null,
+          "skipped": [
+            "fold 0: 2 fired < 20",
+            "fold 1: 2 fired < 20",
+            "fold 2: 1 fired < 20",
+            "fold 3: 0 fired < 20",
+            "fold 4: 0 fired < 20"
+          ]
+        }
+      },
+      "lead_minutes": {
+        "forward": {
+          "n": 2,
+          "within": "4h",
+          "median": 124.7,
+          "q1": 77.7,
+          "q3": 171.6
+        },
+        "onset": {
+          "n": 1,
+          "within": "4h",
+          "median": 218.6,
+          "q1": 218.6,
+          "q3": 218.6
+        }
+      },
+      "raw_general_auc": {
+        "forward": {
+          "30m": 0.503,
+          "1h": 0.532,
+          "2h": 0.541,
+          "4h": 0.528
+        },
+        "onset": {
+          "30m": 0.508,
+          "1h": 0.538,
+          "2h": 0.54,
+          "4h": 0.523
+        }
+      },
+      "status": "descriptive_only"
+    },
+    {
+      "file": "e2_5_all_proxy_all.json",
+      "config": {
+        "order": 5,
+        "labels": "all",
+        "reviewed": "proxy",
+        "agents": "all",
+        "decides": false
+      },
+      "source_sha256": "b126a1fb442d1a51c5ec342ed6699c4083c46963e7754facc042199416297f0d",
+      "forward_1h": {
+        "n": 31,
+        "precision": 0.387,
+        "base_event": 0.18,
+        "base_hour": 0.096,
+        "lift_event": 2.16,
+        "lift_hour": 4.03,
+        "ci95_lift_event": [
+          0.0,
+          2.78
+        ],
+        "folds": {
+          "used": 1,
+          "lifts": [
+            1.45
+          ],
+          "mean": 1.45,
+          "min": 1.45,
+          "max": 1.45,
+          "skipped": [
+            "fold 1: 3 fired < 20",
+            "fold 2: 3 fired < 20",
+            "fold 3: 2 fired < 20",
+            "fold 4: 0 fired < 20"
+          ]
+        }
+      },
+      "symmetric_1h": {
+        "n": 31,
+        "precision": 0.677,
+        "base_event": 0.324,
+        "base_hour": 0.197,
+        "lift_event": 2.09,
+        "lift_hour": 3.44,
+        "ci95_lift_event": [
+          1.34,
+          2.77
+        ],
+        "folds": {
+          "used": 1,
+          "lifts": [
+            1.46
+          ],
+          "mean": 1.46,
+          "min": 1.46,
+          "max": 1.46,
+          "skipped": [
+            "fold 1: 3 fired < 20",
+            "fold 2: 3 fired < 20",
+            "fold 3: 2 fired < 20",
+            "fold 4: 0 fired < 20"
+          ]
+        }
+      },
+      "onset_1h": {
+        "n": 14,
+        "precision": 0.357,
+        "base_event": 0.151,
+        "base_hour": 0.082,
+        "lift_event": 2.37,
+        "lift_hour": 4.37,
+        "ci95_lift_event": [
+          0.0,
+          3.47
+        ],
+        "folds": {
+          "used": 0,
+          "lifts": [],
+          "mean": null,
+          "min": null,
+          "max": null,
+          "skipped": [
+            "fold 0: 9 fired < 20",
+            "fold 1: 2 fired < 20",
+            "fold 2: 2 fired < 20",
+            "fold 3: 1 fired < 20",
+            "fold 4: 0 fired < 20"
+          ]
+        }
+      },
+      "lead_minutes": {
+        "forward": {
+          "n": 18,
+          "within": "4h",
+          "median": 36.8,
+          "q1": 30.4,
+          "q3": 76.2
+        },
+        "onset": {
+          "n": 9,
+          "within": "4h",
+          "median": 33.9,
+          "q1": 32.8,
+          "q3": 90.0
+        }
+      },
+      "raw_general_auc": {
+        "forward": {
+          "30m": 0.569,
+          "1h": 0.587,
+          "2h": 0.586,
+          "4h": 0.579
+        },
+        "onset": {
+          "30m": 0.571,
+          "1h": 0.587,
+          "2h": 0.58,
+          "4h": 0.572
+        }
+      },
+      "status": "descriptive_only"
+    },
+    {
+      "file": "e2_6_all_proxy_noDS.json",
+      "config": {
+        "order": 6,
+        "labels": "all",
+        "reviewed": "proxy",
+        "agents": "noDS",
+        "decides": false
+      },
+      "source_sha256": "a2b0c8b9ed224669762a9db0fbe7183ab2c69ec94201c9e79429f1731e1b9a8a",
+      "forward_1h": {
+        "n": 9,
+        "precision": 0.111,
+        "base_event": 0.13,
+        "base_hour": 0.084,
+        "lift_event": 0.85,
+        "lift_hour": 1.32,
+        "ci95_lift_event": [
+          0.0,
+          3.55
+        ],
+        "folds": {
+          "used": 0,
+          "lifts": [],
+          "mean": null,
+          "min": null,
+          "max": null,
+          "skipped": [
+            "fold 0: 4 fired < 20",
+            "fold 1: 3 fired < 20",
+            "fold 2: 2 fired < 20",
+            "fold 3: 0 fired < 20",
+            "fold 4: 0 fired < 20"
+          ]
+        }
+      },
+      "symmetric_1h": {
+        "n": 9,
+        "precision": 0.444,
+        "base_event": 0.259,
+        "base_hour": 0.179,
+        "lift_event": 1.72,
+        "lift_hour": 2.49,
+        "ci95_lift_event": [
+          1.23,
+          4.04
+        ],
+        "folds": {
+          "used": 0,
+          "lifts": [],
+          "mean": null,
+          "min": null,
+          "max": null,
+          "skipped": [
+            "fold 0: 4 fired < 20",
+            "fold 1: 3 fired < 20",
+            "fold 2: 2 fired < 20",
+            "fold 3: 0 fired < 20",
+            "fold 4: 0 fired < 20"
+          ]
+        }
+      },
+      "onset_1h": {
+        "n": 5,
+        "precision": 0.0,
+        "base_event": 0.121,
+        "base_hour": 0.076,
+        "lift_event": 0.0,
+        "lift_hour": 0.0,
+        "ci95_lift_event": [
+          0.0,
+          0.0
+        ],
+        "folds": {
+          "used": 0,
+          "lifts": [],
+          "mean": null,
+          "min": null,
+          "max": null,
+          "skipped": [
+            "fold 0: 2 fired < 20",
+            "fold 1: 2 fired < 20",
+            "fold 2: 1 fired < 20",
+            "fold 3: 0 fired < 20",
+            "fold 4: 0 fired < 20"
+          ]
+        }
+      },
+      "lead_minutes": {
+        "forward": {
+          "n": 2,
+          "within": "4h",
+          "median": 124.7,
+          "q1": 77.7,
+          "q3": 171.6
+        },
+        "onset": {
+          "n": 1,
+          "within": "4h",
+          "median": 218.6,
+          "q1": 218.6,
+          "q3": 218.6
+        }
+      },
+      "raw_general_auc": {
+        "forward": {
+          "30m": 0.503,
+          "1h": 0.533,
+          "2h": 0.543,
+          "4h": 0.53
+        },
+        "onset": {
+          "30m": 0.51,
+          "1h": 0.541,
+          "2h": 0.543,
+          "4h": 0.527
+        }
+      },
+      "status": "descriptive_only"
+    }
+  ],
+  "p8_descriptives": {
+    "symmetric": {
+      "auc_pooled": 0.5316932984570034,
+      "per_agent_auc": {
+        "n": 23,
+        "median": 0.5178188131313132,
+        "iqr": [
+          0.3952724782925727,
+          0.5876435298429041
+        ],
+        "above_half": 12
+      },
+      "base": 0.09944162809492323,
+      "top1%": {
+        "pooled_precision": 0.09191176470588236,
+        "pooled_lift": 0.9242785588561246,
+        "own_baseline_precision": 0.1524163568773234,
+        "own_baseline_lift": 1.532721857005725
+      },
+      "top5%": {
+        "pooled_precision": 0.08743570903747244,
+        "pooled_lift": 0.8792666684218968,
+        "own_baseline_precision": 0.1351947097722263,
+        "own_baseline_lift": 1.3595383780641095
+      }
+    },
+    "forward": {
+      "auc_pooled": 0.5152002768340292,
+      "per_agent_auc": {
+        "n": 23,
+        "median": 0.5021978189118895,
+        "iqr": [
+          0.38296823705454686,
+          0.5937947279684223
+        ],
+        "above_half": 12
+      },
+      "base": 0.04691058702520021,
+      "top1%": {
+        "pooled_precision": 0.0,
+        "pooled_lift": 0.0,
+        "own_baseline_precision": 0.022304832713754646,
+        "own_baseline_lift": 0.47547545507739153
+      },
+      "top5%": {
+        "pooled_precision": 0.02645113886847906,
+        "pooled_lift": 0.5638628835377736,
+        "own_baseline_precision": 0.04335047759000735,
+        "own_baseline_lift": 0.9241086146869067
+      }
+    },
+    "onset": {
+      "auc_pooled": 0.5132845886887207,
+      "per_agent_auc": {
+        "n": 23,
+        "median": 0.502132996055565,
+        "iqr": [
+          0.3777690689210706,
+          0.5471597527922403
+        ],
+        "above_half": 12
+      },
+      "base": 0.041373671300081766,
+      "top1%": {
+        "pooled_precision": 0.0,
+        "pooled_lift": 0.0,
+        "own_baseline_precision": 0.00823045267489712,
+        "own_baseline_lift": 0.19892971583792843
+      },
+      "top5%": {
+        "pooled_precision": 0.028618152085036794,
+        "pooled_lift": 0.691699604743083,
+        "own_baseline_precision": 0.024549918166939442,
+        "own_baseline_lift": 0.5933705517424296
+      }
+    }
+  },
+  "metadata": {
+    "period": "seal",
+    "first": "2026-08-25",
+    "last": "2026-09-18",
+    "event_files": 19,
+    "model_sha256": "107192d5fe60abe1884bdc807ac5f040d880466a1fb53fafb166b42f67170213",
+    "trace_rows_kept": 27222,
+    "agents_kept": 31
+  },
+  "evidence_gaps": [
+    "Complete original event/monitor/calibration inputs are unavailable locally, so bootstrap estimates, fold assignment and replay were not independently reproduced from raw data.",
+    "Option C (any paging channel at warm+) is required as a descriptive by the sign-off but is not present in the provided E2/P8 result schemas; aggregated per-channel summaries cannot reconstruct the union. Mark missing rather than invent it.",
+    "DeepSeek-included E2 sensitivity is available in configurations 2 and 5. A corresponding DeepSeek-included within-agent P8 sensitivity is not present in the single provided P8 held-out file.",
+    "H1/H1b have not been scored or categorised. Their training power statement, roster prerequisites and original implementation/data availability still need completion before prospective scoring."
+  ],
+  "live_product_update": "Exploratory novelty update is outside this held-out frozen-model test. No product code/settings were changed in response to these results.",
+  "comparison_status": "Waiting for the other team's independently recorded categories; preserve this record and add a separate comparison later."
+}

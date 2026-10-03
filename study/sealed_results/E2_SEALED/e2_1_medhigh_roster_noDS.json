@@ -1,0 +1,7006 @@
+{
+ "meta": {
+  "n_alerts": 591,
+  "n_events": 27222,
+  "n_agent_hours": 3753,
+  "n_agents": 31,
+  "excluded": [
+   "DeepSeek-V3.2"
+  ],
+  "onset_gap_min": 120,
+  "min_fired": 20,
+  "folds": 5,
+  "boot": 1000,
+  "config": {
+   "order": 1,
+   "labels": "medhigh",
+   "reviewed": "roster",
+   "agents": "noDS",
+   "decides": true
+  },
+  "model_sha256": "107192d5fe60abe1884bdc807ac5f040d880466a1fb53fafb166b42f67170213"
+ },
+ "channels": {
+  "off-goal": {
+   "category": "off-goal",
+   "levels": {
+    "warm": {
+     "forward": {
+      "30m": {
+       "n": 106,
+       "precision": 0.009,
+       "base_event": 0.009,
+       "base_hour": 0.004,
+       "lift_event": 1.08,
+       "lift_hour": 2.53,
+       "ci95_lift_event": [
+        0.0,
+        4.21
+       ],
+       "folds": {
+        "used": 3,
+        "lifts": [
+         3.24,
+         0.0,
+         0.0
+        ],
+        "mean": 1.08,
+        "min": 0.0,
+        "max": 3.24,
+        "skipped": [
+         "fold 1: no flags in any reference window",
+         "fold 3: 14 fired < 20"
+        ]
+       }
+      },
+      "1h": {
+       "n": 106,
+       "precision": 0.009,
+       "base_event": 0.017,
+       "base_hour": 0.011,
+       "lift_event": 0.57,
+       "lift_hour": 0.86,
+       "ci95_lift_event": [
+        0.0,
+        2.18
+       ],
+       "folds": {
+        "used": 3,
+        "lifts": [
+         1.62,
+         0.0,
+         0.0
+        ],
+        "mean": 0.54,
+        "min": 0.0,
+        "max": 1.62,
+        "skipped": [
+         "fold 1: no flags in any reference window",
+         "fold 3: 14 fired < 20"
+        ]
+       }
+      },
+      "2h": {
+       "n": 106,
+       "precision": 0.047,
+       "base_event": 0.032,
+       "base_hour": 0.021,
+       "lift_event": 1.49,
+       "lift_hour": 2.3,
+       "ci95_lift_event": [
+        0.31,
+        3.35
+       ],
+       "folds": {
+        "used": 3,
+        "lifts": [
+         1.71,
+         1.45,
+         2.41
+        ],
+        "mean": 1.85,
+        "min": 1.45,
+        "max": 2.41,
+        "skipped": [
+         "fold 1: no flags in any reference window",
+         "fold 3: 14 fired < 20"
+        ]
+       }
+      },
+      "4h": {
+       "n": 106,
+       "precision": 0.066,
+       "base_event": 0.051,
+       "base_hour": 0.034,
+       "lift_event": 1.28,
+       "lift_hour": 1.94,
+       "ci95_lift_event": [
+        0.24,
+        2.9
+       ],
+       "folds": {
+        "used": 3,
+        "lifts": [
+         1.39,
+         2.1,
+         1.51
+        ],
+        "mean": 1.67,
+        "min": 1.39,
+        "max": 2.1,
+        "skipped": [
+         "fold 1: no flags in any reference window",
+         "fold 3: 14 fired < 20"
+        ]
+       }
+      }
+     },
+     "onset": {
+      "30m": {
+       "n": 98,
+       "precision": 0.01,
+       "base_event": 0.009,
+       "base_hour": 0.004,
+       "lift_event": 1.14,
+       "lift_hour": 2.66,
+       "ci95_lift_event": [
+        0.0,
+        4.14
+       ],
+       "folds": {
+        "used": 3,
+        "lifts": [
+         3.38,
+         0.0,
+         0.0
+        ],
+        "mean": 1.13,
+        "min": 0.0,
+        "max": 3.38,
+        "skipped": [
+         "fold 1: no flags in any reference window",
+         "fold 3: 12 fired < 20"
+        ]
+       }
+      },
+      "1h": {
+       "n": 98,
+       "precision": 0.01,
+       "base_event": 0.016,
+       "base_hour": 0.011,
+       "lift_event": 0.63,
+       "lift_hour": 0.93,
+       "ci95_lift_event": [
+        0.0,
+        2.15
+       ],
+       "folds": {
+        "used": 3,
+        "lifts": [
+         1.64,
+         0.0,
+         0.0
+        ],
+        "mean": 0.55,
+        "min": 0.0,
+        "max": 1.64,
+        "skipped": [
+         "fold 1: no flags in any reference window",
+         "fold 3: 12 fired < 20"
+        ]
+       }
+      },
+      "2h": {
+       "n": 98,
+       "precision": 0.031,
+       "base_event": 0.029,
+       "base_hour": 0.02,
+       "lift_event": 1.04,
+       "lift_hour": 1.53,
+       "ci95_lift_event": [
+        0.0,
+        3.33
+       ],
+       "folds": {
+        "used": 3,
+        "lifts": [
+         1.7,
+         0.0,
+         1.53
+        ],
+        "mean": 1.08,
+        "min": 0.0,
+        "max": 1.7,
+        "skipped": [
+         "fold 1: no flags in any reference window",
+         "fold 3: 12 fired < 20"
+        ]
+       }
+      },
+      "4h": {
+       "n": 98,
+       "precision": 0.051,
+       "base_event": 0.049,
+       "base_hour": 0.033,
+       "lift_event": 1.04,
+       "lift_hour": 1.55,
+       "ci95_lift_event": [
+        0.0,
+        2.68
+       ],
+       "folds": {
+        "used": 3,
+        "lifts": [
+         1.38,
+         1.36,
+         0.93
+        ],
+        "mean": 1.22,
+        "min": 0.93,
+        "max": 1.38,
+        "skipped": [
+         "fold 1: no flags in any reference window",
+         "fold 3: 12 fired < 20"
+        ]
+       }
+      }
+     },
+     "symmetric": {
+      "30m": {
+       "n": 106,
+       "precision": 0.019,
+       "base_event": 0.02,
+       "base_hour": 0.015,
+       "lift_event": 0.95,
+       "lift_hour": 1.24,
+       "ci95_lift_event": [
+        0.0,
+        2.22
+       ],
+       "folds": {
+        "used": 4,
+        "lifts": [
+         2.67,
+         0.0,
+         0.0,
+         0.0
+        ],
+        "mean": 0.67,
+        "min": 0.0,
+        "max": 2.67,
+        "skipped": [
+         "fold 3: 14 fired < 20"
+        ]
+       }
+      },
+      "1h": {
+       "n": 106,
+       "precision": 0.038,
+       "base_event": 0.038,
+       "base_hour": 0.026,
+       "lift_event": 1.0,
+       "lift_hour": 1.46,
+       "ci95_lift_event": [
+        0.22,
+        2.51
+       ],
+       "folds": {
+        "used": 4,
+        "lifts": [
+         1.48,
+         0.0,
+         0.0,
+         0.93
+        ],
+        "mean": 0.6,
+        "min": 0.0,
+        "max": 1.48,
+        "skipped": [
+         "fold 3: 14 fired < 20"
+        ]
+       }
+      },
+      "2h": {
+       "n": 106,
+       "precision": 0.104,
+       "base_event": 0.069,
+       "base_hour": 0.049,
+       "lift_event": 1.5,
+       "lift_hour": 2.13,
+       "ci95_lift_event": [
+        0.91,
+        2.9
+       ],
+       "folds": {
+        "used": 4,
+        "lifts": [
+         1.2,
+         0.0,
+         1.48,
+         2.05
+        ],
+        "mean": 1.18,
+        "min": 0.0,
+        "max": 2.05,
+        "skipped": [
+         "fold 3: 14 fired < 20"
+        ]
+       }
+      },
+      "4h": {
+       "n": 106,
+       "precision": 0.17,
+       "base_event": 0.114,
+       "base_hour": 0.086,
+       "lift_event": 1.49,
+       "lift_hour": 1.98,
+       "ci95_lift_event": [
+        0.85,
+        2.54
+       ],
+       "folds": {
+        "used": 4,
+        "lifts": [
+         1.37,
+         0.0,
+         1.53,
+         2.05
+        ],
+        "mean": 1.24,
+        "min": 0.0,
+        "max": 2.05,
+        "skipped": [
+         "fold 3: 14 fired < 20"
+        ]
+       }
+      }
+     },
+     "lead_minutes": {
+      "forward": {
+       "n": 7,
+       "within": "4h",
+       "median": 104.6,
+       "q1": 87.5,
+       "q3": 146.3
+      },
+      "onset": {
+       "n": 5,
+       "within": "4h",
+       "median": 104.6,
+       "q1": 103.5,
+       "q3": 183.1
+      }
+     }
+    },
+    "hot+": {
+     "forward": {
+      "30m": {
+       "n": 17,
+       "precision": 0.0,
+       "base_event": 0.009,
+       "base_hour": 0.004,
+       "lift_event": 0.0,
+       "lift_hour": 0.0,
+       "ci95_lift_event": [
+        0.0,
+        0.0
+       ],
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 3 fired < 20",
+         "fold 1: 3 fired < 20",
+         "fold 2: 6 fired < 20",
+         "fold 3: 0 fired < 20",
+         "fold 4: 5 fired < 20"
+        ]
+       }
+      },
+      "1h": {
+       "n": 17,
+       "precision": 0.0,
+       "base_event": 0.017,
+       "base_hour": 0.011,
+       "lift_event": 0.0,
+       "lift_hour": 0.0,
+       "ci95_lift_event": [
+        0.0,
+        0.0
+       ],
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 3 fired < 20",
+         "fold 1: 3 fired < 20",
+         "fold 2: 6 fired < 20",
+         "fold 3: 0 fired < 20",
+         "fold 4: 5 fired < 20"
+        ]
+       }
+      },
+      "2h": {
+       "n": 17,
+       "precision": 0.0,
+       "base_event": 0.032,
+       "base_hour": 0.021,
+       "lift_event": 0.0,
+       "lift_hour": 0.0,
+       "ci95_lift_event": [
+        0.0,
+        0.0
+       ],
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 3 fired < 20",
+         "fold 1: 3 fired < 20",
+         "fold 2: 6 fired < 20",
+         "fold 3: 0 fired < 20",
+         "fold 4: 5 fired < 20"
+        ]
+       }
+      },
+      "4h": {
+       "n": 17,
+       "precision": 0.0,
+       "base_event": 0.051,
+       "base_hour": 0.034,
+       "lift_event": 0.0,
+       "lift_hour": 0.0,
+       "ci95_lift_event": [
+        0.0,
+        0.0
+       ],
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 3 fired < 20",
+         "fold 1: 3 fired < 20",
+         "fold 2: 6 fired < 20",
+         "fold 3: 0 fired < 20",
+         "fold 4: 5 fired < 20"
+        ]
+       }
+      }
+     },
+     "onset": {
+      "30m": {
+       "n": 17,
+       "precision": 0.0,
+       "base_event": 0.009,
+       "base_hour": 0.004,
+       "lift_event": 0.0,
+       "lift_hour": 0.0,
+       "ci95_lift_event": [
+        0.0,
+        0.0
+       ],
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 3 fired < 20",
+         "fold 1: 3 fired < 20",
+         "fold 2: 6 fired < 20",
+         "fold 3: 0 fired < 20",
+         "fold 4: 5 fired < 20"
+        ]
+       }
+      },
+      "1h": {
+       "n": 17,
+       "precision": 0.0,
+       "base_event": 0.016,
+       "base_hour": 0.011,
+       "lift_event": 0.0,
+       "lift_hour": 0.0,
+       "ci95_lift_event": [
+        0.0,
+        0.0
+       ],
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 3 fired < 20",
+         "fold 1: 3 fired < 20",
+         "fold 2: 6 fired < 20",
+         "fold 3: 0 fired < 20",
+         "fold 4: 5 fired < 20"
+        ]
+       }
+      },
+      "2h": {
+       "n": 17,
+       "precision": 0.0,
+       "base_event": 0.029,
+       "base_hour": 0.02,
+       "lift_event": 0.0,
+       "lift_hour": 0.0,
+       "ci95_lift_event": [
+        0.0,
+        0.0
+       ],
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 3 fired < 20",
+         "fold 1: 3 fired < 20",
+         "fold 2: 6 fired < 20",
+         "fold 3: 0 fired < 20",
+         "fold 4: 5 fired < 20"
+        ]
+       }
+      },
+      "4h": {
+       "n": 17,
+       "precision": 0.0,
+       "base_event": 0.049,
+       "base_hour": 0.033,
+       "lift_event": 0.0,
+       "lift_hour": 0.0,
+       "ci95_lift_event": [
+        0.0,
+        0.0
+       ],
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 3 fired < 20",
+         "fold 1: 3 fired < 20",
+         "fold 2: 6 fired < 20",
+         "fold 3: 0 fired < 20",
+         "fold 4: 5 fired < 20"
+        ]
+       }
+      }
+     },
+     "symmetric": {
+      "30m": {
+       "n": 17,
+       "precision": 0.0,
+       "base_event": 0.02,
+       "base_hour": 0.015,
+       "lift_event": 0.0,
+       "lift_hour": 0.0,
+       "ci95_lift_event": [
+        0.0,
+        0.0
+       ],
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 3 fired < 20",
+         "fold 1: 3 fired < 20",
+         "fold 2: 6 fired < 20",
+         "fold 3: 0 fired < 20",
+         "fold 4: 5 fired < 20"
+        ]
+       }
+      },
+      "1h": {
+       "n": 17,
+       "precision": 0.0,
+       "base_event": 0.038,
+       "base_hour": 0.026,
+       "lift_event": 0.0,
+       "lift_hour": 0.0,
+       "ci95_lift_event": [
+        0.0,
+        0.0
+       ],
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 3 fired < 20",
+         "fold 1: 3 fired < 20",
+         "fold 2: 6 fired < 20",
+         "fold 3: 0 fired < 20",
+         "fold 4: 5 fired < 20"
+        ]
+       }
+      },
+      "2h": {
+       "n": 17,
+       "precision": 0.0,
+       "base_event": 0.069,
+       "base_hour": 0.049,
+       "lift_event": 0.0,
+       "lift_hour": 0.0,
+       "ci95_lift_event": [
+        0.0,
+        0.0
+       ],
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 3 fired < 20",
+         "fold 1: 3 fired < 20",
+         "fold 2: 6 fired < 20",
+         "fold 3: 0 fired < 20",
+         "fold 4: 5 fired < 20"
+        ]
+       }
+      },
+      "4h": {
+       "n": 17,
+       "precision": 0.118,
+       "base_event": 0.114,
+       "base_hour": 0.086,
+       "lift_event": 1.03,
+       "lift_hour": 1.37,
+       "ci95_lift_event": [
+        0.0,
+        4.36
+       ],
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 3 fired < 20",
+         "fold 1: 3 fired < 20",
+         "fold 2: 6 fired < 20",
+         "fold 3: 0 fired < 20",
+         "fold 4: 5 fired < 20"
+        ]
+       }
+      }
+     },
+     "lead_minutes": {
+      "forward": {
+       "n": 0,
+       "within": "4h",
+       "median": null,
+       "q1": null,
+       "q3": null
+      },
+      "onset": {
+       "n": 0,
+       "within": "4h",
+       "median": null,
+       "q1": null,
+       "q3": null
+      }
+     }
+    },
+    "critical": {
+     "forward": {
+      "30m": {
+       "n": 0,
+       "precision": null,
+       "base_event": 0.009,
+       "base_hour": 0.004,
+       "lift_event": null,
+       "lift_hour": null,
+       "ci95_lift_event": null,
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 0 fired < 20",
+         "fold 1: 0 fired < 20",
+         "fold 2: 0 fired < 20",
+         "fold 3: 0 fired < 20",
+         "fold 4: 0 fired < 20"
+        ]
+       }
+      },
+      "1h": {
+       "n": 0,
+       "precision": null,
+       "base_event": 0.017,
+       "base_hour": 0.011,
+       "lift_event": null,
+       "lift_hour": null,
+       "ci95_lift_event": null,
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 0 fired < 20",
+         "fold 1: 0 fired < 20",
+         "fold 2: 0 fired < 20",
+         "fold 3: 0 fired < 20",
+         "fold 4: 0 fired < 20"
+        ]
+       }
+      },
+      "2h": {
+       "n": 0,
+       "precision": null,
+       "base_event": 0.032,
+       "base_hour": 0.021,
+       "lift_event": null,
+       "lift_hour": null,
+       "ci95_lift_event": null,
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 0 fired < 20",
+         "fold 1: 0 fired < 20",
+         "fold 2: 0 fired < 20",
+         "fold 3: 0 fired < 20",
+         "fold 4: 0 fired < 20"
+        ]
+       }
+      },
+      "4h": {
+       "n": 0,
+       "precision": null,
+       "base_event": 0.051,
+       "base_hour": 0.034,
+       "lift_event": null,
+       "lift_hour": null,
+       "ci95_lift_event": null,
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 0 fired < 20",
+         "fold 1: 0 fired < 20",
+         "fold 2: 0 fired < 20",
+         "fold 3: 0 fired < 20",
+         "fold 4: 0 fired < 20"
+        ]
+       }
+      }
+     },
+     "onset": {
+      "30m": {
+       "n": 0,
+       "precision": null,
+       "base_event": 0.009,
+       "base_hour": 0.004,
+       "lift_event": null,
+       "lift_hour": null,
+       "ci95_lift_event": null,
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 0 fired < 20",
+         "fold 1: 0 fired < 20",
+         "fold 2: 0 fired < 20",
+         "fold 3: 0 fired < 20",
+         "fold 4: 0 fired < 20"
+        ]
+       }
+      },
+      "1h": {
+       "n": 0,
+       "precision": null,
+       "base_event": 0.016,
+       "base_hour": 0.011,
+       "lift_event": null,
+       "lift_hour": null,
+       "ci95_lift_event": null,
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 0 fired < 20",
+         "fold 1: 0 fired < 20",
+         "fold 2: 0 fired < 20",
+         "fold 3: 0 fired < 20",
+         "fold 4: 0 fired < 20"
+        ]
+       }
+      },
+      "2h": {
+       "n": 0,
+       "precision": null,
+       "base_event": 0.029,
+       "base_hour": 0.02,
+       "lift_event": null,
+       "lift_hour": null,
+       "ci95_lift_event": null,
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 0 fired < 20",
+         "fold 1: 0 fired < 20",
+         "fold 2: 0 fired < 20",
+         "fold 3: 0 fired < 20",
+         "fold 4: 0 fired < 20"
+        ]
+       }
+      },
+      "4h": {
+       "n": 0,
+       "precision": null,
+       "base_event": 0.049,
+       "base_hour": 0.033,
+       "lift_event": null,
+       "lift_hour": null,
+       "ci95_lift_event": null,
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 0 fired < 20",
+         "fold 1: 0 fired < 20",
+         "fold 2: 0 fired < 20",
+         "fold 3: 0 fired < 20",
+         "fold 4: 0 fired < 20"
+        ]
+       }
+      }
+     },
+     "symmetric": {
+      "30m": {
+       "n": 0,
+       "precision": null,
+       "base_event": 0.02,
+       "base_hour": 0.015,
+       "lift_event": null,
+       "lift_hour": null,
+       "ci95_lift_event": null,
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 0 fired < 20",
+         "fold 1: 0 fired < 20",
+         "fold 2: 0 fired < 20",
+         "fold 3: 0 fired < 20",
+         "fold 4: 0 fired < 20"
+        ]
+       }
+      },
+      "1h": {
+       "n": 0,
+       "precision": null,
+       "base_event": 0.038,
+       "base_hour": 0.026,
+       "lift_event": null,
+       "lift_hour": null,
+       "ci95_lift_event": null,
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 0 fired < 20",
+         "fold 1: 0 fired < 20",
+         "fold 2: 0 fired < 20",
+         "fold 3: 0 fired < 20",
+         "fold 4: 0 fired < 20"
+        ]
+       }
+      },
+      "2h": {
+       "n": 0,
+       "precision": null,
+       "base_event": 0.069,
+       "base_hour": 0.049,
+       "lift_event": null,
+       "lift_hour": null,
+       "ci95_lift_event": null,
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 0 fired < 20",
+         "fold 1: 0 fired < 20",
+         "fold 2: 0 fired < 20",
+         "fold 3: 0 fired < 20",
+         "fold 4: 0 fired < 20"
+        ]
+       }
+      },
+      "4h": {
+       "n": 0,
+       "precision": null,
+       "base_event": 0.114,
+       "base_hour": 0.086,
+       "lift_event": null,
+       "lift_hour": null,
+       "ci95_lift_event": null,
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 0 fired < 20",
+         "fold 1: 0 fired < 20",
+         "fold 2: 0 fired < 20",
+         "fold 3: 0 fired < 20",
+         "fold 4: 0 fired < 20"
+        ]
+       }
+      }
+     },
+     "lead_minutes": {
+      "forward": {
+       "n": 0,
+       "within": "4h",
+       "median": null,
+       "q1": null,
+       "q3": null
+      },
+      "onset": {
+       "n": 0,
+       "within": "4h",
+       "median": null,
+       "q1": null,
+       "q3": null
+      }
+     }
+    }
+   },
+   "auc": {
+    "forward": {
+     "30m": 0.433,
+     "1h": 0.463,
+     "2h": 0.486,
+     "4h": 0.444
+    },
+    "onset": {
+     "30m": 0.432,
+     "1h": 0.451,
+     "2h": 0.459,
+     "4h": 0.419
+    }
+   }
+  },
+  "erratic": {
+   "category": "emotional-or-erratic",
+   "levels": {
+    "warm": {
+     "forward": {
+      "30m": {
+       "n": 72,
+       "precision": 0.0,
+       "base_event": 0.003,
+       "base_hour": 0.003,
+       "lift_event": 0.0,
+       "lift_hour": 0.0,
+       "ci95_lift_event": [
+        0.0,
+        0.0
+       ],
+       "folds": {
+        "used": 2,
+        "lifts": [
+         0.0,
+         0.0
+        ],
+        "mean": 0.0,
+        "min": 0.0,
+        "max": 0.0,
+        "skipped": [
+         "fold 0: 14 fired < 20",
+         "fold 1: 12 fired < 20",
+         "fold 4: 6 fired < 20"
+        ]
+       }
+      },
+      "1h": {
+       "n": 72,
+       "precision": 0.0,
+       "base_event": 0.007,
+       "base_hour": 0.005,
+       "lift_event": 0.0,
+       "lift_hour": 0.0,
+       "ci95_lift_event": [
+        0.0,
+        0.0
+       ],
+       "folds": {
+        "used": 2,
+        "lifts": [
+         0.0,
+         0.0
+        ],
+        "mean": 0.0,
+        "min": 0.0,
+        "max": 0.0,
+        "skipped": [
+         "fold 0: 14 fired < 20",
+         "fold 1: 12 fired < 20",
+         "fold 4: 6 fired < 20"
+        ]
+       }
+      },
+      "2h": {
+       "n": 72,
+       "precision": 0.014,
+       "base_event": 0.014,
+       "base_hour": 0.009,
+       "lift_event": 0.96,
+       "lift_hour": 1.58,
+       "ci95_lift_event": [
+        0.0,
+        5.04
+       ],
+       "folds": {
+        "used": 2,
+        "lifts": [
+         0.0,
+         3.54
+        ],
+        "mean": 1.77,
+        "min": 0.0,
+        "max": 3.54,
+        "skipped": [
+         "fold 0: 14 fired < 20",
+         "fold 1: 12 fired < 20",
+         "fold 4: 6 fired < 20"
+        ]
+       }
+      },
+      "4h": {
+       "n": 72,
+       "precision": 0.042,
+       "base_event": 0.031,
+       "base_hour": 0.017,
+       "lift_event": 1.32,
+       "lift_hour": 2.48,
+       "ci95_lift_event": [
+        0.0,
+        3.36
+       ],
+       "folds": {
+        "used": 2,
+        "lifts": [
+         0.0,
+         2.09
+        ],
+        "mean": 1.05,
+        "min": 0.0,
+        "max": 2.09,
+        "skipped": [
+         "fold 0: 14 fired < 20",
+         "fold 1: 12 fired < 20",
+         "fold 4: 6 fired < 20"
+        ]
+       }
+      }
+     },
+     "onset": {
+      "30m": {
+       "n": 71,
+       "precision": 0.0,
+       "base_event": 0.003,
+       "base_hour": 0.003,
+       "lift_event": 0.0,
+       "lift_hour": 0.0,
+       "ci95_lift_event": [
+        0.0,
+        0.0
+       ],
+       "folds": {
+        "used": 1,
+        "lifts": [
+         0.0
+        ],
+        "mean": 0.0,
+        "min": 0.0,
+        "max": 0.0,
+        "skipped": [
+         "fold 0: 14 fired < 20",
+         "fold 1: 12 fired < 20",
+         "fold 2: 19 fired < 20",
+         "fold 4: 6 fired < 20"
+        ]
+       }
+      },
+      "1h": {
+       "n": 71,
+       "precision": 0.0,
+       "base_event": 0.007,
+       "base_hour": 0.005,
+       "lift_event": 0.0,
+       "lift_hour": 0.0,
+       "ci95_lift_event": [
+        0.0,
+        0.0
+       ],
+       "folds": {
+        "used": 1,
+        "lifts": [
+         0.0
+        ],
+        "mean": 0.0,
+        "min": 0.0,
+        "max": 0.0,
+        "skipped": [
+         "fold 0: 14 fired < 20",
+         "fold 1: 12 fired < 20",
+         "fold 2: 19 fired < 20",
+         "fold 4: 6 fired < 20"
+        ]
+       }
+      },
+      "2h": {
+       "n": 71,
+       "precision": 0.014,
+       "base_event": 0.015,
+       "base_hour": 0.009,
+       "lift_event": 0.96,
+       "lift_hour": 1.58,
+       "ci95_lift_event": [
+        0.0,
+        5.08
+       ],
+       "folds": {
+        "used": 1,
+        "lifts": [
+         3.49
+        ],
+        "mean": 3.49,
+        "min": 3.49,
+        "max": 3.49,
+        "skipped": [
+         "fold 0: 14 fired < 20",
+         "fold 1: 12 fired < 20",
+         "fold 2: 19 fired < 20",
+         "fold 4: 6 fired < 20"
+        ]
+       }
+      },
+      "4h": {
+       "n": 71,
+       "precision": 0.042,
+       "base_event": 0.032,
+       "base_hour": 0.017,
+       "lift_event": 1.32,
+       "lift_hour": 2.49,
+       "ci95_lift_event": [
+        0.0,
+        3.08
+       ],
+       "folds": {
+        "used": 1,
+        "lifts": [
+         2.06
+        ],
+        "mean": 2.06,
+        "min": 2.06,
+        "max": 2.06,
+        "skipped": [
+         "fold 0: 14 fired < 20",
+         "fold 1: 12 fired < 20",
+         "fold 2: 19 fired < 20",
+         "fold 4: 6 fired < 20"
+        ]
+       }
+      }
+     },
+     "symmetric": {
+      "30m": {
+       "n": 72,
+       "precision": 0.0,
+       "base_event": 0.008,
+       "base_hour": 0.006,
+       "lift_event": 0.0,
+       "lift_hour": 0.0,
+       "ci95_lift_event": [
+        0.0,
+        0.0
+       ],
+       "folds": {
+        "used": 2,
+        "lifts": [
+         0.0,
+         0.0
+        ],
+        "mean": 0.0,
+        "min": 0.0,
+        "max": 0.0,
+        "skipped": [
+         "fold 0: 14 fired < 20",
+         "fold 1: 12 fired < 20",
+         "fold 4: 6 fired < 20"
+        ]
+       }
+      },
+      "1h": {
+       "n": 72,
+       "precision": 0.0,
+       "base_event": 0.016,
+       "base_hour": 0.01,
+       "lift_event": 0.0,
+       "lift_hour": 0.0,
+       "ci95_lift_event": [
+        0.0,
+        0.0
+       ],
+       "folds": {
+        "used": 2,
+        "lifts": [
+         0.0,
+         0.0
+        ],
+        "mean": 0.0,
+        "min": 0.0,
+        "max": 0.0,
+        "skipped": [
+         "fold 0: 14 fired < 20",
+         "fold 1: 12 fired < 20",
+         "fold 4: 6 fired < 20"
+        ]
+       }
+      },
+      "2h": {
+       "n": 72,
+       "precision": 0.028,
+       "base_event": 0.033,
+       "base_hour": 0.021,
+       "lift_event": 0.85,
+       "lift_hour": 1.35,
+       "ci95_lift_event": [
+        0.0,
+        2.75
+       ],
+       "folds": {
+        "used": 2,
+        "lifts": [
+         1.05,
+         1.66
+        ],
+        "mean": 1.35,
+        "min": 1.05,
+        "max": 1.66,
+        "skipped": [
+         "fold 0: 14 fired < 20",
+         "fold 1: 12 fired < 20",
+         "fold 4: 6 fired < 20"
+        ]
+       }
+      },
+      "4h": {
+       "n": 72,
+       "precision": 0.069,
+       "base_event": 0.061,
+       "base_hour": 0.038,
+       "lift_event": 1.15,
+       "lift_hour": 1.85,
+       "ci95_lift_event": [
+        0.0,
+        2.01
+       ],
+       "folds": {
+        "used": 2,
+        "lifts": [
+         0.56,
+         1.03
+        ],
+        "mean": 0.8,
+        "min": 0.56,
+        "max": 1.03,
+        "skipped": [
+         "fold 0: 14 fired < 20",
+         "fold 1: 12 fired < 20",
+         "fold 4: 6 fired < 20"
+        ]
+       }
+      }
+     },
+     "lead_minutes": {
+      "forward": {
+       "n": 3,
+       "within": "4h",
+       "median": 126.0,
+       "q1": 98.8,
+       "q3": 155.1
+      },
+      "onset": {
+       "n": 3,
+       "within": "4h",
+       "median": 126.0,
+       "q1": 98.8,
+       "q3": 155.1
+      }
+     }
+    },
+    "hot+": {
+     "forward": {
+      "30m": {
+       "n": 25,
+       "precision": 0.0,
+       "base_event": 0.003,
+       "base_hour": 0.003,
+       "lift_event": 0.0,
+       "lift_hour": 0.0,
+       "ci95_lift_event": [
+        0.0,
+        0.0
+       ],
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 9 fired < 20",
+         "fold 1: 7 fired < 20",
+         "fold 2: 5 fired < 20",
+         "fold 3: 3 fired < 20",
+         "fold 4: 1 fired < 20"
+        ]
+       }
+      },
+      "1h": {
+       "n": 25,
+       "precision": 0.0,
+       "base_event": 0.007,
+       "base_hour": 0.005,
+       "lift_event": 0.0,
+       "lift_hour": 0.0,
+       "ci95_lift_event": [
+        0.0,
+        0.0
+       ],
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 9 fired < 20",
+         "fold 1: 7 fired < 20",
+         "fold 2: 5 fired < 20",
+         "fold 3: 3 fired < 20",
+         "fold 4: 1 fired < 20"
+        ]
+       }
+      },
+      "2h": {
+       "n": 25,
+       "precision": 0.04,
+       "base_event": 0.014,
+       "base_hour": 0.009,
+       "lift_event": 2.78,
+       "lift_hour": 4.55,
+       "ci95_lift_event": [
+        0.0,
+        6.15
+       ],
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 9 fired < 20",
+         "fold 1: 7 fired < 20",
+         "fold 2: 5 fired < 20",
+         "fold 3: 3 fired < 20",
+         "fold 4: 1 fired < 20"
+        ]
+       }
+      },
+      "4h": {
+       "n": 25,
+       "precision": 0.04,
+       "base_event": 0.031,
+       "base_hour": 0.017,
+       "lift_event": 1.27,
+       "lift_hour": 2.38,
+       "ci95_lift_event": [
+        0.0,
+        2.57
+       ],
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 9 fired < 20",
+         "fold 1: 7 fired < 20",
+         "fold 2: 5 fired < 20",
+         "fold 3: 3 fired < 20",
+         "fold 4: 1 fired < 20"
+        ]
+       }
+      }
+     },
+     "onset": {
+      "30m": {
+       "n": 24,
+       "precision": 0.0,
+       "base_event": 0.003,
+       "base_hour": 0.003,
+       "lift_event": 0.0,
+       "lift_hour": 0.0,
+       "ci95_lift_event": [
+        0.0,
+        0.0
+       ],
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 9 fired < 20",
+         "fold 1: 7 fired < 20",
+         "fold 2: 4 fired < 20",
+         "fold 3: 3 fired < 20",
+         "fold 4: 1 fired < 20"
+        ]
+       }
+      },
+      "1h": {
+       "n": 24,
+       "precision": 0.0,
+       "base_event": 0.007,
+       "base_hour": 0.005,
+       "lift_event": 0.0,
+       "lift_hour": 0.0,
+       "ci95_lift_event": [
+        0.0,
+        0.0
+       ],
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 9 fired < 20",
+         "fold 1: 7 fired < 20",
+         "fold 2: 4 fired < 20",
+         "fold 3: 3 fired < 20",
+         "fold 4: 1 fired < 20"
+        ]
+       }
+      },
+      "2h": {
+       "n": 24,
+       "precision": 0.042,
+       "base_event": 0.015,
+       "base_hour": 0.009,
+       "lift_event": 2.84,
+       "lift_hour": 4.68,
+       "ci95_lift_event": [
+        0.0,
+        6.01
+       ],
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 9 fired < 20",
+         "fold 1: 7 fired < 20",
+         "fold 2: 4 fired < 20",
+         "fold 3: 3 fired < 20",
+         "fold 4: 1 fired < 20"
+        ]
+       }
+      },
+      "4h": {
+       "n": 24,
+       "precision": 0.042,
+       "base_event": 0.032,
+       "base_hour": 0.017,
+       "lift_event": 1.3,
+       "lift_hour": 2.45,
+       "ci95_lift_event": [
+        0.0,
+        2.65
+       ],
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 9 fired < 20",
+         "fold 1: 7 fired < 20",
+         "fold 2: 4 fired < 20",
+         "fold 3: 3 fired < 20",
+         "fold 4: 1 fired < 20"
+        ]
+       }
+      }
+     },
+     "symmetric": {
+      "30m": {
+       "n": 25,
+       "precision": 0.0,
+       "base_event": 0.008,
+       "base_hour": 0.006,
+       "lift_event": 0.0,
+       "lift_hour": 0.0,
+       "ci95_lift_event": [
+        0.0,
+        0.0
+       ],
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 9 fired < 20",
+         "fold 1: 7 fired < 20",
+         "fold 2: 5 fired < 20",
+         "fold 3: 3 fired < 20",
+         "fold 4: 1 fired < 20"
+        ]
+       }
+      },
+      "1h": {
+       "n": 25,
+       "precision": 0.0,
+       "base_event": 0.016,
+       "base_hour": 0.01,
+       "lift_event": 0.0,
+       "lift_hour": 0.0,
+       "ci95_lift_event": [
+        0.0,
+        0.0
+       ],
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 9 fired < 20",
+         "fold 1: 7 fired < 20",
+         "fold 2: 5 fired < 20",
+         "fold 3: 3 fired < 20",
+         "fold 4: 1 fired < 20"
+        ]
+       }
+      },
+      "2h": {
+       "n": 25,
+       "precision": 0.08,
+       "base_event": 0.033,
+       "base_hour": 0.021,
+       "lift_event": 2.46,
+       "lift_hour": 3.9,
+       "ci95_lift_event": [
+        0.0,
+        5.44
+       ],
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 9 fired < 20",
+         "fold 1: 7 fired < 20",
+         "fold 2: 5 fired < 20",
+         "fold 3: 3 fired < 20",
+         "fold 4: 1 fired < 20"
+        ]
+       }
+      },
+      "4h": {
+       "n": 25,
+       "precision": 0.08,
+       "base_event": 0.061,
+       "base_hour": 0.038,
+       "lift_event": 1.32,
+       "lift_hour": 2.13,
+       "ci95_lift_event": [
+        0.0,
+        3.1
+       ],
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 9 fired < 20",
+         "fold 1: 7 fired < 20",
+         "fold 2: 5 fired < 20",
+         "fold 3: 3 fired < 20",
+         "fold 4: 1 fired < 20"
+        ]
+       }
+      }
+     },
+     "lead_minutes": {
+      "forward": {
+       "n": 1,
+       "within": "4h",
+       "median": 115.5,
+       "q1": 115.5,
+       "q3": 115.5
+      },
+      "onset": {
+       "n": 1,
+       "within": "4h",
+       "median": 115.5,
+       "q1": 115.5,
+       "q3": 115.5
+      }
+     }
+    },
+    "critical": {
+     "forward": {
+      "30m": {
+       "n": 4,
+       "precision": 0.0,
+       "base_event": 0.003,
+       "base_hour": 0.003,
+       "lift_event": 0.0,
+       "lift_hour": 0.0,
+       "ci95_lift_event": [
+        0.0,
+        0.0
+       ],
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 2 fired < 20",
+         "fold 1: 2 fired < 20",
+         "fold 2: 0 fired < 20",
+         "fold 3: 0 fired < 20",
+         "fold 4: 0 fired < 20"
+        ]
+       }
+      },
+      "1h": {
+       "n": 4,
+       "precision": 0.0,
+       "base_event": 0.007,
+       "base_hour": 0.005,
+       "lift_event": 0.0,
+       "lift_hour": 0.0,
+       "ci95_lift_event": [
+        0.0,
+        0.0
+       ],
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 2 fired < 20",
+         "fold 1: 2 fired < 20",
+         "fold 2: 0 fired < 20",
+         "fold 3: 0 fired < 20",
+         "fold 4: 0 fired < 20"
+        ]
+       }
+      },
+      "2h": {
+       "n": 4,
+       "precision": 0.0,
+       "base_event": 0.014,
+       "base_hour": 0.009,
+       "lift_event": 0.0,
+       "lift_hour": 0.0,
+       "ci95_lift_event": [
+        0.0,
+        0.0
+       ],
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 2 fired < 20",
+         "fold 1: 2 fired < 20",
+         "fold 2: 0 fired < 20",
+         "fold 3: 0 fired < 20",
+         "fold 4: 0 fired < 20"
+        ]
+       }
+      },
+      "4h": {
+       "n": 4,
+       "precision": 0.0,
+       "base_event": 0.031,
+       "base_hour": 0.017,
+       "lift_event": 0.0,
+       "lift_hour": 0.0,
+       "ci95_lift_event": [
+        0.0,
+        0.0
+       ],
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 2 fired < 20",
+         "fold 1: 2 fired < 20",
+         "fold 2: 0 fired < 20",
+         "fold 3: 0 fired < 20",
+         "fold 4: 0 fired < 20"
+        ]
+       }
+      }
+     },
+     "onset": {
+      "30m": {
+       "n": 4,
+       "precision": 0.0,
+       "base_event": 0.003,
+       "base_hour": 0.003,
+       "lift_event": 0.0,
+       "lift_hour": 0.0,
+       "ci95_lift_event": [
+        0.0,
+        0.0
+       ],
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 2 fired < 20",
+         "fold 1: 2 fired < 20",
+         "fold 2: 0 fired < 20",
+         "fold 3: 0 fired < 20",
+         "fold 4: 0 fired < 20"
+        ]
+       }
+      },
+      "1h": {
+       "n": 4,
+       "precision": 0.0,
+       "base_event": 0.007,
+       "base_hour": 0.005,
+       "lift_event": 0.0,
+       "lift_hour": 0.0,
+       "ci95_lift_event": [
+        0.0,
+        0.0
+       ],
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 2 fired < 20",
+         "fold 1: 2 fired < 20",
+         "fold 2: 0 fired < 20",
+         "fold 3: 0 fired < 20",
+         "fold 4: 0 fired < 20"
+        ]
+       }
+      },
+      "2h": {
+       "n": 4,
+       "precision": 0.0,
+       "base_event": 0.015,
+       "base_hour": 0.009,
+       "lift_event": 0.0,
+       "lift_hour": 0.0,
+       "ci95_lift_event": [
+        0.0,
+        0.0
+       ],
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 2 fired < 20",
+         "fold 1: 2 fired < 20",
+         "fold 2: 0 fired < 20",
+         "fold 3: 0 fired < 20",
+         "fold 4: 0 fired < 20"
+        ]
+       }
+      },
+      "4h": {
+       "n": 4,
+       "precision": 0.0,
+       "base_event": 0.032,
+       "base_hour": 0.017,
+       "lift_event": 0.0,
+       "lift_hour": 0.0,
+       "ci95_lift_event": [
+        0.0,
+        0.0
+       ],
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 2 fired < 20",
+         "fold 1: 2 fired < 20",
+         "fold 2: 0 fired < 20",
+         "fold 3: 0 fired < 20",
+         "fold 4: 0 fired < 20"
+        ]
+       }
+      }
+     },
+     "symmetric": {
+      "30m": {
+       "n": 4,
+       "precision": 0.0,
+       "base_event": 0.008,
+       "base_hour": 0.006,
+       "lift_event": 0.0,
+       "lift_hour": 0.0,
+       "ci95_lift_event": [
+        0.0,
+        0.0
+       ],
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 2 fired < 20",
+         "fold 1: 2 fired < 20",
+         "fold 2: 0 fired < 20",
+         "fold 3: 0 fired < 20",
+         "fold 4: 0 fired < 20"
+        ]
+       }
+      },
+      "1h": {
+       "n": 4,
+       "precision": 0.0,
+       "base_event": 0.016,
+       "base_hour": 0.01,
+       "lift_event": 0.0,
+       "lift_hour": 0.0,
+       "ci95_lift_event": [
+        0.0,
+        0.0
+       ],
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 2 fired < 20",
+         "fold 1: 2 fired < 20",
+         "fold 2: 0 fired < 20",
+         "fold 3: 0 fired < 20",
+         "fold 4: 0 fired < 20"
+        ]
+       }
+      },
+      "2h": {
+       "n": 4,
+       "precision": 0.0,
+       "base_event": 0.033,
+       "base_hour": 0.021,
+       "lift_event": 0.0,
+       "lift_hour": 0.0,
+       "ci95_lift_event": [
+        0.0,
+        0.0
+       ],
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 2 fired < 20",
+         "fold 1: 2 fired < 20",
+         "fold 2: 0 fired < 20",
+         "fold 3: 0 fired < 20",
+         "fold 4: 0 fired < 20"
+        ]
+       }
+      },
+      "4h": {
+       "n": 4,
+       "precision": 0.0,
+       "base_event": 0.061,
+       "base_hour": 0.038,
+       "lift_event": 0.0,
+       "lift_hour": 0.0,
+       "ci95_lift_event": [
+        0.0,
+        0.0
+       ],
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 2 fired < 20",
+         "fold 1: 2 fired < 20",
+         "fold 2: 0 fired < 20",
+         "fold 3: 0 fired < 20",
+         "fold 4: 0 fired < 20"
+        ]
+       }
+      }
+     },
+     "lead_minutes": {
+      "forward": {
+       "n": 0,
+       "within": "4h",
+       "median": null,
+       "q1": null,
+       "q3": null
+      },
+      "onset": {
+       "n": 0,
+       "within": "4h",
+       "median": null,
+       "q1": null,
+       "q3": null
+      }
+     }
+    }
+   },
+   "auc": {
+    "forward": {
+     "30m": 0.506,
+     "1h": 0.533,
+     "2h": 0.586,
+     "4h": 0.563
+    },
+    "onset": {
+     "30m": 0.507,
+     "1h": 0.534,
+     "2h": 0.587,
+     "4h": 0.564
+    }
+   }
+  },
+  "deceptive": {
+   "category": "surreptitious-or-deceptive",
+   "levels": {
+    "warm": {
+     "forward": {
+      "30m": {
+       "n": 63,
+       "precision": 0.0,
+       "base_event": 0.009,
+       "base_hour": 0.006,
+       "lift_event": 0.0,
+       "lift_hour": 0.0,
+       "ci95_lift_event": [
+        0.0,
+        0.0
+       ],
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 6 fired < 20",
+         "fold 1: 19 fired < 20",
+         "fold 2: 10 fired < 20",
+         "fold 3: 19 fired < 20",
+         "fold 4: 9 fired < 20"
+        ]
+       }
+      },
+      "1h": {
+       "n": 63,
+       "precision": 0.016,
+       "base_event": 0.018,
+       "base_hour": 0.012,
+       "lift_event": 0.88,
+       "lift_hour": 1.3,
+       "ci95_lift_event": [
+        0.0,
+        2.64
+       ],
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 6 fired < 20",
+         "fold 1: 19 fired < 20",
+         "fold 2: 10 fired < 20",
+         "fold 3: 19 fired < 20",
+         "fold 4: 9 fired < 20"
+        ]
+       }
+      },
+      "2h": {
+       "n": 63,
+       "precision": 0.048,
+       "base_event": 0.033,
+       "base_hour": 0.021,
+       "lift_event": 1.42,
+       "lift_hour": 2.23,
+       "ci95_lift_event": [
+        0.0,
+        3.04
+       ],
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 6 fired < 20",
+         "fold 1: 19 fired < 20",
+         "fold 2: 10 fired < 20",
+         "fold 3: 19 fired < 20",
+         "fold 4: 9 fired < 20"
+        ]
+       }
+      },
+      "4h": {
+       "n": 63,
+       "precision": 0.063,
+       "base_event": 0.046,
+       "base_hour": 0.03,
+       "lift_event": 1.37,
+       "lift_hour": 2.15,
+       "ci95_lift_event": [
+        0.38,
+        2.89
+       ],
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 6 fired < 20",
+         "fold 1: 19 fired < 20",
+         "fold 2: 10 fired < 20",
+         "fold 3: 19 fired < 20",
+         "fold 4: 9 fired < 20"
+        ]
+       }
+      }
+     },
+     "onset": {
+      "30m": {
+       "n": 59,
+       "precision": 0.0,
+       "base_event": 0.008,
+       "base_hour": 0.005,
+       "lift_event": 0.0,
+       "lift_hour": 0.0,
+       "ci95_lift_event": [
+        0.0,
+        0.0
+       ],
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 6 fired < 20",
+         "fold 1: 19 fired < 20",
+         "fold 2: 10 fired < 20",
+         "fold 3: 16 fired < 20",
+         "fold 4: 8 fired < 20"
+        ]
+       }
+      },
+      "1h": {
+       "n": 59,
+       "precision": 0.017,
+       "base_event": 0.016,
+       "base_hour": 0.011,
+       "lift_event": 1.07,
+       "lift_hour": 1.55,
+       "ci95_lift_event": [
+        0.0,
+        3.72
+       ],
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 6 fired < 20",
+         "fold 1: 19 fired < 20",
+         "fold 2: 10 fired < 20",
+         "fold 3: 16 fired < 20",
+         "fold 4: 8 fired < 20"
+        ]
+       }
+      },
+      "2h": {
+       "n": 59,
+       "precision": 0.034,
+       "base_event": 0.03,
+       "base_hour": 0.02,
+       "lift_event": 1.13,
+       "lift_hour": 1.72,
+       "ci95_lift_event": [
+        0.0,
+        3.06
+       ],
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 6 fired < 20",
+         "fold 1: 19 fired < 20",
+         "fold 2: 10 fired < 20",
+         "fold 3: 16 fired < 20",
+         "fold 4: 8 fired < 20"
+        ]
+       }
+      },
+      "4h": {
+       "n": 59,
+       "precision": 0.051,
+       "base_event": 0.041,
+       "base_hour": 0.027,
+       "lift_event": 1.23,
+       "lift_hour": 1.86,
+       "ci95_lift_event": [
+        0.0,
+        2.76
+       ],
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 6 fired < 20",
+         "fold 1: 19 fired < 20",
+         "fold 2: 10 fired < 20",
+         "fold 3: 16 fired < 20",
+         "fold 4: 8 fired < 20"
+        ]
+       }
+      }
+     },
+     "symmetric": {
+      "30m": {
+       "n": 63,
+       "precision": 0.016,
+       "base_event": 0.02,
+       "base_hour": 0.013,
+       "lift_event": 0.8,
+       "lift_hour": 1.19,
+       "ci95_lift_event": [
+        0.0,
+        2.44
+       ],
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 6 fired < 20",
+         "fold 1: 19 fired < 20",
+         "fold 2: 10 fired < 20",
+         "fold 3: 19 fired < 20",
+         "fold 4: 9 fired < 20"
+        ]
+       }
+      },
+      "1h": {
+       "n": 63,
+       "precision": 0.063,
+       "base_event": 0.035,
+       "base_hour": 0.024,
+       "lift_event": 1.79,
+       "lift_hour": 2.62,
+       "ci95_lift_event": [
+        0.0,
+        3.52
+       ],
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 6 fired < 20",
+         "fold 1: 19 fired < 20",
+         "fold 2: 10 fired < 20",
+         "fold 3: 19 fired < 20",
+         "fold 4: 9 fired < 20"
+        ]
+       }
+      },
+      "2h": {
+       "n": 63,
+       "precision": 0.095,
+       "base_event": 0.062,
+       "base_hour": 0.043,
+       "lift_event": 1.53,
+       "lift_hour": 2.19,
+       "ci95_lift_event": [
+        0.47,
+        2.74
+       ],
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 6 fired < 20",
+         "fold 1: 19 fired < 20",
+         "fold 2: 10 fired < 20",
+         "fold 3: 19 fired < 20",
+         "fold 4: 9 fired < 20"
+        ]
+       }
+      },
+      "4h": {
+       "n": 63,
+       "precision": 0.159,
+       "base_event": 0.091,
+       "base_hour": 0.07,
+       "lift_event": 1.75,
+       "lift_hour": 2.28,
+       "ci95_lift_event": [
+        0.72,
+        3.15
+       ],
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 6 fired < 20",
+         "fold 1: 19 fired < 20",
+         "fold 2: 10 fired < 20",
+         "fold 3: 19 fired < 20",
+         "fold 4: 9 fired < 20"
+        ]
+       }
+      }
+     },
+     "lead_minutes": {
+      "forward": {
+       "n": 4,
+       "within": "4h",
+       "median": 63.8,
+       "q1": 57.5,
+       "q3": 95.5
+      },
+      "onset": {
+       "n": 3,
+       "within": "4h",
+       "median": 64.0,
+       "q1": 51.8,
+       "q3": 127.0
+      }
+     }
+    },
+    "hot+": {
+     "forward": {
+      "30m": {
+       "n": 9,
+       "precision": 0.0,
+       "base_event": 0.009,
+       "base_hour": 0.006,
+       "lift_event": 0.0,
+       "lift_hour": 0.0,
+       "ci95_lift_event": [
+        0.0,
+        0.0
+       ],
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 1 fired < 20",
+         "fold 1: 1 fired < 20",
+         "fold 2: 2 fired < 20",
+         "fold 3: 0 fired < 20",
+         "fold 4: 5 fired < 20"
+        ]
+       }
+      },
+      "1h": {
+       "n": 9,
+       "precision": 0.0,
+       "base_event": 0.018,
+       "base_hour": 0.012,
+       "lift_event": 0.0,
+       "lift_hour": 0.0,
+       "ci95_lift_event": [
+        0.0,
+        0.0
+       ],
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 1 fired < 20",
+         "fold 1: 1 fired < 20",
+         "fold 2: 2 fired < 20",
+         "fold 3: 0 fired < 20",
+         "fold 4: 5 fired < 20"
+        ]
+       }
+      },
+      "2h": {
+       "n": 9,
+       "precision": 0.0,
+       "base_event": 0.033,
+       "base_hour": 0.021,
+       "lift_event": 0.0,
+       "lift_hour": 0.0,
+       "ci95_lift_event": [
+        0.0,
+        0.0
+       ],
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 1 fired < 20",
+         "fold 1: 1 fired < 20",
+         "fold 2: 2 fired < 20",
+         "fold 3: 0 fired < 20",
+         "fold 4: 5 fired < 20"
+        ]
+       }
+      },
+      "4h": {
+       "n": 9,
+       "precision": 0.0,
+       "base_event": 0.046,
+       "base_hour": 0.03,
+       "lift_event": 0.0,
+       "lift_hour": 0.0,
+       "ci95_lift_event": [
+        0.0,
+        0.0
+       ],
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 1 fired < 20",
+         "fold 1: 1 fired < 20",
+         "fold 2: 2 fired < 20",
+         "fold 3: 0 fired < 20",
+         "fold 4: 5 fired < 20"
+        ]
+       }
+      }
+     },
+     "onset": {
+      "30m": {
+       "n": 9,
+       "precision": 0.0,
+       "base_event": 0.008,
+       "base_hour": 0.005,
+       "lift_event": 0.0,
+       "lift_hour": 0.0,
+       "ci95_lift_event": [
+        0.0,
+        0.0
+       ],
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 1 fired < 20",
+         "fold 1: 1 fired < 20",
+         "fold 2: 2 fired < 20",
+         "fold 3: 0 fired < 20",
+         "fold 4: 5 fired < 20"
+        ]
+       }
+      },
+      "1h": {
+       "n": 9,
+       "precision": 0.0,
+       "base_event": 0.016,
+       "base_hour": 0.011,
+       "lift_event": 0.0,
+       "lift_hour": 0.0,
+       "ci95_lift_event": [
+        0.0,
+        0.0
+       ],
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 1 fired < 20",
+         "fold 1: 1 fired < 20",
+         "fold 2: 2 fired < 20",
+         "fold 3: 0 fired < 20",
+         "fold 4: 5 fired < 20"
+        ]
+       }
+      },
+      "2h": {
+       "n": 9,
+       "precision": 0.0,
+       "base_event": 0.03,
+       "base_hour": 0.02,
+       "lift_event": 0.0,
+       "lift_hour": 0.0,
+       "ci95_lift_event": [
+        0.0,
+        0.0
+       ],
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 1 fired < 20",
+         "fold 1: 1 fired < 20",
+         "fold 2: 2 fired < 20",
+         "fold 3: 0 fired < 20",
+         "fold 4: 5 fired < 20"
+        ]
+       }
+      },
+      "4h": {
+       "n": 9,
+       "precision": 0.0,
+       "base_event": 0.041,
+       "base_hour": 0.027,
+       "lift_event": 0.0,
+       "lift_hour": 0.0,
+       "ci95_lift_event": [
+        0.0,
+        0.0
+       ],
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 1 fired < 20",
+         "fold 1: 1 fired < 20",
+         "fold 2: 2 fired < 20",
+         "fold 3: 0 fired < 20",
+         "fold 4: 5 fired < 20"
+        ]
+       }
+      }
+     },
+     "symmetric": {
+      "30m": {
+       "n": 9,
+       "precision": 0.0,
+       "base_event": 0.02,
+       "base_hour": 0.013,
+       "lift_event": 0.0,
+       "lift_hour": 0.0,
+       "ci95_lift_event": [
+        0.0,
+        0.0
+       ],
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 1 fired < 20",
+         "fold 1: 1 fired < 20",
+         "fold 2: 2 fired < 20",
+         "fold 3: 0 fired < 20",
+         "fold 4: 5 fired < 20"
+        ]
+       }
+      },
+      "1h": {
+       "n": 9,
+       "precision": 0.0,
+       "base_event": 0.035,
+       "base_hour": 0.024,
+       "lift_event": 0.0,
+       "lift_hour": 0.0,
+       "ci95_lift_event": [
+        0.0,
+        0.0
+       ],
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 1 fired < 20",
+         "fold 1: 1 fired < 20",
+         "fold 2: 2 fired < 20",
+         "fold 3: 0 fired < 20",
+         "fold 4: 5 fired < 20"
+        ]
+       }
+      },
+      "2h": {
+       "n": 9,
+       "precision": 0.0,
+       "base_event": 0.062,
+       "base_hour": 0.043,
+       "lift_event": 0.0,
+       "lift_hour": 0.0,
+       "ci95_lift_event": [
+        0.0,
+        0.0
+       ],
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 1 fired < 20",
+         "fold 1: 1 fired < 20",
+         "fold 2: 2 fired < 20",
+         "fold 3: 0 fired < 20",
+         "fold 4: 5 fired < 20"
+        ]
+       }
+      },
+      "4h": {
+       "n": 9,
+       "precision": 0.111,
+       "base_event": 0.091,
+       "base_hour": 0.07,
+       "lift_event": 1.22,
+       "lift_hour": 1.6,
+       "ci95_lift_event": [
+        0.0,
+        5.58
+       ],
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 1 fired < 20",
+         "fold 1: 1 fired < 20",
+         "fold 2: 2 fired < 20",
+         "fold 3: 0 fired < 20",
+         "fold 4: 5 fired < 20"
+        ]
+       }
+      }
+     },
+     "lead_minutes": {
+      "forward": {
+       "n": 0,
+       "within": "4h",
+       "median": null,
+       "q1": null,
+       "q3": null
+      },
+      "onset": {
+       "n": 0,
+       "within": "4h",
+       "median": null,
+       "q1": null,
+       "q3": null
+      }
+     }
+    },
+    "critical": {
+     "forward": {
+      "30m": {
+       "n": 2,
+       "precision": 0.0,
+       "base_event": 0.009,
+       "base_hour": 0.006,
+       "lift_event": 0.0,
+       "lift_hour": 0.0,
+       "ci95_lift_event": [
+        0.0,
+        0.0
+       ],
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 0 fired < 20",
+         "fold 1: 0 fired < 20",
+         "fold 2: 0 fired < 20",
+         "fold 3: 0 fired < 20",
+         "fold 4: 2 fired < 20"
+        ]
+       }
+      },
+      "1h": {
+       "n": 2,
+       "precision": 0.0,
+       "base_event": 0.018,
+       "base_hour": 0.012,
+       "lift_event": 0.0,
+       "lift_hour": 0.0,
+       "ci95_lift_event": [
+        0.0,
+        0.0
+       ],
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 0 fired < 20",
+         "fold 1: 0 fired < 20",
+         "fold 2: 0 fired < 20",
+         "fold 3: 0 fired < 20",
+         "fold 4: 2 fired < 20"
+        ]
+       }
+      },
+      "2h": {
+       "n": 2,
+       "precision": 0.0,
+       "base_event": 0.033,
+       "base_hour": 0.021,
+       "lift_event": 0.0,
+       "lift_hour": 0.0,
+       "ci95_lift_event": [
+        0.0,
+        0.0
+       ],
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 0 fired < 20",
+         "fold 1: 0 fired < 20",
+         "fold 2: 0 fired < 20",
+         "fold 3: 0 fired < 20",
+         "fold 4: 2 fired < 20"
+        ]
+       }
+      },
+      "4h": {
+       "n": 2,
+       "precision": 0.0,
+       "base_event": 0.046,
+       "base_hour": 0.03,
+       "lift_event": 0.0,
+       "lift_hour": 0.0,
+       "ci95_lift_event": [
+        0.0,
+        0.0
+       ],
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 0 fired < 20",
+         "fold 1: 0 fired < 20",
+         "fold 2: 0 fired < 20",
+         "fold 3: 0 fired < 20",
+         "fold 4: 2 fired < 20"
+        ]
+       }
+      }
+     },
+     "onset": {
+      "30m": {
+       "n": 2,
+       "precision": 0.0,
+       "base_event": 0.008,
+       "base_hour": 0.005,
+       "lift_event": 0.0,
+       "lift_hour": 0.0,
+       "ci95_lift_event": [
+        0.0,
+        0.0
+       ],
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 0 fired < 20",
+         "fold 1: 0 fired < 20",
+         "fold 2: 0 fired < 20",
+         "fold 3: 0 fired < 20",
+         "fold 4: 2 fired < 20"
+        ]
+       }
+      },
+      "1h": {
+       "n": 2,
+       "precision": 0.0,
+       "base_event": 0.016,
+       "base_hour": 0.011,
+       "lift_event": 0.0,
+       "lift_hour": 0.0,
+       "ci95_lift_event": [
+        0.0,
+        0.0
+       ],
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 0 fired < 20",
+         "fold 1: 0 fired < 20",
+         "fold 2: 0 fired < 20",
+         "fold 3: 0 fired < 20",
+         "fold 4: 2 fired < 20"
+        ]
+       }
+      },
+      "2h": {
+       "n": 2,
+       "precision": 0.0,
+       "base_event": 0.03,
+       "base_hour": 0.02,
+       "lift_event": 0.0,
+       "lift_hour": 0.0,
+       "ci95_lift_event": [
+        0.0,
+        0.0
+       ],
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 0 fired < 20",
+         "fold 1: 0 fired < 20",
+         "fold 2: 0 fired < 20",
+         "fold 3: 0 fired < 20",
+         "fold 4: 2 fired < 20"
+        ]
+       }
+      },
+      "4h": {
+       "n": 2,
+       "precision": 0.0,
+       "base_event": 0.041,
+       "base_hour": 0.027,
+       "lift_event": 0.0,
+       "lift_hour": 0.0,
+       "ci95_lift_event": [
+        0.0,
+        0.0
+       ],
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 0 fired < 20",
+         "fold 1: 0 fired < 20",
+         "fold 2: 0 fired < 20",
+         "fold 3: 0 fired < 20",
+         "fold 4: 2 fired < 20"
+        ]
+       }
+      }
+     },
+     "symmetric": {
+      "30m": {
+       "n": 2,
+       "precision": 0.0,
+       "base_event": 0.02,
+       "base_hour": 0.013,
+       "lift_event": 0.0,
+       "lift_hour": 0.0,
+       "ci95_lift_event": [
+        0.0,
+        0.0
+       ],
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 0 fired < 20",
+         "fold 1: 0 fired < 20",
+         "fold 2: 0 fired < 20",
+         "fold 3: 0 fired < 20",
+         "fold 4: 2 fired < 20"
+        ]
+       }
+      },
+      "1h": {
+       "n": 2,
+       "precision": 0.0,
+       "base_event": 0.035,
+       "base_hour": 0.024,
+       "lift_event": 0.0,
+       "lift_hour": 0.0,
+       "ci95_lift_event": [
+        0.0,
+        0.0
+       ],
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 0 fired < 20",
+         "fold 1: 0 fired < 20",
+         "fold 2: 0 fired < 20",
+         "fold 3: 0 fired < 20",
+         "fold 4: 2 fired < 20"
+        ]
+       }
+      },
+      "2h": {
+       "n": 2,
+       "precision": 0.0,
+       "base_event": 0.062,
+       "base_hour": 0.043,
+       "lift_event": 0.0,
+       "lift_hour": 0.0,
+       "ci95_lift_event": [
+        0.0,
+        0.0
+       ],
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 0 fired < 20",
+         "fold 1: 0 fired < 20",
+         "fold 2: 0 fired < 20",
+         "fold 3: 0 fired < 20",
+         "fold 4: 2 fired < 20"
+        ]
+       }
+      },
+      "4h": {
+       "n": 2,
+       "precision": 0.0,
+       "base_event": 0.091,
+       "base_hour": 0.07,
+       "lift_event": 0.0,
+       "lift_hour": 0.0,
+       "ci95_lift_event": [
+        0.0,
+        0.0
+       ],
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 0 fired < 20",
+         "fold 1: 0 fired < 20",
+         "fold 2: 0 fired < 20",
+         "fold 3: 0 fired < 20",
+         "fold 4: 2 fired < 20"
+        ]
+       }
+      }
+     },
+     "lead_minutes": {
+      "forward": {
+       "n": 0,
+       "within": "4h",
+       "median": null,
+       "q1": null,
+       "q3": null
+      },
+      "onset": {
+       "n": 0,
+       "within": "4h",
+       "median": null,
+       "q1": null,
+       "q3": null
+      }
+     }
+    }
+   },
+   "auc": {
+    "forward": {
+     "30m": 0.488,
+     "1h": 0.505,
+     "2h": 0.511,
+     "4h": 0.52
+    },
+    "onset": {
+     "30m": 0.463,
+     "1h": 0.476,
+     "2h": 0.494,
+     "4h": 0.511
+    }
+   }
+  },
+  "conflict": {
+   "category": "conflict",
+   "levels": {
+    "warm": {
+     "forward": {
+      "30m": {
+       "n": 138,
+       "precision": 0.0,
+       "base_event": 0.003,
+       "base_hour": 0.001,
+       "lift_event": 0.0,
+       "lift_hour": 0.0,
+       "ci95_lift_event": [
+        0.0,
+        0.0
+       ],
+       "folds": {
+        "used": 5,
+        "lifts": [
+         0.0,
+         0.0,
+         0.0,
+         0.0,
+         0.0
+        ],
+        "mean": 0.0,
+        "min": 0.0,
+        "max": 0.0,
+        "skipped": []
+       }
+      },
+      "1h": {
+       "n": 138,
+       "precision": 0.007,
+       "base_event": 0.005,
+       "base_hour": 0.002,
+       "lift_event": 1.59,
+       "lift_hour": 3.4,
+       "ci95_lift_event": [
+        0.0,
+        7.2
+       ],
+       "folds": {
+        "used": 5,
+        "lifts": [
+         12.64,
+         0.0,
+         0.0,
+         0.0,
+         0.0
+        ],
+        "mean": 2.53,
+        "min": 0.0,
+        "max": 12.64,
+        "skipped": []
+       }
+      },
+      "2h": {
+       "n": 138,
+       "precision": 0.014,
+       "base_event": 0.006,
+       "base_hour": 0.004,
+       "lift_event": 2.33,
+       "lift_hour": 3.4,
+       "ci95_lift_event": [
+        0.0,
+        5.84
+       ],
+       "folds": {
+        "used": 5,
+        "lifts": [
+         7.34,
+         0.0,
+         0.0,
+         6.5,
+         0.0
+        ],
+        "mean": 2.77,
+        "min": 0.0,
+        "max": 7.34,
+        "skipped": []
+       }
+      },
+      "4h": {
+       "n": 138,
+       "precision": 0.029,
+       "base_event": 0.01,
+       "base_hour": 0.008,
+       "lift_event": 3.05,
+       "lift_hour": 3.63,
+       "ci95_lift_event": [
+        0.0,
+        9.21
+       ],
+       "folds": {
+        "used": 5,
+        "lifts": [
+         12.41,
+         0.0,
+         0.0,
+         5.75,
+         0.0
+        ],
+        "mean": 3.63,
+        "min": 0.0,
+        "max": 12.41,
+        "skipped": []
+       }
+      }
+     },
+     "onset": {
+      "30m": {
+       "n": 132,
+       "precision": 0.0,
+       "base_event": 0.003,
+       "base_hour": 0.001,
+       "lift_event": 0.0,
+       "lift_hour": 0.0,
+       "ci95_lift_event": [
+        0.0,
+        0.0
+       ],
+       "folds": {
+        "used": 5,
+        "lifts": [
+         0.0,
+         0.0,
+         0.0,
+         0.0,
+         0.0
+        ],
+        "mean": 0.0,
+        "min": 0.0,
+        "max": 0.0,
+        "skipped": []
+       }
+      },
+      "1h": {
+       "n": 132,
+       "precision": 0.008,
+       "base_event": 0.005,
+       "base_hour": 0.002,
+       "lift_event": 1.64,
+       "lift_hour": 3.53,
+       "ci95_lift_event": [
+        0.0,
+        6.99
+       ],
+       "folds": {
+        "used": 5,
+        "lifts": [
+         13.55,
+         0.0,
+         0.0,
+         0.0,
+         0.0
+        ],
+        "mean": 2.71,
+        "min": 0.0,
+        "max": 13.55,
+        "skipped": []
+       }
+      },
+      "2h": {
+       "n": 132,
+       "precision": 0.015,
+       "base_event": 0.006,
+       "base_hour": 0.004,
+       "lift_event": 2.41,
+       "lift_hour": 3.53,
+       "ci95_lift_event": [
+        0.0,
+        6.65
+       ],
+       "folds": {
+        "used": 5,
+        "lifts": [
+         7.87,
+         0.0,
+         0.0,
+         6.76,
+         0.0
+        ],
+        "mean": 2.92,
+        "min": 0.0,
+        "max": 7.87,
+        "skipped": []
+       }
+      },
+      "4h": {
+       "n": 132,
+       "precision": 0.03,
+       "base_event": 0.01,
+       "base_hour": 0.008,
+       "lift_event": 3.15,
+       "lift_hour": 3.76,
+       "ci95_lift_event": [
+        0.0,
+        8.38
+       ],
+       "folds": {
+        "used": 5,
+        "lifts": [
+         13.3,
+         0.0,
+         0.0,
+         5.98,
+         0.0
+        ],
+        "mean": 3.86,
+        "min": 0.0,
+        "max": 13.3,
+        "skipped": []
+       }
+      }
+     },
+     "symmetric": {
+      "30m": {
+       "n": 138,
+       "precision": 0.022,
+       "base_event": 0.007,
+       "base_hour": 0.005,
+       "lift_event": 3.13,
+       "lift_hour": 4.8,
+       "ci95_lift_event": [
+        0.0,
+        6.99
+       ],
+       "folds": {
+        "used": 5,
+        "lifts": [
+         10.34,
+         2.69,
+         0.0,
+         0.0,
+         0.0
+        ],
+        "mean": 2.61,
+        "min": 0.0,
+        "max": 10.34,
+        "skipped": []
+       }
+      },
+      "1h": {
+       "n": 138,
+       "precision": 0.036,
+       "base_event": 0.012,
+       "base_hour": 0.006,
+       "lift_event": 2.99,
+       "lift_hour": 5.91,
+       "ci95_lift_event": [
+        0.0,
+        7.11
+       ],
+       "folds": {
+        "used": 5,
+        "lifts": [
+         9.89,
+         1.59,
+         0.0,
+         1.97,
+         0.0
+        ],
+        "mean": 2.69,
+        "min": 0.0,
+        "max": 9.89,
+        "skipped": []
+       }
+      },
+      "2h": {
+       "n": 138,
+       "precision": 0.058,
+       "base_event": 0.017,
+       "base_hour": 0.011,
+       "lift_event": 3.34,
+       "lift_hour": 5.18,
+       "ci95_lift_event": [
+        1.6,
+        5.67
+       ],
+       "folds": {
+        "used": 5,
+        "lifts": [
+         7.19,
+         2.41,
+         0.0,
+         3.93,
+         0.0
+        ],
+        "mean": 2.71,
+        "min": 0.0,
+        "max": 7.19,
+        "skipped": []
+       }
+      },
+      "4h": {
+       "n": 138,
+       "precision": 0.101,
+       "base_event": 0.028,
+       "base_hour": 0.019,
+       "lift_event": 3.58,
+       "lift_hour": 5.29,
+       "ci95_lift_event": [
+        1.25,
+        6.81
+       ],
+       "folds": {
+        "used": 5,
+        "lifts": [
+         10.76,
+         2.24,
+         0.0,
+         2.93,
+         0.0
+        ],
+        "mean": 3.19,
+        "min": 0.0,
+        "max": 10.76,
+        "skipped": []
+       }
+      }
+     },
+     "lead_minutes": {
+      "forward": {
+       "n": 4,
+       "within": "4h",
+       "median": 97.8,
+       "q1": 56.5,
+       "q3": 146.7
+      },
+      "onset": {
+       "n": 4,
+       "within": "4h",
+       "median": 97.8,
+       "q1": 56.5,
+       "q3": 146.7
+      }
+     }
+    },
+    "hot+": {
+     "forward": {
+      "30m": {
+       "n": 27,
+       "precision": 0.0,
+       "base_event": 0.003,
+       "base_hour": 0.001,
+       "lift_event": 0.0,
+       "lift_hour": 0.0,
+       "ci95_lift_event": [
+        0.0,
+        0.0
+       ],
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 9 fired < 20",
+         "fold 1: 4 fired < 20",
+         "fold 2: 8 fired < 20",
+         "fold 3: 4 fired < 20",
+         "fold 4: 2 fired < 20"
+        ]
+       }
+      },
+      "1h": {
+       "n": 27,
+       "precision": 0.0,
+       "base_event": 0.005,
+       "base_hour": 0.002,
+       "lift_event": 0.0,
+       "lift_hour": 0.0,
+       "ci95_lift_event": [
+        0.0,
+        0.0
+       ],
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 9 fired < 20",
+         "fold 1: 4 fired < 20",
+         "fold 2: 8 fired < 20",
+         "fold 3: 4 fired < 20",
+         "fold 4: 2 fired < 20"
+        ]
+       }
+      },
+      "2h": {
+       "n": 27,
+       "precision": 0.0,
+       "base_event": 0.006,
+       "base_hour": 0.004,
+       "lift_event": 0.0,
+       "lift_hour": 0.0,
+       "ci95_lift_event": [
+        0.0,
+        0.0
+       ],
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 9 fired < 20",
+         "fold 1: 4 fired < 20",
+         "fold 2: 8 fired < 20",
+         "fold 3: 4 fired < 20",
+         "fold 4: 2 fired < 20"
+        ]
+       }
+      },
+      "4h": {
+       "n": 27,
+       "precision": 0.0,
+       "base_event": 0.01,
+       "base_hour": 0.008,
+       "lift_event": 0.0,
+       "lift_hour": 0.0,
+       "ci95_lift_event": [
+        0.0,
+        0.0
+       ],
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 9 fired < 20",
+         "fold 1: 4 fired < 20",
+         "fold 2: 8 fired < 20",
+         "fold 3: 4 fired < 20",
+         "fold 4: 2 fired < 20"
+        ]
+       }
+      }
+     },
+     "onset": {
+      "30m": {
+       "n": 24,
+       "precision": 0.0,
+       "base_event": 0.003,
+       "base_hour": 0.001,
+       "lift_event": 0.0,
+       "lift_hour": 0.0,
+       "ci95_lift_event": [
+        0.0,
+        0.0
+       ],
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 6 fired < 20",
+         "fold 1: 4 fired < 20",
+         "fold 2: 8 fired < 20",
+         "fold 3: 4 fired < 20",
+         "fold 4: 2 fired < 20"
+        ]
+       }
+      },
+      "1h": {
+       "n": 24,
+       "precision": 0.0,
+       "base_event": 0.005,
+       "base_hour": 0.002,
+       "lift_event": 0.0,
+       "lift_hour": 0.0,
+       "ci95_lift_event": [
+        0.0,
+        0.0
+       ],
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 6 fired < 20",
+         "fold 1: 4 fired < 20",
+         "fold 2: 8 fired < 20",
+         "fold 3: 4 fired < 20",
+         "fold 4: 2 fired < 20"
+        ]
+       }
+      },
+      "2h": {
+       "n": 24,
+       "precision": 0.0,
+       "base_event": 0.006,
+       "base_hour": 0.004,
+       "lift_event": 0.0,
+       "lift_hour": 0.0,
+       "ci95_lift_event": [
+        0.0,
+        0.0
+       ],
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 6 fired < 20",
+         "fold 1: 4 fired < 20",
+         "fold 2: 8 fired < 20",
+         "fold 3: 4 fired < 20",
+         "fold 4: 2 fired < 20"
+        ]
+       }
+      },
+      "4h": {
+       "n": 24,
+       "precision": 0.0,
+       "base_event": 0.01,
+       "base_hour": 0.008,
+       "lift_event": 0.0,
+       "lift_hour": 0.0,
+       "ci95_lift_event": [
+        0.0,
+        0.0
+       ],
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 6 fired < 20",
+         "fold 1: 4 fired < 20",
+         "fold 2: 8 fired < 20",
+         "fold 3: 4 fired < 20",
+         "fold 4: 2 fired < 20"
+        ]
+       }
+      }
+     },
+     "symmetric": {
+      "30m": {
+       "n": 27,
+       "precision": 0.074,
+       "base_event": 0.007,
+       "base_hour": 0.005,
+       "lift_event": 10.67,
+       "lift_hour": 16.35,
+       "ci95_lift_event": [
+        0.0,
+        34.27
+       ],
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 9 fired < 20",
+         "fold 1: 4 fired < 20",
+         "fold 2: 8 fired < 20",
+         "fold 3: 4 fired < 20",
+         "fold 4: 2 fired < 20"
+        ]
+       }
+      },
+      "1h": {
+       "n": 27,
+       "precision": 0.074,
+       "base_event": 0.012,
+       "base_hour": 0.006,
+       "lift_event": 6.11,
+       "lift_hour": 12.09,
+       "ci95_lift_event": [
+        0.0,
+        18.78
+       ],
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 9 fired < 20",
+         "fold 1: 4 fired < 20",
+         "fold 2: 8 fired < 20",
+         "fold 3: 4 fired < 20",
+         "fold 4: 2 fired < 20"
+        ]
+       }
+      },
+      "2h": {
+       "n": 27,
+       "precision": 0.111,
+       "base_event": 0.017,
+       "base_hour": 0.011,
+       "lift_event": 6.41,
+       "lift_hour": 9.93,
+       "ci95_lift_event": [
+        0.0,
+        21.36
+       ],
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 9 fired < 20",
+         "fold 1: 4 fired < 20",
+         "fold 2: 8 fired < 20",
+         "fold 3: 4 fired < 20",
+         "fold 4: 2 fired < 20"
+        ]
+       }
+      },
+      "4h": {
+       "n": 27,
+       "precision": 0.111,
+       "base_event": 0.028,
+       "base_hour": 0.019,
+       "lift_event": 3.92,
+       "lift_hour": 5.79,
+       "ci95_lift_event": [
+        0.0,
+        13.87
+       ],
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 9 fired < 20",
+         "fold 1: 4 fired < 20",
+         "fold 2: 8 fired < 20",
+         "fold 3: 4 fired < 20",
+         "fold 4: 2 fired < 20"
+        ]
+       }
+      }
+     },
+     "lead_minutes": {
+      "forward": {
+       "n": 0,
+       "within": "4h",
+       "median": null,
+       "q1": null,
+       "q3": null
+      },
+      "onset": {
+       "n": 0,
+       "within": "4h",
+       "median": null,
+       "q1": null,
+       "q3": null
+      }
+     }
+    },
+    "critical": {
+     "forward": {
+      "30m": {
+       "n": 0,
+       "precision": null,
+       "base_event": 0.003,
+       "base_hour": 0.001,
+       "lift_event": null,
+       "lift_hour": null,
+       "ci95_lift_event": null,
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 0 fired < 20",
+         "fold 1: 0 fired < 20",
+         "fold 2: 0 fired < 20",
+         "fold 3: 0 fired < 20",
+         "fold 4: 0 fired < 20"
+        ]
+       }
+      },
+      "1h": {
+       "n": 0,
+       "precision": null,
+       "base_event": 0.005,
+       "base_hour": 0.002,
+       "lift_event": null,
+       "lift_hour": null,
+       "ci95_lift_event": null,
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 0 fired < 20",
+         "fold 1: 0 fired < 20",
+         "fold 2: 0 fired < 20",
+         "fold 3: 0 fired < 20",
+         "fold 4: 0 fired < 20"
+        ]
+       }
+      },
+      "2h": {
+       "n": 0,
+       "precision": null,
+       "base_event": 0.006,
+       "base_hour": 0.004,
+       "lift_event": null,
+       "lift_hour": null,
+       "ci95_lift_event": null,
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 0 fired < 20",
+         "fold 1: 0 fired < 20",
+         "fold 2: 0 fired < 20",
+         "fold 3: 0 fired < 20",
+         "fold 4: 0 fired < 20"
+        ]
+       }
+      },
+      "4h": {
+       "n": 0,
+       "precision": null,
+       "base_event": 0.01,
+       "base_hour": 0.008,
+       "lift_event": null,
+       "lift_hour": null,
+       "ci95_lift_event": null,
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 0 fired < 20",
+         "fold 1: 0 fired < 20",
+         "fold 2: 0 fired < 20",
+         "fold 3: 0 fired < 20",
+         "fold 4: 0 fired < 20"
+        ]
+       }
+      }
+     },
+     "onset": {
+      "30m": {
+       "n": 0,
+       "precision": null,
+       "base_event": 0.003,
+       "base_hour": 0.001,
+       "lift_event": null,
+       "lift_hour": null,
+       "ci95_lift_event": null,
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 0 fired < 20",
+         "fold 1: 0 fired < 20",
+         "fold 2: 0 fired < 20",
+         "fold 3: 0 fired < 20",
+         "fold 4: 0 fired < 20"
+        ]
+       }
+      },
+      "1h": {
+       "n": 0,
+       "precision": null,
+       "base_event": 0.005,
+       "base_hour": 0.002,
+       "lift_event": null,
+       "lift_hour": null,
+       "ci95_lift_event": null,
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 0 fired < 20",
+         "fold 1: 0 fired < 20",
+         "fold 2: 0 fired < 20",
+         "fold 3: 0 fired < 20",
+         "fold 4: 0 fired < 20"
+        ]
+       }
+      },
+      "2h": {
+       "n": 0,
+       "precision": null,
+       "base_event": 0.006,
+       "base_hour": 0.004,
+       "lift_event": null,
+       "lift_hour": null,
+       "ci95_lift_event": null,
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 0 fired < 20",
+         "fold 1: 0 fired < 20",
+         "fold 2: 0 fired < 20",
+         "fold 3: 0 fired < 20",
+         "fold 4: 0 fired < 20"
+        ]
+       }
+      },
+      "4h": {
+       "n": 0,
+       "precision": null,
+       "base_event": 0.01,
+       "base_hour": 0.008,
+       "lift_event": null,
+       "lift_hour": null,
+       "ci95_lift_event": null,
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 0 fired < 20",
+         "fold 1: 0 fired < 20",
+         "fold 2: 0 fired < 20",
+         "fold 3: 0 fired < 20",
+         "fold 4: 0 fired < 20"
+        ]
+       }
+      }
+     },
+     "symmetric": {
+      "30m": {
+       "n": 0,
+       "precision": null,
+       "base_event": 0.007,
+       "base_hour": 0.005,
+       "lift_event": null,
+       "lift_hour": null,
+       "ci95_lift_event": null,
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 0 fired < 20",
+         "fold 1: 0 fired < 20",
+         "fold 2: 0 fired < 20",
+         "fold 3: 0 fired < 20",
+         "fold 4: 0 fired < 20"
+        ]
+       }
+      },
+      "1h": {
+       "n": 0,
+       "precision": null,
+       "base_event": 0.012,
+       "base_hour": 0.006,
+       "lift_event": null,
+       "lift_hour": null,
+       "ci95_lift_event": null,
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 0 fired < 20",
+         "fold 1: 0 fired < 20",
+         "fold 2: 0 fired < 20",
+         "fold 3: 0 fired < 20",
+         "fold 4: 0 fired < 20"
+        ]
+       }
+      },
+      "2h": {
+       "n": 0,
+       "precision": null,
+       "base_event": 0.017,
+       "base_hour": 0.011,
+       "lift_event": null,
+       "lift_hour": null,
+       "ci95_lift_event": null,
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 0 fired < 20",
+         "fold 1: 0 fired < 20",
+         "fold 2: 0 fired < 20",
+         "fold 3: 0 fired < 20",
+         "fold 4: 0 fired < 20"
+        ]
+       }
+      },
+      "4h": {
+       "n": 0,
+       "precision": null,
+       "base_event": 0.028,
+       "base_hour": 0.019,
+       "lift_event": null,
+       "lift_hour": null,
+       "ci95_lift_event": null,
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 0 fired < 20",
+         "fold 1: 0 fired < 20",
+         "fold 2: 0 fired < 20",
+         "fold 3: 0 fired < 20",
+         "fold 4: 0 fired < 20"
+        ]
+       }
+      }
+     },
+     "lead_minutes": {
+      "forward": {
+       "n": 0,
+       "within": "4h",
+       "median": null,
+       "q1": null,
+       "q3": null
+      },
+      "onset": {
+       "n": 0,
+       "within": "4h",
+       "median": null,
+       "q1": null,
+       "q3": null
+      }
+     }
+    }
+   },
+   "auc": {
+    "forward": {
+     "30m": 0.7,
+     "1h": 0.704,
+     "2h": 0.661,
+     "4h": 0.638
+    },
+    "onset": {
+     "30m": 0.703,
+     "1h": 0.708,
+     "2h": 0.665,
+     "4h": 0.642
+    }
+   }
+  },
+  "outreach": {
+   "category": "unsolicited-outreach",
+   "levels": {
+    "warm": {
+     "forward": {
+      "30m": {
+       "n": 50,
+       "precision": 0.0,
+       "base_event": 0.002,
+       "base_hour": 0.001,
+       "lift_event": 0.0,
+       "lift_hour": 0.0,
+       "ci95_lift_event": [
+        0.0,
+        0.0
+       ],
+       "folds": {
+        "used": 1,
+        "lifts": [
+         0.0
+        ],
+        "mean": 0.0,
+        "min": 0.0,
+        "max": 0.0,
+        "skipped": [
+         "fold 0: 3 fired < 20",
+         "fold 1: 13 fired < 20",
+         "fold 2: 4 fired < 20",
+         "fold 4: 10 fired < 20"
+        ]
+       }
+      },
+      "1h": {
+       "n": 50,
+       "precision": 0.02,
+       "base_event": 0.003,
+       "base_hour": 0.002,
+       "lift_event": 5.98,
+       "lift_hour": 9.38,
+       "ci95_lift_event": [
+        0.0,
+        16.29
+       ],
+       "folds": {
+        "used": 1,
+        "lifts": [
+         0.0
+        ],
+        "mean": 0.0,
+        "min": 0.0,
+        "max": 0.0,
+        "skipped": [
+         "fold 0: 3 fired < 20",
+         "fold 1: 13 fired < 20",
+         "fold 2: 4 fired < 20",
+         "fold 4: 10 fired < 20"
+        ]
+       }
+      },
+      "2h": {
+       "n": 50,
+       "precision": 0.02,
+       "base_event": 0.006,
+       "base_hour": 0.004,
+       "lift_event": 3.13,
+       "lift_hour": 4.69,
+       "ci95_lift_event": [
+        0.0,
+        8.16
+       ],
+       "folds": {
+        "used": 1,
+        "lifts": [
+         0.0
+        ],
+        "mean": 0.0,
+        "min": 0.0,
+        "max": 0.0,
+        "skipped": [
+         "fold 0: 3 fired < 20",
+         "fold 1: 13 fired < 20",
+         "fold 2: 4 fired < 20",
+         "fold 4: 10 fired < 20"
+        ]
+       }
+      },
+      "4h": {
+       "n": 50,
+       "precision": 0.02,
+       "base_event": 0.01,
+       "base_hour": 0.008,
+       "lift_event": 1.92,
+       "lift_hour": 2.59,
+       "ci95_lift_event": [
+        0.0,
+        5.54
+       ],
+       "folds": {
+        "used": 1,
+        "lifts": [
+         0.0
+        ],
+        "mean": 0.0,
+        "min": 0.0,
+        "max": 0.0,
+        "skipped": [
+         "fold 0: 3 fired < 20",
+         "fold 1: 13 fired < 20",
+         "fold 2: 4 fired < 20",
+         "fold 4: 10 fired < 20"
+        ]
+       }
+      }
+     },
+     "onset": {
+      "30m": {
+       "n": 49,
+       "precision": 0.0,
+       "base_event": 0.002,
+       "base_hour": 0.001,
+       "lift_event": 0.0,
+       "lift_hour": 0.0,
+       "ci95_lift_event": [
+        0.0,
+        0.0
+       ],
+       "folds": {
+        "used": 1,
+        "lifts": [
+         0.0
+        ],
+        "mean": 0.0,
+        "min": 0.0,
+        "max": 0.0,
+        "skipped": [
+         "fold 0: 3 fired < 20",
+         "fold 1: 13 fired < 20",
+         "fold 2: 4 fired < 20",
+         "fold 4: 9 fired < 20"
+        ]
+       }
+      },
+      "1h": {
+       "n": 49,
+       "precision": 0.02,
+       "base_event": 0.003,
+       "base_hour": 0.002,
+       "lift_event": 6.07,
+       "lift_hour": 9.53,
+       "ci95_lift_event": [
+        0.0,
+        15.66
+       ],
+       "folds": {
+        "used": 1,
+        "lifts": [
+         0.0
+        ],
+        "mean": 0.0,
+        "min": 0.0,
+        "max": 0.0,
+        "skipped": [
+         "fold 0: 3 fired < 20",
+         "fold 1: 13 fired < 20",
+         "fold 2: 4 fired < 20",
+         "fold 4: 9 fired < 20"
+        ]
+       }
+      },
+      "2h": {
+       "n": 49,
+       "precision": 0.02,
+       "base_event": 0.006,
+       "base_hour": 0.004,
+       "lift_event": 3.17,
+       "lift_hour": 4.77,
+       "ci95_lift_event": [
+        0.0,
+        8.77
+       ],
+       "folds": {
+        "used": 1,
+        "lifts": [
+         0.0
+        ],
+        "mean": 0.0,
+        "min": 0.0,
+        "max": 0.0,
+        "skipped": [
+         "fold 0: 3 fired < 20",
+         "fold 1: 13 fired < 20",
+         "fold 2: 4 fired < 20",
+         "fold 4: 9 fired < 20"
+        ]
+       }
+      },
+      "4h": {
+       "n": 49,
+       "precision": 0.02,
+       "base_event": 0.01,
+       "base_hour": 0.008,
+       "lift_event": 1.95,
+       "lift_hour": 2.63,
+       "ci95_lift_event": [
+        0.0,
+        5.82
+       ],
+       "folds": {
+        "used": 1,
+        "lifts": [
+         0.0
+        ],
+        "mean": 0.0,
+        "min": 0.0,
+        "max": 0.0,
+        "skipped": [
+         "fold 0: 3 fired < 20",
+         "fold 1: 13 fired < 20",
+         "fold 2: 4 fired < 20",
+         "fold 4: 9 fired < 20"
+        ]
+       }
+      }
+     },
+     "symmetric": {
+      "30m": {
+       "n": 50,
+       "precision": 0.0,
+       "base_event": 0.003,
+       "base_hour": 0.002,
+       "lift_event": 0.0,
+       "lift_hour": 0.0,
+       "ci95_lift_event": [
+        0.0,
+        0.0
+       ],
+       "folds": {
+        "used": 1,
+        "lifts": [
+         0.0
+        ],
+        "mean": 0.0,
+        "min": 0.0,
+        "max": 0.0,
+        "skipped": [
+         "fold 0: 3 fired < 20",
+         "fold 1: 13 fired < 20",
+         "fold 2: 4 fired < 20",
+         "fold 4: 10 fired < 20"
+        ]
+       }
+      },
+      "1h": {
+       "n": 50,
+       "precision": 0.02,
+       "base_event": 0.006,
+       "base_hour": 0.004,
+       "lift_event": 3.18,
+       "lift_hour": 4.69,
+       "ci95_lift_event": [
+        0.0,
+        8.06
+       ],
+       "folds": {
+        "used": 1,
+        "lifts": [
+         0.0
+        ],
+        "mean": 0.0,
+        "min": 0.0,
+        "max": 0.0,
+        "skipped": [
+         "fold 0: 3 fired < 20",
+         "fold 1: 13 fired < 20",
+         "fold 2: 4 fired < 20",
+         "fold 4: 10 fired < 20"
+        ]
+       }
+      },
+      "2h": {
+       "n": 50,
+       "precision": 0.04,
+       "base_event": 0.013,
+       "base_hour": 0.009,
+       "lift_event": 3.14,
+       "lift_hour": 4.69,
+       "ci95_lift_event": [
+        0.0,
+        8.75
+       ],
+       "folds": {
+        "used": 1,
+        "lifts": [
+         0.0
+        ],
+        "mean": 0.0,
+        "min": 0.0,
+        "max": 0.0,
+        "skipped": [
+         "fold 0: 3 fired < 20",
+         "fold 1: 13 fired < 20",
+         "fold 2: 4 fired < 20",
+         "fold 4: 10 fired < 20"
+        ]
+       }
+      },
+      "4h": {
+       "n": 50,
+       "precision": 0.08,
+       "base_event": 0.022,
+       "base_hour": 0.016,
+       "lift_event": 3.7,
+       "lift_hour": 5.09,
+       "ci95_lift_event": [
+        0.0,
+        6.75
+       ],
+       "folds": {
+        "used": 1,
+        "lifts": [
+         1.68
+        ],
+        "mean": 1.68,
+        "min": 1.68,
+        "max": 1.68,
+        "skipped": [
+         "fold 0: 3 fired < 20",
+         "fold 1: 13 fired < 20",
+         "fold 2: 4 fired < 20",
+         "fold 4: 10 fired < 20"
+        ]
+       }
+      }
+     },
+     "lead_minutes": {
+      "forward": {
+       "n": 1,
+       "within": "4h",
+       "median": 50.5,
+       "q1": 50.5,
+       "q3": 50.5
+      },
+      "onset": {
+       "n": 1,
+       "within": "4h",
+       "median": 50.5,
+       "q1": 50.5,
+       "q3": 50.5
+      }
+     }
+    },
+    "hot+": {
+     "forward": {
+      "30m": {
+       "n": 4,
+       "precision": 0.0,
+       "base_event": 0.002,
+       "base_hour": 0.001,
+       "lift_event": 0.0,
+       "lift_hour": 0.0,
+       "ci95_lift_event": [
+        0.0,
+        0.0
+       ],
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 0 fired < 20",
+         "fold 1: 0 fired < 20",
+         "fold 2: 0 fired < 20",
+         "fold 3: 2 fired < 20",
+         "fold 4: 2 fired < 20"
+        ]
+       }
+      },
+      "1h": {
+       "n": 4,
+       "precision": 0.0,
+       "base_event": 0.003,
+       "base_hour": 0.002,
+       "lift_event": 0.0,
+       "lift_hour": 0.0,
+       "ci95_lift_event": [
+        0.0,
+        0.0
+       ],
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 0 fired < 20",
+         "fold 1: 0 fired < 20",
+         "fold 2: 0 fired < 20",
+         "fold 3: 2 fired < 20",
+         "fold 4: 2 fired < 20"
+        ]
+       }
+      },
+      "2h": {
+       "n": 4,
+       "precision": 0.0,
+       "base_event": 0.006,
+       "base_hour": 0.004,
+       "lift_event": 0.0,
+       "lift_hour": 0.0,
+       "ci95_lift_event": [
+        0.0,
+        0.0
+       ],
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 0 fired < 20",
+         "fold 1: 0 fired < 20",
+         "fold 2: 0 fired < 20",
+         "fold 3: 2 fired < 20",
+         "fold 4: 2 fired < 20"
+        ]
+       }
+      },
+      "4h": {
+       "n": 4,
+       "precision": 0.0,
+       "base_event": 0.01,
+       "base_hour": 0.008,
+       "lift_event": 0.0,
+       "lift_hour": 0.0,
+       "ci95_lift_event": [
+        0.0,
+        0.0
+       ],
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 0 fired < 20",
+         "fold 1: 0 fired < 20",
+         "fold 2: 0 fired < 20",
+         "fold 3: 2 fired < 20",
+         "fold 4: 2 fired < 20"
+        ]
+       }
+      }
+     },
+     "onset": {
+      "30m": {
+       "n": 3,
+       "precision": 0.0,
+       "base_event": 0.002,
+       "base_hour": 0.001,
+       "lift_event": 0.0,
+       "lift_hour": 0.0,
+       "ci95_lift_event": [
+        0.0,
+        0.0
+       ],
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 0 fired < 20",
+         "fold 1: 0 fired < 20",
+         "fold 2: 0 fired < 20",
+         "fold 3: 2 fired < 20",
+         "fold 4: 1 fired < 20"
+        ]
+       }
+      },
+      "1h": {
+       "n": 3,
+       "precision": 0.0,
+       "base_event": 0.003,
+       "base_hour": 0.002,
+       "lift_event": 0.0,
+       "lift_hour": 0.0,
+       "ci95_lift_event": [
+        0.0,
+        0.0
+       ],
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 0 fired < 20",
+         "fold 1: 0 fired < 20",
+         "fold 2: 0 fired < 20",
+         "fold 3: 2 fired < 20",
+         "fold 4: 1 fired < 20"
+        ]
+       }
+      },
+      "2h": {
+       "n": 3,
+       "precision": 0.0,
+       "base_event": 0.006,
+       "base_hour": 0.004,
+       "lift_event": 0.0,
+       "lift_hour": 0.0,
+       "ci95_lift_event": [
+        0.0,
+        0.0
+       ],
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 0 fired < 20",
+         "fold 1: 0 fired < 20",
+         "fold 2: 0 fired < 20",
+         "fold 3: 2 fired < 20",
+         "fold 4: 1 fired < 20"
+        ]
+       }
+      },
+      "4h": {
+       "n": 3,
+       "precision": 0.0,
+       "base_event": 0.01,
+       "base_hour": 0.008,
+       "lift_event": 0.0,
+       "lift_hour": 0.0,
+       "ci95_lift_event": [
+        0.0,
+        0.0
+       ],
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 0 fired < 20",
+         "fold 1: 0 fired < 20",
+         "fold 2: 0 fired < 20",
+         "fold 3: 2 fired < 20",
+         "fold 4: 1 fired < 20"
+        ]
+       }
+      }
+     },
+     "symmetric": {
+      "30m": {
+       "n": 4,
+       "precision": 0.25,
+       "base_event": 0.003,
+       "base_hour": 0.002,
+       "lift_event": 84.02,
+       "lift_hour": 117.28,
+       "ci95_lift_event": [
+        0.0,
+        383.66
+       ],
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 0 fired < 20",
+         "fold 1: 0 fired < 20",
+         "fold 2: 0 fired < 20",
+         "fold 3: 2 fired < 20",
+         "fold 4: 2 fired < 20"
+        ]
+       }
+      },
+      "1h": {
+       "n": 4,
+       "precision": 0.25,
+       "base_event": 0.006,
+       "base_hour": 0.004,
+       "lift_event": 39.8,
+       "lift_hour": 58.64,
+       "ci95_lift_event": [
+        0.0,
+        162.24
+       ],
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 0 fired < 20",
+         "fold 1: 0 fired < 20",
+         "fold 2: 0 fired < 20",
+         "fold 3: 2 fired < 20",
+         "fold 4: 2 fired < 20"
+        ]
+       }
+      },
+      "2h": {
+       "n": 4,
+       "precision": 0.25,
+       "base_event": 0.013,
+       "base_hour": 0.009,
+       "lift_event": 19.61,
+       "lift_hour": 29.32,
+       "ci95_lift_event": [
+        0.0,
+        84.56
+       ],
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 0 fired < 20",
+         "fold 1: 0 fired < 20",
+         "fold 2: 0 fired < 20",
+         "fold 3: 2 fired < 20",
+         "fold 4: 2 fired < 20"
+        ]
+       }
+      },
+      "4h": {
+       "n": 4,
+       "precision": 0.25,
+       "base_event": 0.022,
+       "base_hour": 0.016,
+       "lift_event": 11.55,
+       "lift_hour": 15.9,
+       "ci95_lift_event": [
+        0.0,
+        46.84
+       ],
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 0 fired < 20",
+         "fold 1: 0 fired < 20",
+         "fold 2: 0 fired < 20",
+         "fold 3: 2 fired < 20",
+         "fold 4: 2 fired < 20"
+        ]
+       }
+      }
+     },
+     "lead_minutes": {
+      "forward": {
+       "n": 0,
+       "within": "4h",
+       "median": null,
+       "q1": null,
+       "q3": null
+      },
+      "onset": {
+       "n": 0,
+       "within": "4h",
+       "median": null,
+       "q1": null,
+       "q3": null
+      }
+     }
+    },
+    "critical": {
+     "forward": {
+      "30m": {
+       "n": 0,
+       "precision": null,
+       "base_event": 0.002,
+       "base_hour": 0.001,
+       "lift_event": null,
+       "lift_hour": null,
+       "ci95_lift_event": null,
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 0 fired < 20",
+         "fold 1: 0 fired < 20",
+         "fold 2: 0 fired < 20",
+         "fold 3: 0 fired < 20",
+         "fold 4: 0 fired < 20"
+        ]
+       }
+      },
+      "1h": {
+       "n": 0,
+       "precision": null,
+       "base_event": 0.003,
+       "base_hour": 0.002,
+       "lift_event": null,
+       "lift_hour": null,
+       "ci95_lift_event": null,
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 0 fired < 20",
+         "fold 1: 0 fired < 20",
+         "fold 2: 0 fired < 20",
+         "fold 3: 0 fired < 20",
+         "fold 4: 0 fired < 20"
+        ]
+       }
+      },
+      "2h": {
+       "n": 0,
+       "precision": null,
+       "base_event": 0.006,
+       "base_hour": 0.004,
+       "lift_event": null,
+       "lift_hour": null,
+       "ci95_lift_event": null,
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 0 fired < 20",
+         "fold 1: 0 fired < 20",
+         "fold 2: 0 fired < 20",
+         "fold 3: 0 fired < 20",
+         "fold 4: 0 fired < 20"
+        ]
+       }
+      },
+      "4h": {
+       "n": 0,
+       "precision": null,
+       "base_event": 0.01,
+       "base_hour": 0.008,
+       "lift_event": null,
+       "lift_hour": null,
+       "ci95_lift_event": null,
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 0 fired < 20",
+         "fold 1: 0 fired < 20",
+         "fold 2: 0 fired < 20",
+         "fold 3: 0 fired < 20",
+         "fold 4: 0 fired < 20"
+        ]
+       }
+      }
+     },
+     "onset": {
+      "30m": {
+       "n": 0,
+       "precision": null,
+       "base_event": 0.002,
+       "base_hour": 0.001,
+       "lift_event": null,
+       "lift_hour": null,
+       "ci95_lift_event": null,
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 0 fired < 20",
+         "fold 1: 0 fired < 20",
+         "fold 2: 0 fired < 20",
+         "fold 3: 0 fired < 20",
+         "fold 4: 0 fired < 20"
+        ]
+       }
+      },
+      "1h": {
+       "n": 0,
+       "precision": null,
+       "base_event": 0.003,
+       "base_hour": 0.002,
+       "lift_event": null,
+       "lift_hour": null,
+       "ci95_lift_event": null,
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 0 fired < 20",
+         "fold 1: 0 fired < 20",
+         "fold 2: 0 fired < 20",
+         "fold 3: 0 fired < 20",
+         "fold 4: 0 fired < 20"
+        ]
+       }
+      },
+      "2h": {
+       "n": 0,
+       "precision": null,
+       "base_event": 0.006,
+       "base_hour": 0.004,
+       "lift_event": null,
+       "lift_hour": null,
+       "ci95_lift_event": null,
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 0 fired < 20",
+         "fold 1: 0 fired < 20",
+         "fold 2: 0 fired < 20",
+         "fold 3: 0 fired < 20",
+         "fold 4: 0 fired < 20"
+        ]
+       }
+      },
+      "4h": {
+       "n": 0,
+       "precision": null,
+       "base_event": 0.01,
+       "base_hour": 0.008,
+       "lift_event": null,
+       "lift_hour": null,
+       "ci95_lift_event": null,
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 0 fired < 20",
+         "fold 1: 0 fired < 20",
+         "fold 2: 0 fired < 20",
+         "fold 3: 0 fired < 20",
+         "fold 4: 0 fired < 20"
+        ]
+       }
+      }
+     },
+     "symmetric": {
+      "30m": {
+       "n": 0,
+       "precision": null,
+       "base_event": 0.003,
+       "base_hour": 0.002,
+       "lift_event": null,
+       "lift_hour": null,
+       "ci95_lift_event": null,
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 0 fired < 20",
+         "fold 1: 0 fired < 20",
+         "fold 2: 0 fired < 20",
+         "fold 3: 0 fired < 20",
+         "fold 4: 0 fired < 20"
+        ]
+       }
+      },
+      "1h": {
+       "n": 0,
+       "precision": null,
+       "base_event": 0.006,
+       "base_hour": 0.004,
+       "lift_event": null,
+       "lift_hour": null,
+       "ci95_lift_event": null,
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 0 fired < 20",
+         "fold 1: 0 fired < 20",
+         "fold 2: 0 fired < 20",
+         "fold 3: 0 fired < 20",
+         "fold 4: 0 fired < 20"
+        ]
+       }
+      },
+      "2h": {
+       "n": 0,
+       "precision": null,
+       "base_event": 0.013,
+       "base_hour": 0.009,
+       "lift_event": null,
+       "lift_hour": null,
+       "ci95_lift_event": null,
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 0 fired < 20",
+         "fold 1: 0 fired < 20",
+         "fold 2: 0 fired < 20",
+         "fold 3: 0 fired < 20",
+         "fold 4: 0 fired < 20"
+        ]
+       }
+      },
+      "4h": {
+       "n": 0,
+       "precision": null,
+       "base_event": 0.022,
+       "base_hour": 0.016,
+       "lift_event": null,
+       "lift_hour": null,
+       "ci95_lift_event": null,
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 0 fired < 20",
+         "fold 1: 0 fired < 20",
+         "fold 2: 0 fired < 20",
+         "fold 3: 0 fired < 20",
+         "fold 4: 0 fired < 20"
+        ]
+       }
+      }
+     },
+     "lead_minutes": {
+      "forward": {
+       "n": 0,
+       "within": "4h",
+       "median": null,
+       "q1": null,
+       "q3": null
+      },
+      "onset": {
+       "n": 0,
+       "within": "4h",
+       "median": null,
+       "q1": null,
+       "q3": null
+      }
+     }
+    }
+   },
+   "auc": {
+    "forward": {
+     "30m": 0.748,
+     "1h": 0.68,
+     "2h": 0.665,
+     "4h": 0.587
+    },
+    "onset": {
+     "30m": 0.749,
+     "1h": 0.681,
+     "2h": 0.666,
+     "4h": 0.589
+    }
+   }
+  },
+  "credentials": {
+   "category": "surreptitious-or-deceptive",
+   "levels": {
+    "warm": {
+     "forward": {
+      "30m": {
+       "n": 0,
+       "precision": null,
+       "base_event": 0.009,
+       "base_hour": 0.006,
+       "lift_event": null,
+       "lift_hour": null,
+       "ci95_lift_event": null,
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 0 fired < 20",
+         "fold 1: 0 fired < 20",
+         "fold 2: 0 fired < 20",
+         "fold 3: 0 fired < 20",
+         "fold 4: 0 fired < 20"
+        ]
+       }
+      },
+      "1h": {
+       "n": 0,
+       "precision": null,
+       "base_event": 0.018,
+       "base_hour": 0.012,
+       "lift_event": null,
+       "lift_hour": null,
+       "ci95_lift_event": null,
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 0 fired < 20",
+         "fold 1: 0 fired < 20",
+         "fold 2: 0 fired < 20",
+         "fold 3: 0 fired < 20",
+         "fold 4: 0 fired < 20"
+        ]
+       }
+      },
+      "2h": {
+       "n": 0,
+       "precision": null,
+       "base_event": 0.033,
+       "base_hour": 0.021,
+       "lift_event": null,
+       "lift_hour": null,
+       "ci95_lift_event": null,
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 0 fired < 20",
+         "fold 1: 0 fired < 20",
+         "fold 2: 0 fired < 20",
+         "fold 3: 0 fired < 20",
+         "fold 4: 0 fired < 20"
+        ]
+       }
+      },
+      "4h": {
+       "n": 0,
+       "precision": null,
+       "base_event": 0.046,
+       "base_hour": 0.03,
+       "lift_event": null,
+       "lift_hour": null,
+       "ci95_lift_event": null,
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 0 fired < 20",
+         "fold 1: 0 fired < 20",
+         "fold 2: 0 fired < 20",
+         "fold 3: 0 fired < 20",
+         "fold 4: 0 fired < 20"
+        ]
+       }
+      }
+     },
+     "onset": {
+      "30m": {
+       "n": 0,
+       "precision": null,
+       "base_event": 0.008,
+       "base_hour": 0.005,
+       "lift_event": null,
+       "lift_hour": null,
+       "ci95_lift_event": null,
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 0 fired < 20",
+         "fold 1: 0 fired < 20",
+         "fold 2: 0 fired < 20",
+         "fold 3: 0 fired < 20",
+         "fold 4: 0 fired < 20"
+        ]
+       }
+      },
+      "1h": {
+       "n": 0,
+       "precision": null,
+       "base_event": 0.016,
+       "base_hour": 0.011,
+       "lift_event": null,
+       "lift_hour": null,
+       "ci95_lift_event": null,
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 0 fired < 20",
+         "fold 1: 0 fired < 20",
+         "fold 2: 0 fired < 20",
+         "fold 3: 0 fired < 20",
+         "fold 4: 0 fired < 20"
+        ]
+       }
+      },
+      "2h": {
+       "n": 0,
+       "precision": null,
+       "base_event": 0.03,
+       "base_hour": 0.02,
+       "lift_event": null,
+       "lift_hour": null,
+       "ci95_lift_event": null,
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 0 fired < 20",
+         "fold 1: 0 fired < 20",
+         "fold 2: 0 fired < 20",
+         "fold 3: 0 fired < 20",
+         "fold 4: 0 fired < 20"
+        ]
+       }
+      },
+      "4h": {
+       "n": 0,
+       "precision": null,
+       "base_event": 0.041,
+       "base_hour": 0.027,
+       "lift_event": null,
+       "lift_hour": null,
+       "ci95_lift_event": null,
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 0 fired < 20",
+         "fold 1: 0 fired < 20",
+         "fold 2: 0 fired < 20",
+         "fold 3: 0 fired < 20",
+         "fold 4: 0 fired < 20"
+        ]
+       }
+      }
+     },
+     "symmetric": {
+      "30m": {
+       "n": 0,
+       "precision": null,
+       "base_event": 0.02,
+       "base_hour": 0.013,
+       "lift_event": null,
+       "lift_hour": null,
+       "ci95_lift_event": null,
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 0 fired < 20",
+         "fold 1: 0 fired < 20",
+         "fold 2: 0 fired < 20",
+         "fold 3: 0 fired < 20",
+         "fold 4: 0 fired < 20"
+        ]
+       }
+      },
+      "1h": {
+       "n": 0,
+       "precision": null,
+       "base_event": 0.035,
+       "base_hour": 0.024,
+       "lift_event": null,
+       "lift_hour": null,
+       "ci95_lift_event": null,
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 0 fired < 20",
+         "fold 1: 0 fired < 20",
+         "fold 2: 0 fired < 20",
+         "fold 3: 0 fired < 20",
+         "fold 4: 0 fired < 20"
+        ]
+       }
+      },
+      "2h": {
+       "n": 0,
+       "precision": null,
+       "base_event": 0.062,
+       "base_hour": 0.043,
+       "lift_event": null,
+       "lift_hour": null,
+       "ci95_lift_event": null,
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 0 fired < 20",
+         "fold 1: 0 fired < 20",
+         "fold 2: 0 fired < 20",
+         "fold 3: 0 fired < 20",
+         "fold 4: 0 fired < 20"
+        ]
+       }
+      },
+      "4h": {
+       "n": 0,
+       "precision": null,
+       "base_event": 0.091,
+       "base_hour": 0.07,
+       "lift_event": null,
+       "lift_hour": null,
+       "ci95_lift_event": null,
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 0 fired < 20",
+         "fold 1: 0 fired < 20",
+         "fold 2: 0 fired < 20",
+         "fold 3: 0 fired < 20",
+         "fold 4: 0 fired < 20"
+        ]
+       }
+      }
+     },
+     "lead_minutes": {
+      "forward": {
+       "n": 0,
+       "within": "4h",
+       "median": null,
+       "q1": null,
+       "q3": null
+      },
+      "onset": {
+       "n": 0,
+       "within": "4h",
+       "median": null,
+       "q1": null,
+       "q3": null
+      }
+     }
+    },
+    "hot+": {
+     "forward": {
+      "30m": {
+       "n": 0,
+       "precision": null,
+       "base_event": 0.009,
+       "base_hour": 0.006,
+       "lift_event": null,
+       "lift_hour": null,
+       "ci95_lift_event": null,
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 0 fired < 20",
+         "fold 1: 0 fired < 20",
+         "fold 2: 0 fired < 20",
+         "fold 3: 0 fired < 20",
+         "fold 4: 0 fired < 20"
+        ]
+       }
+      },
+      "1h": {
+       "n": 0,
+       "precision": null,
+       "base_event": 0.018,
+       "base_hour": 0.012,
+       "lift_event": null,
+       "lift_hour": null,
+       "ci95_lift_event": null,
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 0 fired < 20",
+         "fold 1: 0 fired < 20",
+         "fold 2: 0 fired < 20",
+         "fold 3: 0 fired < 20",
+         "fold 4: 0 fired < 20"
+        ]
+       }
+      },
+      "2h": {
+       "n": 0,
+       "precision": null,
+       "base_event": 0.033,
+       "base_hour": 0.021,
+       "lift_event": null,
+       "lift_hour": null,
+       "ci95_lift_event": null,
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 0 fired < 20",
+         "fold 1: 0 fired < 20",
+         "fold 2: 0 fired < 20",
+         "fold 3: 0 fired < 20",
+         "fold 4: 0 fired < 20"
+        ]
+       }
+      },
+      "4h": {
+       "n": 0,
+       "precision": null,
+       "base_event": 0.046,
+       "base_hour": 0.03,
+       "lift_event": null,
+       "lift_hour": null,
+       "ci95_lift_event": null,
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 0 fired < 20",
+         "fold 1: 0 fired < 20",
+         "fold 2: 0 fired < 20",
+         "fold 3: 0 fired < 20",
+         "fold 4: 0 fired < 20"
+        ]
+       }
+      }
+     },
+     "onset": {
+      "30m": {
+       "n": 0,
+       "precision": null,
+       "base_event": 0.008,
+       "base_hour": 0.005,
+       "lift_event": null,
+       "lift_hour": null,
+       "ci95_lift_event": null,
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 0 fired < 20",
+         "fold 1: 0 fired < 20",
+         "fold 2: 0 fired < 20",
+         "fold 3: 0 fired < 20",
+         "fold 4: 0 fired < 20"
+        ]
+       }
+      },
+      "1h": {
+       "n": 0,
+       "precision": null,
+       "base_event": 0.016,
+       "base_hour": 0.011,
+       "lift_event": null,
+       "lift_hour": null,
+       "ci95_lift_event": null,
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 0 fired < 20",
+         "fold 1: 0 fired < 20",
+         "fold 2: 0 fired < 20",
+         "fold 3: 0 fired < 20",
+         "fold 4: 0 fired < 20"
+        ]
+       }
+      },
+      "2h": {
+       "n": 0,
+       "precision": null,
+       "base_event": 0.03,
+       "base_hour": 0.02,
+       "lift_event": null,
+       "lift_hour": null,
+       "ci95_lift_event": null,
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 0 fired < 20",
+         "fold 1: 0 fired < 20",
+         "fold 2: 0 fired < 20",
+         "fold 3: 0 fired < 20",
+         "fold 4: 0 fired < 20"
+        ]
+       }
+      },
+      "4h": {
+       "n": 0,
+       "precision": null,
+       "base_event": 0.041,
+       "base_hour": 0.027,
+       "lift_event": null,
+       "lift_hour": null,
+       "ci95_lift_event": null,
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 0 fired < 20",
+         "fold 1: 0 fired < 20",
+         "fold 2: 0 fired < 20",
+         "fold 3: 0 fired < 20",
+         "fold 4: 0 fired < 20"
+        ]
+       }
+      }
+     },
+     "symmetric": {
+      "30m": {
+       "n": 0,
+       "precision": null,
+       "base_event": 0.02,
+       "base_hour": 0.013,
+       "lift_event": null,
+       "lift_hour": null,
+       "ci95_lift_event": null,
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 0 fired < 20",
+         "fold 1: 0 fired < 20",
+         "fold 2: 0 fired < 20",
+         "fold 3: 0 fired < 20",
+         "fold 4: 0 fired < 20"
+        ]
+       }
+      },
+      "1h": {
+       "n": 0,
+       "precision": null,
+       "base_event": 0.035,
+       "base_hour": 0.024,
+       "lift_event": null,
+       "lift_hour": null,
+       "ci95_lift_event": null,
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 0 fired < 20",
+         "fold 1: 0 fired < 20",
+         "fold 2: 0 fired < 20",
+         "fold 3: 0 fired < 20",
+         "fold 4: 0 fired < 20"
+        ]
+       }
+      },
+      "2h": {
+       "n": 0,
+       "precision": null,
+       "base_event": 0.062,
+       "base_hour": 0.043,
+       "lift_event": null,
+       "lift_hour": null,
+       "ci95_lift_event": null,
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 0 fired < 20",
+         "fold 1: 0 fired < 20",
+         "fold 2: 0 fired < 20",
+         "fold 3: 0 fired < 20",
+         "fold 4: 0 fired < 20"
+        ]
+       }
+      },
+      "4h": {
+       "n": 0,
+       "precision": null,
+       "base_event": 0.091,
+       "base_hour": 0.07,
+       "lift_event": null,
+       "lift_hour": null,
+       "ci95_lift_event": null,
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 0 fired < 20",
+         "fold 1: 0 fired < 20",
+         "fold 2: 0 fired < 20",
+         "fold 3: 0 fired < 20",
+         "fold 4: 0 fired < 20"
+        ]
+       }
+      }
+     },
+     "lead_minutes": {
+      "forward": {
+       "n": 0,
+       "within": "4h",
+       "median": null,
+       "q1": null,
+       "q3": null
+      },
+      "onset": {
+       "n": 0,
+       "within": "4h",
+       "median": null,
+       "q1": null,
+       "q3": null
+      }
+     }
+    },
+    "critical": {
+     "forward": {
+      "30m": {
+       "n": 0,
+       "precision": null,
+       "base_event": 0.009,
+       "base_hour": 0.006,
+       "lift_event": null,
+       "lift_hour": null,
+       "ci95_lift_event": null,
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 0 fired < 20",
+         "fold 1: 0 fired < 20",
+         "fold 2: 0 fired < 20",
+         "fold 3: 0 fired < 20",
+         "fold 4: 0 fired < 20"
+        ]
+       }
+      },
+      "1h": {
+       "n": 0,
+       "precision": null,
+       "base_event": 0.018,
+       "base_hour": 0.012,
+       "lift_event": null,
+       "lift_hour": null,
+       "ci95_lift_event": null,
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 0 fired < 20",
+         "fold 1: 0 fired < 20",
+         "fold 2: 0 fired < 20",
+         "fold 3: 0 fired < 20",
+         "fold 4: 0 fired < 20"
+        ]
+       }
+      },
+      "2h": {
+       "n": 0,
+       "precision": null,
+       "base_event": 0.033,
+       "base_hour": 0.021,
+       "lift_event": null,
+       "lift_hour": null,
+       "ci95_lift_event": null,
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 0 fired < 20",
+         "fold 1: 0 fired < 20",
+         "fold 2: 0 fired < 20",
+         "fold 3: 0 fired < 20",
+         "fold 4: 0 fired < 20"
+        ]
+       }
+      },
+      "4h": {
+       "n": 0,
+       "precision": null,
+       "base_event": 0.046,
+       "base_hour": 0.03,
+       "lift_event": null,
+       "lift_hour": null,
+       "ci95_lift_event": null,
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 0 fired < 20",
+         "fold 1: 0 fired < 20",
+         "fold 2: 0 fired < 20",
+         "fold 3: 0 fired < 20",
+         "fold 4: 0 fired < 20"
+        ]
+       }
+      }
+     },
+     "onset": {
+      "30m": {
+       "n": 0,
+       "precision": null,
+       "base_event": 0.008,
+       "base_hour": 0.005,
+       "lift_event": null,
+       "lift_hour": null,
+       "ci95_lift_event": null,
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 0 fired < 20",
+         "fold 1: 0 fired < 20",
+         "fold 2: 0 fired < 20",
+         "fold 3: 0 fired < 20",
+         "fold 4: 0 fired < 20"
+        ]
+       }
+      },
+      "1h": {
+       "n": 0,
+       "precision": null,
+       "base_event": 0.016,
+       "base_hour": 0.011,
+       "lift_event": null,
+       "lift_hour": null,
+       "ci95_lift_event": null,
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 0 fired < 20",
+         "fold 1: 0 fired < 20",
+         "fold 2: 0 fired < 20",
+         "fold 3: 0 fired < 20",
+         "fold 4: 0 fired < 20"
+        ]
+       }
+      },
+      "2h": {
+       "n": 0,
+       "precision": null,
+       "base_event": 0.03,
+       "base_hour": 0.02,
+       "lift_event": null,
+       "lift_hour": null,
+       "ci95_lift_event": null,
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 0 fired < 20",
+         "fold 1: 0 fired < 20",
+         "fold 2: 0 fired < 20",
+         "fold 3: 0 fired < 20",
+         "fold 4: 0 fired < 20"
+        ]
+       }
+      },
+      "4h": {
+       "n": 0,
+       "precision": null,
+       "base_event": 0.041,
+       "base_hour": 0.027,
+       "lift_event": null,
+       "lift_hour": null,
+       "ci95_lift_event": null,
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 0 fired < 20",
+         "fold 1: 0 fired < 20",
+         "fold 2: 0 fired < 20",
+         "fold 3: 0 fired < 20",
+         "fold 4: 0 fired < 20"
+        ]
+       }
+      }
+     },
+     "symmetric": {
+      "30m": {
+       "n": 0,
+       "precision": null,
+       "base_event": 0.02,
+       "base_hour": 0.013,
+       "lift_event": null,
+       "lift_hour": null,
+       "ci95_lift_event": null,
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 0 fired < 20",
+         "fold 1: 0 fired < 20",
+         "fold 2: 0 fired < 20",
+         "fold 3: 0 fired < 20",
+         "fold 4: 0 fired < 20"
+        ]
+       }
+      },
+      "1h": {
+       "n": 0,
+       "precision": null,
+       "base_event": 0.035,
+       "base_hour": 0.024,
+       "lift_event": null,
+       "lift_hour": null,
+       "ci95_lift_event": null,
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 0 fired < 20",
+         "fold 1: 0 fired < 20",
+         "fold 2: 0 fired < 20",
+         "fold 3: 0 fired < 20",
+         "fold 4: 0 fired < 20"
+        ]
+       }
+      },
+      "2h": {
+       "n": 0,
+       "precision": null,
+       "base_event": 0.062,
+       "base_hour": 0.043,
+       "lift_event": null,
+       "lift_hour": null,
+       "ci95_lift_event": null,
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 0 fired < 20",
+         "fold 1: 0 fired < 20",
+         "fold 2: 0 fired < 20",
+         "fold 3: 0 fired < 20",
+         "fold 4: 0 fired < 20"
+        ]
+       }
+      },
+      "4h": {
+       "n": 0,
+       "precision": null,
+       "base_event": 0.091,
+       "base_hour": 0.07,
+       "lift_event": null,
+       "lift_hour": null,
+       "ci95_lift_event": null,
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 0 fired < 20",
+         "fold 1: 0 fired < 20",
+         "fold 2: 0 fired < 20",
+         "fold 3: 0 fired < 20",
+         "fold 4: 0 fired < 20"
+        ]
+       }
+      }
+     },
+     "lead_minutes": {
+      "forward": {
+       "n": 0,
+       "within": "4h",
+       "median": null,
+       "q1": null,
+       "q3": null
+      },
+      "onset": {
+       "n": 0,
+       "within": "4h",
+       "median": null,
+       "q1": null,
+       "q3": null
+      }
+     }
+    }
+   },
+   "auc": {
+    "forward": {
+     "30m": 0.507,
+     "1h": 0.503,
+     "2h": 0.499,
+     "4h": 0.505
+    },
+    "onset": {
+     "30m": 0.51,
+     "1h": 0.506,
+     "2h": 0.501,
+     "4h": 0.508
+    }
+   }
+  },
+  "general": {
+   "category": "general",
+   "levels": {
+    "warm": {
+     "forward": {
+      "30m": {
+       "n": 71,
+       "precision": 0.028,
+       "base_event": 0.025,
+       "base_hour": 0.014,
+       "lift_event": 1.14,
+       "lift_hour": 2.03,
+       "ci95_lift_event": [
+        0.0,
+        2.9
+       ],
+       "folds": {
+        "used": 1,
+        "lifts": [
+         1.39
+        ],
+        "mean": 1.39,
+        "min": 1.39,
+        "max": 1.39,
+        "skipped": [
+         "fold 1: 10 fired < 20",
+         "fold 2: 11 fired < 20",
+         "fold 3: 19 fired < 20",
+         "fold 4: 9 fired < 20"
+        ]
+       }
+      },
+      "1h": {
+       "n": 71,
+       "precision": 0.042,
+       "base_event": 0.047,
+       "base_hour": 0.03,
+       "lift_event": 0.9,
+       "lift_hour": 1.39,
+       "ci95_lift_event": [
+        0.0,
+        2.27
+       ],
+       "folds": {
+        "used": 1,
+        "lifts": [
+         1.42
+        ],
+        "mean": 1.42,
+        "min": 1.42,
+        "max": 1.42,
+        "skipped": [
+         "fold 1: 10 fired < 20",
+         "fold 2: 11 fired < 20",
+         "fold 3: 19 fired < 20",
+         "fold 4: 9 fired < 20"
+        ]
+       }
+      },
+      "2h": {
+       "n": 71,
+       "precision": 0.113,
+       "base_event": 0.087,
+       "base_hour": 0.056,
+       "lift_event": 1.3,
+       "lift_hour": 2.02,
+       "ci95_lift_event": [
+        0.5,
+        2.42
+       ],
+       "folds": {
+        "used": 1,
+        "lifts": [
+         1.11
+        ],
+        "mean": 1.11,
+        "min": 1.11,
+        "max": 1.11,
+        "skipped": [
+         "fold 1: 10 fired < 20",
+         "fold 2: 11 fired < 20",
+         "fold 3: 19 fired < 20",
+         "fold 4: 9 fired < 20"
+        ]
+       }
+      },
+      "4h": {
+       "n": 71,
+       "precision": 0.183,
+       "base_event": 0.126,
+       "base_hour": 0.084,
+       "lift_event": 1.45,
+       "lift_hour": 2.17,
+       "ci95_lift_event": [
+        0.65,
+        2.66
+       ],
+       "folds": {
+        "used": 1,
+        "lifts": [
+         1.44
+        ],
+        "mean": 1.44,
+        "min": 1.44,
+        "max": 1.44,
+        "skipped": [
+         "fold 1: 10 fired < 20",
+         "fold 2: 11 fired < 20",
+         "fold 3: 19 fired < 20",
+         "fold 4: 9 fired < 20"
+        ]
+       }
+      }
+     },
+     "onset": {
+      "30m": {
+       "n": 55,
+       "precision": 0.018,
+       "base_event": 0.023,
+       "base_hour": 0.013,
+       "lift_event": 0.8,
+       "lift_hour": 1.44,
+       "ci95_lift_event": [
+        0.0,
+        3.23
+       ],
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 18 fired < 20",
+         "fold 1: 9 fired < 20",
+         "fold 2: 9 fired < 20",
+         "fold 3: 14 fired < 20",
+         "fold 4: 5 fired < 20"
+        ]
+       }
+      },
+      "1h": {
+       "n": 55,
+       "precision": 0.036,
+       "base_event": 0.041,
+       "base_hour": 0.027,
+       "lift_event": 0.88,
+       "lift_hour": 1.36,
+       "ci95_lift_event": [
+        0.0,
+        2.3
+       ],
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 18 fired < 20",
+         "fold 1: 9 fired < 20",
+         "fold 2: 9 fired < 20",
+         "fold 3: 14 fired < 20",
+         "fold 4: 5 fired < 20"
+        ]
+       }
+      },
+      "2h": {
+       "n": 55,
+       "precision": 0.109,
+       "base_event": 0.076,
+       "base_hour": 0.049,
+       "lift_event": 1.43,
+       "lift_hour": 2.21,
+       "ci95_lift_event": [
+        0.48,
+        2.65
+       ],
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 18 fired < 20",
+         "fold 1: 9 fired < 20",
+         "fold 2: 9 fired < 20",
+         "fold 3: 14 fired < 20",
+         "fold 4: 5 fired < 20"
+        ]
+       }
+      },
+      "4h": {
+       "n": 55,
+       "precision": 0.182,
+       "base_event": 0.113,
+       "base_hour": 0.077,
+       "lift_event": 1.6,
+       "lift_hour": 2.36,
+       "ci95_lift_event": [
+        0.75,
+        3.14
+       ],
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 18 fired < 20",
+         "fold 1: 9 fired < 20",
+         "fold 2: 9 fired < 20",
+         "fold 3: 14 fired < 20",
+         "fold 4: 5 fired < 20"
+        ]
+       }
+      }
+     },
+     "symmetric": {
+      "30m": {
+       "n": 71,
+       "precision": 0.099,
+       "base_event": 0.055,
+       "base_hour": 0.039,
+       "lift_event": 1.81,
+       "lift_hour": 2.53,
+       "ci95_lift_event": [
+        0.71,
+        3.47
+       ],
+       "folds": {
+        "used": 1,
+        "lifts": [
+         1.2
+        ],
+        "mean": 1.2,
+        "min": 1.2,
+        "max": 1.2,
+        "skipped": [
+         "fold 1: 10 fired < 20",
+         "fold 2: 11 fired < 20",
+         "fold 3: 19 fired < 20",
+         "fold 4: 9 fired < 20"
+        ]
+       }
+      },
+      "1h": {
+       "n": 71,
+       "precision": 0.183,
+       "base_event": 0.099,
+       "base_hour": 0.066,
+       "lift_event": 1.84,
+       "lift_hour": 2.78,
+       "ci95_lift_event": [
+        0.9,
+        3.4
+       ],
+       "folds": {
+        "used": 1,
+        "lifts": [
+         1.63
+        ],
+        "mean": 1.63,
+        "min": 1.63,
+        "max": 1.63,
+        "skipped": [
+         "fold 1: 10 fired < 20",
+         "fold 2: 11 fired < 20",
+         "fold 3: 19 fired < 20",
+         "fold 4: 9 fired < 20"
+        ]
+       }
+      },
+      "2h": {
+       "n": 71,
+       "precision": 0.31,
+       "base_event": 0.17,
+       "base_hour": 0.117,
+       "lift_event": 1.82,
+       "lift_hour": 2.65,
+       "ci95_lift_event": [
+        1.04,
+        2.8
+       ],
+       "folds": {
+        "used": 1,
+        "lifts": [
+         1.16
+        ],
+        "mean": 1.16,
+        "min": 1.16,
+        "max": 1.16,
+        "skipped": [
+         "fold 1: 10 fired < 20",
+         "fold 2: 11 fired < 20",
+         "fold 3: 19 fired < 20",
+         "fold 4: 9 fired < 20"
+        ]
+       }
+      },
+      "4h": {
+       "n": 71,
+       "precision": 0.394,
+       "base_event": 0.254,
+       "base_hour": 0.189,
+       "lift_event": 1.55,
+       "lift_hour": 2.08,
+       "ci95_lift_event": [
+        0.96,
+        2.34
+       ],
+       "folds": {
+        "used": 1,
+        "lifts": [
+         1.34
+        ],
+        "mean": 1.34,
+        "min": 1.34,
+        "max": 1.34,
+        "skipped": [
+         "fold 1: 10 fired < 20",
+         "fold 2: 11 fired < 20",
+         "fold 3: 19 fired < 20",
+         "fold 4: 9 fired < 20"
+        ]
+       }
+      }
+     },
+     "lead_minutes": {
+      "forward": {
+       "n": 13,
+       "within": "4h",
+       "median": 108.8,
+       "q1": 66.6,
+       "q3": 126.1
+      },
+      "onset": {
+       "n": 10,
+       "within": "4h",
+       "median": 112.6,
+       "q1": 76.1,
+       "q3": 124.9
+      }
+     }
+    },
+    "hot+": {
+     "forward": {
+      "30m": {
+       "n": 9,
+       "precision": 0.0,
+       "base_event": 0.025,
+       "base_hour": 0.014,
+       "lift_event": 0.0,
+       "lift_hour": 0.0,
+       "ci95_lift_event": [
+        0.0,
+        0.0
+       ],
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 4 fired < 20",
+         "fold 1: 3 fired < 20",
+         "fold 2: 2 fired < 20",
+         "fold 3: 0 fired < 20",
+         "fold 4: 0 fired < 20"
+        ]
+       }
+      },
+      "1h": {
+       "n": 9,
+       "precision": 0.0,
+       "base_event": 0.047,
+       "base_hour": 0.03,
+       "lift_event": 0.0,
+       "lift_hour": 0.0,
+       "ci95_lift_event": [
+        0.0,
+        0.0
+       ],
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 4 fired < 20",
+         "fold 1: 3 fired < 20",
+         "fold 2: 2 fired < 20",
+         "fold 3: 0 fired < 20",
+         "fold 4: 0 fired < 20"
+        ]
+       }
+      },
+      "2h": {
+       "n": 9,
+       "precision": 0.0,
+       "base_event": 0.087,
+       "base_hour": 0.056,
+       "lift_event": 0.0,
+       "lift_hour": 0.0,
+       "ci95_lift_event": [
+        0.0,
+        0.0
+       ],
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 4 fired < 20",
+         "fold 1: 3 fired < 20",
+         "fold 2: 2 fired < 20",
+         "fold 3: 0 fired < 20",
+         "fold 4: 0 fired < 20"
+        ]
+       }
+      },
+      "4h": {
+       "n": 9,
+       "precision": 0.0,
+       "base_event": 0.126,
+       "base_hour": 0.084,
+       "lift_event": 0.0,
+       "lift_hour": 0.0,
+       "ci95_lift_event": [
+        0.0,
+        0.0
+       ],
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 4 fired < 20",
+         "fold 1: 3 fired < 20",
+         "fold 2: 2 fired < 20",
+         "fold 3: 0 fired < 20",
+         "fold 4: 0 fired < 20"
+        ]
+       }
+      }
+     },
+     "onset": {
+      "30m": {
+       "n": 6,
+       "precision": 0.0,
+       "base_event": 0.023,
+       "base_hour": 0.013,
+       "lift_event": 0.0,
+       "lift_hour": 0.0,
+       "ci95_lift_event": [
+        0.0,
+        0.0
+       ],
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 3 fired < 20",
+         "fold 1: 2 fired < 20",
+         "fold 2: 1 fired < 20",
+         "fold 3: 0 fired < 20",
+         "fold 4: 0 fired < 20"
+        ]
+       }
+      },
+      "1h": {
+       "n": 6,
+       "precision": 0.0,
+       "base_event": 0.041,
+       "base_hour": 0.027,
+       "lift_event": 0.0,
+       "lift_hour": 0.0,
+       "ci95_lift_event": [
+        0.0,
+        0.0
+       ],
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 3 fired < 20",
+         "fold 1: 2 fired < 20",
+         "fold 2: 1 fired < 20",
+         "fold 3: 0 fired < 20",
+         "fold 4: 0 fired < 20"
+        ]
+       }
+      },
+      "2h": {
+       "n": 6,
+       "precision": 0.0,
+       "base_event": 0.076,
+       "base_hour": 0.049,
+       "lift_event": 0.0,
+       "lift_hour": 0.0,
+       "ci95_lift_event": [
+        0.0,
+        0.0
+       ],
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 3 fired < 20",
+         "fold 1: 2 fired < 20",
+         "fold 2: 1 fired < 20",
+         "fold 3: 0 fired < 20",
+         "fold 4: 0 fired < 20"
+        ]
+       }
+      },
+      "4h": {
+       "n": 6,
+       "precision": 0.0,
+       "base_event": 0.113,
+       "base_hour": 0.077,
+       "lift_event": 0.0,
+       "lift_hour": 0.0,
+       "ci95_lift_event": [
+        0.0,
+        0.0
+       ],
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 3 fired < 20",
+         "fold 1: 2 fired < 20",
+         "fold 2: 1 fired < 20",
+         "fold 3: 0 fired < 20",
+         "fold 4: 0 fired < 20"
+        ]
+       }
+      }
+     },
+     "symmetric": {
+      "30m": {
+       "n": 9,
+       "precision": 0.111,
+       "base_event": 0.055,
+       "base_hour": 0.039,
+       "lift_event": 2.04,
+       "lift_hour": 2.86,
+       "ci95_lift_event": [
+        0.0,
+        6.45
+       ],
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 4 fired < 20",
+         "fold 1: 3 fired < 20",
+         "fold 2: 2 fired < 20",
+         "fold 3: 0 fired < 20",
+         "fold 4: 0 fired < 20"
+        ]
+       }
+      },
+      "1h": {
+       "n": 9,
+       "precision": 0.222,
+       "base_event": 0.099,
+       "base_hour": 0.066,
+       "lift_event": 2.23,
+       "lift_hour": 3.38,
+       "ci95_lift_event": [
+        0.0,
+        9.75
+       ],
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 4 fired < 20",
+         "fold 1: 3 fired < 20",
+         "fold 2: 2 fired < 20",
+         "fold 3: 0 fired < 20",
+         "fold 4: 0 fired < 20"
+        ]
+       }
+      },
+      "2h": {
+       "n": 9,
+       "precision": 0.333,
+       "base_event": 0.17,
+       "base_hour": 0.117,
+       "lift_event": 1.96,
+       "lift_hour": 2.85,
+       "ci95_lift_event": [
+        0.0,
+        5.87
+       ],
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 4 fired < 20",
+         "fold 1: 3 fired < 20",
+         "fold 2: 2 fired < 20",
+         "fold 3: 0 fired < 20",
+         "fold 4: 0 fired < 20"
+        ]
+       }
+      },
+      "4h": {
+       "n": 9,
+       "precision": 0.556,
+       "base_event": 0.254,
+       "base_hour": 0.189,
+       "lift_event": 2.19,
+       "lift_hour": 2.93,
+       "ci95_lift_event": [
+        0.0,
+        4.44
+       ],
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 4 fired < 20",
+         "fold 1: 3 fired < 20",
+         "fold 2: 2 fired < 20",
+         "fold 3: 0 fired < 20",
+         "fold 4: 0 fired < 20"
+        ]
+       }
+      }
+     },
+     "lead_minutes": {
+      "forward": {
+       "n": 0,
+       "within": "4h",
+       "median": null,
+       "q1": null,
+       "q3": null
+      },
+      "onset": {
+       "n": 0,
+       "within": "4h",
+       "median": null,
+       "q1": null,
+       "q3": null
+      }
+     }
+    },
+    "critical": {
+     "forward": {
+      "30m": {
+       "n": 0,
+       "precision": null,
+       "base_event": 0.025,
+       "base_hour": 0.014,
+       "lift_event": null,
+       "lift_hour": null,
+       "ci95_lift_event": null,
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 0 fired < 20",
+         "fold 1: 0 fired < 20",
+         "fold 2: 0 fired < 20",
+         "fold 3: 0 fired < 20",
+         "fold 4: 0 fired < 20"
+        ]
+       }
+      },
+      "1h": {
+       "n": 0,
+       "precision": null,
+       "base_event": 0.047,
+       "base_hour": 0.03,
+       "lift_event": null,
+       "lift_hour": null,
+       "ci95_lift_event": null,
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 0 fired < 20",
+         "fold 1: 0 fired < 20",
+         "fold 2: 0 fired < 20",
+         "fold 3: 0 fired < 20",
+         "fold 4: 0 fired < 20"
+        ]
+       }
+      },
+      "2h": {
+       "n": 0,
+       "precision": null,
+       "base_event": 0.087,
+       "base_hour": 0.056,
+       "lift_event": null,
+       "lift_hour": null,
+       "ci95_lift_event": null,
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 0 fired < 20",
+         "fold 1: 0 fired < 20",
+         "fold 2: 0 fired < 20",
+         "fold 3: 0 fired < 20",
+         "fold 4: 0 fired < 20"
+        ]
+       }
+      },
+      "4h": {
+       "n": 0,
+       "precision": null,
+       "base_event": 0.126,
+       "base_hour": 0.084,
+       "lift_event": null,
+       "lift_hour": null,
+       "ci95_lift_event": null,
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 0 fired < 20",
+         "fold 1: 0 fired < 20",
+         "fold 2: 0 fired < 20",
+         "fold 3: 0 fired < 20",
+         "fold 4: 0 fired < 20"
+        ]
+       }
+      }
+     },
+     "onset": {
+      "30m": {
+       "n": 0,
+       "precision": null,
+       "base_event": 0.023,
+       "base_hour": 0.013,
+       "lift_event": null,
+       "lift_hour": null,
+       "ci95_lift_event": null,
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 0 fired < 20",
+         "fold 1: 0 fired < 20",
+         "fold 2: 0 fired < 20",
+         "fold 3: 0 fired < 20",
+         "fold 4: 0 fired < 20"
+        ]
+       }
+      },
+      "1h": {
+       "n": 0,
+       "precision": null,
+       "base_event": 0.041,
+       "base_hour": 0.027,
+       "lift_event": null,
+       "lift_hour": null,
+       "ci95_lift_event": null,
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 0 fired < 20",
+         "fold 1: 0 fired < 20",
+         "fold 2: 0 fired < 20",
+         "fold 3: 0 fired < 20",
+         "fold 4: 0 fired < 20"
+        ]
+       }
+      },
+      "2h": {
+       "n": 0,
+       "precision": null,
+       "base_event": 0.076,
+       "base_hour": 0.049,
+       "lift_event": null,
+       "lift_hour": null,
+       "ci95_lift_event": null,
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 0 fired < 20",
+         "fold 1: 0 fired < 20",
+         "fold 2: 0 fired < 20",
+         "fold 3: 0 fired < 20",
+         "fold 4: 0 fired < 20"
+        ]
+       }
+      },
+      "4h": {
+       "n": 0,
+       "precision": null,
+       "base_event": 0.113,
+       "base_hour": 0.077,
+       "lift_event": null,
+       "lift_hour": null,
+       "ci95_lift_event": null,
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 0 fired < 20",
+         "fold 1: 0 fired < 20",
+         "fold 2: 0 fired < 20",
+         "fold 3: 0 fired < 20",
+         "fold 4: 0 fired < 20"
+        ]
+       }
+      }
+     },
+     "symmetric": {
+      "30m": {
+       "n": 0,
+       "precision": null,
+       "base_event": 0.055,
+       "base_hour": 0.039,
+       "lift_event": null,
+       "lift_hour": null,
+       "ci95_lift_event": null,
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 0 fired < 20",
+         "fold 1: 0 fired < 20",
+         "fold 2: 0 fired < 20",
+         "fold 3: 0 fired < 20",
+         "fold 4: 0 fired < 20"
+        ]
+       }
+      },
+      "1h": {
+       "n": 0,
+       "precision": null,
+       "base_event": 0.099,
+       "base_hour": 0.066,
+       "lift_event": null,
+       "lift_hour": null,
+       "ci95_lift_event": null,
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 0 fired < 20",
+         "fold 1: 0 fired < 20",
+         "fold 2: 0 fired < 20",
+         "fold 3: 0 fired < 20",
+         "fold 4: 0 fired < 20"
+        ]
+       }
+      },
+      "2h": {
+       "n": 0,
+       "precision": null,
+       "base_event": 0.17,
+       "base_hour": 0.117,
+       "lift_event": null,
+       "lift_hour": null,
+       "ci95_lift_event": null,
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 0 fired < 20",
+         "fold 1: 0 fired < 20",
+         "fold 2: 0 fired < 20",
+         "fold 3: 0 fired < 20",
+         "fold 4: 0 fired < 20"
+        ]
+       }
+      },
+      "4h": {
+       "n": 0,
+       "precision": null,
+       "base_event": 0.254,
+       "base_hour": 0.189,
+       "lift_event": null,
+       "lift_hour": null,
+       "ci95_lift_event": null,
+       "folds": {
+        "used": 0,
+        "lifts": [],
+        "mean": null,
+        "min": null,
+        "max": null,
+        "skipped": [
+         "fold 0: 0 fired < 20",
+         "fold 1: 0 fired < 20",
+         "fold 2: 0 fired < 20",
+         "fold 3: 0 fired < 20",
+         "fold 4: 0 fired < 20"
+        ]
+       }
+      }
+     },
+     "lead_minutes": {
+      "forward": {
+       "n": 0,
+       "within": "4h",
+       "median": null,
+       "q1": null,
+       "q3": null
+      },
+      "onset": {
+       "n": 0,
+       "within": "4h",
+       "median": null,
+       "q1": null,
+       "q3": null
+      }
+     }
+    }
+   },
+   "auc": {
+    "forward": {
+     "30m": 0.491,
+     "1h": 0.515,
+     "2h": 0.52,
+     "4h": 0.506
+    },
+    "onset": {
+     "30m": 0.491,
+     "1h": 0.513,
+     "2h": 0.519,
+     "4h": 0.505
+    }
+   }
+  }
+ }
+}

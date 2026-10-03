@@ -1,0 +1,243 @@
+{
+  "status": "E2 AND P8 JOINTLY UNSEALED AS EXACT BYTE COPIES; NO INTERPRETATION",
+  "completed_at_utc": "2026-10-03T02:23:20.455487+00:00",
+  "freeze_manifest_sha256": "6f11cc2685ee6aa4aa0338306233ab1478f05e98eb70856f9c758874c4990ad4",
+  "verification_before_extraction": {
+    "status": "ALL 13 SEALED RESULT FILE HASHES MATCH BEFORE JOINT EXTRACTION",
+    "verified_at_utc": "2026-10-03T02:23:20.168107+00:00",
+    "client_date": "2026-10-02",
+    "client_timezone": "America/New_York",
+    "freeze_manifest_sha256": "6f11cc2685ee6aa4aa0338306233ab1478f05e98eb70856f9c758874c4990ad4",
+    "all_four_agreements_and_every_frozen_file_rechecked": true,
+    "e2_zip_sha256": "e27c71dea7a064f15f080fddcc3b8463fa14f3d5b234e3bbc4426cf82cd36b74",
+    "e2_matches_sender_supplied_zip_prefix": true,
+    "full_sender_zip_digest_independently_supplied": false,
+    "full_expected_result_hash_source": "Original E2/P8 manifests, cross-checked against the signed deciding-file identifiers",
+    "p8_source_zip_sha256": "ee8f85662de884a76dd914d0342ea8bb0c789430e963d120671907e9d1bdfa10",
+    "files": [
+      {
+        "seal": "E2",
+        "path": "E2_SEALED/e2_1_medhigh_roster_noDS.json",
+        "expected_sha256": "01c23fd105f40e5afcfbf5751bf42457c02326ea0c7a8cfc176dadf47dfe00d3",
+        "actual_sha256": "01c23fd105f40e5afcfbf5751bf42457c02326ea0c7a8cfc176dadf47dfe00d3",
+        "match": true
+      },
+      {
+        "seal": "E2",
+        "path": "E2_SEALED/e2_1_medhigh_roster_noDS.report.txt",
+        "expected_sha256": "bb9d15ac6f2a304e46d6b59a3ef27cfbedd87cb2a0cae9c6e15ba3a9f6041610",
+        "actual_sha256": "bb9d15ac6f2a304e46d6b59a3ef27cfbedd87cb2a0cae9c6e15ba3a9f6041610",
+        "match": true
+      },
+      {
+        "seal": "E2",
+        "path": "E2_SEALED/e2_2_medhigh_roster_all.json",
+        "expected_sha256": "05d21af0fc983e5d50de44f0d9b27aa566948b314b18bb2d8e139d2736aa342a",
+        "actual_sha256": "05d21af0fc983e5d50de44f0d9b27aa566948b314b18bb2d8e139d2736aa342a",
+        "match": true
+      },
+      {
+        "seal": "E2",
+        "path": "E2_SEALED/e2_2_medhigh_roster_all.report.txt",
+        "expected_sha256": "65c27c74c380b1e9c80c46df604adfcf3ea2daf3f8507320f7acc23b98489edc",
+        "actual_sha256": "65c27c74c380b1e9c80c46df604adfcf3ea2daf3f8507320f7acc23b98489edc",
+        "match": true
+      },
+      {
+        "seal": "E2",
+        "path": "E2_SEALED/e2_3_medhigh_proxy_noDS.json",
+        "expected_sha256": "081587e2cdecde9e1f91d32e8313970ce7dd0a4a117923a39093f6bbf466fabf",
+        "actual_sha256": "081587e2cdecde9e1f91d32e8313970ce7dd0a4a117923a39093f6bbf466fabf",
+        "match": true
+      },
+      {
+        "seal": "E2",
+        "path": "E2_SEALED/e2_3_medhigh_proxy_noDS.report.txt",
+        "expected_sha256": "b4db6ac18341529f2f81dbfbfa7b9a3a8cec8c792b52b1ad0c5444ed8ff020e8",
+        "actual_sha256": "b4db6ac18341529f2f81dbfbfa7b9a3a8cec8c792b52b1ad0c5444ed8ff020e8",
+        "match": true
+      },
+      {
+        "seal": "E2",
+        "path": "E2_SEALED/e2_4_all_roster_noDS.json",
+        "expected_sha256": "5ee5794785f8c4031ffa78e77d6b6190c654b5ee1ef0be36d45add2fec50e4f6",
+        "actual_sha256": "5ee5794785f8c4031ffa78e77d6b6190c654b5ee1ef0be36d45add2fec50e4f6",
+        "match": true
+      },
+      {
+        "seal": "E2",
+        "path": "E2_SEALED/e2_4_all_roster_noDS.report.txt",
+        "expected_sha256": "fbb063a2bf126f990ae1dea1e818551eb65753271df7f243f6e230cff4a8cde9",
+        "actual_sha256": "fbb063a2bf126f990ae1dea1e818551eb65753271df7f243f6e230cff4a8cde9",
+        "match": true
+      },
+      {
+        "seal": "E2",
+        "path": "E2_SEALED/e2_5_all_proxy_all.json",
+        "expected_sha256": "b126a1fb442d1a51c5ec342ed6699c4083c46963e7754facc042199416297f0d",
+        "actual_sha256": "b126a1fb442d1a51c5ec342ed6699c4083c46963e7754facc042199416297f0d",
+        "match": true
+      },
+      {
+        "seal": "E2",
+        "path": "E2_SEALED/e2_5_all_proxy_all.report.txt",
+        "expected_sha256": "0a1ae1574c45f7fe3e63b2df316bd30a02a7791f1248f740f7722f4c43c9d75e",
+        "actual_sha256": "0a1ae1574c45f7fe3e63b2df316bd30a02a7791f1248f740f7722f4c43c9d75e",
+        "match": true
+      },
+      {
+        "seal": "E2",
+        "path": "E2_SEALED/e2_6_all_proxy_noDS.json",
+        "expected_sha256": "a2b0c8b9ed224669762a9db0fbe7183ab2c69ec94201c9e79429f1731e1b9a8a",
+        "actual_sha256": "a2b0c8b9ed224669762a9db0fbe7183ab2c69ec94201c9e79429f1731e1b9a8a",
+        "match": true
+      },
+      {
+        "seal": "E2",
+        "path": "E2_SEALED/e2_6_all_proxy_noDS.report.txt",
+        "expected_sha256": "e6c488cd59e5f7a127c2e0bae8d0b64e56b89e750aad69ed8cac212a647b2acd",
+        "actual_sha256": "e6c488cd59e5f7a127c2e0bae8d0b64e56b89e750aad69ed8cac212a647b2acd",
+        "match": true
+      },
+      {
+        "seal": "P8",
+        "path": "P8_SEALED/p8_heldout_medhigh_roster_noDS.json",
+        "expected_sha256": "158b7db5d9fc998756f81a51b913feb76149f40279c151f8a8a9015734012721",
+        "actual_sha256": "158b7db5d9fc998756f81a51b913feb76149f40279c151f8a8a9015734012721",
+        "match": true
+      }
+    ],
+    "result_json_parsed_or_reports_read_as_text": false,
+    "full_original_input_data_verified": false,
+    "input_data_limitation": "Original event/monitor/calibration input files are not all shipped locally. Result seal verification is complete; complete recomputation-input provenance is not claimed."
+  },
+  "e2_supplied_verifier_exit_code": 0,
+  "e2_verifier_log": "E2_VERIFY_LOG.txt",
+  "p8_result_hash_verified": true,
+  "p8_available_frozen_input_hashes": [
+    {
+      "path": "p8_auc.py",
+      "sha256": "8abb2773f89365cd0694133e48212267471d362341222068fe5920b7f0fc2757",
+      "match": true
+    },
+    {
+      "path": "test_p8_auc.py",
+      "sha256": "8cde61a4a8443a13f318820f415c458c8915183fcb2392681d3287815891fed0",
+      "match": true
+    },
+    {
+      "path": "p8_run.py",
+      "sha256": "6258e07725c5ff3bf8556c6de1690c34a375a20e3f759fde22f90a492e47911f",
+      "match": true
+    },
+    {
+      "path": "heatbot_model.json",
+      "sha256": "107192d5fe60abe1884bdc807ac5f040d880466a1fb53fafb166b42f67170213",
+      "match": true
+    },
+    {
+      "path": "forward_eval.py",
+      "sha256": "ef18724c4e42c7fab6a1ee83b545c4fa3e92375c09c37d0b85b9b6045ac80c12",
+      "match": true
+    }
+  ],
+  "p8_original_inputs_not_available_here": [
+    "heatbot.py",
+    "calibrate_v2.py",
+    "pt_time.py",
+    "all_findings.json",
+    "id2name.json",
+    "v2.json",
+    "events_all/2026-08-25.json",
+    "events_all/2026-08-26.json",
+    "events_all/2026-08-27.json",
+    "events_all/2026-08-28.json",
+    "events_all/2026-08-31.json",
+    "events_all/2026-09-01.json",
+    "events_all/2026-09-02.json",
+    "events_all/2026-09-03.json",
+    "events_all/2026-09-04.json",
+    "events_all/2026-09-07.json",
+    "events_all/2026-09-08.json",
+    "events_all/2026-09-09.json",
+    "events_all/2026-09-10.json",
+    "events_all/2026-09-11.json",
+    "events_all/2026-09-14.json",
+    "events_all/2026-09-15.json",
+    "events_all/2026-09-16.json",
+    "events_all/2026-09-17.json",
+    "events_all/2026-09-18.json",
+    "monitor_days/2026-04-06.json",
+    "monitor_days/2026-06-16.json",
+    "monitor_days/2026-06-17.json",
+    "monitor_days/2026-06-18.json",
+    "monitor_days/2026-06-19.json",
+    "monitor_days/2026-06-22.json",
+    "monitor_days/2026-06-23.json",
+    "monitor_days/2026-06-24.json",
+    "monitor_days/2026-06-25.json",
+    "monitor_days/2026-06-26.json",
+    "monitor_days/2026-06-29.json",
+    "monitor_days/2026-06-30.json",
+    "monitor_days/2026-07-01.json",
+    "monitor_days/2026-07-06.json",
+    "monitor_days/2026-07-07.json",
+    "monitor_days/2026-07-08.json",
+    "monitor_days/2026-07-09.json",
+    "monitor_days/2026-07-10.json",
+    "monitor_days/2026-07-13.json",
+    "monitor_days/2026-07-17.json",
+    "monitor_days/2026-07-20.json",
+    "monitor_days/2026-07-21.json",
+    "monitor_days/2026-07-22.json",
+    "monitor_days/2026-07-23.json",
+    "monitor_days/2026-07-24.json",
+    "monitor_days/2026-07-27.json",
+    "monitor_days/2026-07-28.json",
+    "monitor_days/2026-07-29.json",
+    "monitor_days/2026-07-30.json",
+    "monitor_days/2026-07-31.json",
+    "monitor_days/2026-08-03.json",
+    "monitor_days/2026-08-04.json",
+    "monitor_days/2026-08-05.json",
+    "monitor_days/2026-08-06.json",
+    "monitor_days/2026-08-07.json",
+    "monitor_days/2026-08-10.json",
+    "monitor_days/2026-08-11.json",
+    "monitor_days/2026-08-12.json",
+    "monitor_days/2026-08-13.json",
+    "monitor_days/2026-08-14.json",
+    "monitor_days/2026-08-17.json",
+    "monitor_days/2026-08-18.json",
+    "monitor_days/2026-08-19.json",
+    "monitor_days/2026-08-20.json",
+    "monitor_days/2026-08-21.json",
+    "monitor_days/2026-08-24.json",
+    "monitor_days/2026-08-25.json",
+    "monitor_days/2026-08-26.json",
+    "monitor_days/2026-08-27.json",
+    "monitor_days/2026-08-28.json",
+    "monitor_days/2026-08-31.json",
+    "monitor_days/2026-09-01.json",
+    "monitor_days/2026-09-02.json",
+    "monitor_days/2026-09-03.json",
+    "monitor_days/2026-09-04.json",
+    "monitor_days/2026-09-07.json",
+    "monitor_days/2026-09-08.json",
+    "monitor_days/2026-09-09.json",
+    "monitor_days/2026-09-10.json",
+    "monitor_days/2026-09-11.json",
+    "monitor_days/2026-09-14.json",
+    "monitor_days/2026-09-15.json",
+    "monitor_days/2026-09-16.json",
+    "monitor_days/2026-09-18.json"
+  ],
+  "p8_run_full_verify_executed": false,
+  "p8_full_verify_limitation": "Its original runner requires all historical inputs, many of which were not shipped. Result and available frozen code/model hashes are verified without altering that runner or either original manifest.",
+  "result_files_count": 13,
+  "every_extracted_result_rehashed": true,
+  "result_contents_interpreted_or_displayed": false,
+  "independent_categorisation_performed": false,
+  "sent_to_other_team": false,
+  "next_step": "Greg sends this identical packet and the final signed freeze packet to Adam/Claude before either side discusses interpretations. Each side then categorises independently."
+}

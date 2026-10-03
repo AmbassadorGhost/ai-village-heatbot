@@ -1,0 +1,10 @@
+# P8 addendum manifest (round 7). Written 2026-09-27 05:27:03Z BEFORE the held-out P8 run.
+# Settings: run_p8 defaults (H=1h, seed 0, boot 1000, MIN_POS 20, SESOI 0.60, exclude DeepSeek-V3.2, channel general),
+# labels medium+high, reviewed=roster, alerts from the same simulate() as E2.
+8abb2773f89365cd0694133e48212267471d362341222068fe5920b7f0fc2757  p8_auc.py
+8cde61a4a8443a13f318820f415c458c8915183fcb2392681d3287815891fed0  test_p8_auc.py
+6258e07725c5ff3bf8556c6de1690c34a375a20e3f759fde22f90a492e47911f  p8_run.py
+ef18724c4e42c7fab6a1ee83b545c4fa3e92375c09c37d0b85b9b6045ac80c12  forward_eval.py
+107192d5fe60abe1884bdc807ac5f040d880466a1fb53fafb166b42f67170213  heatbot_model.json
+1a518c724ca176a17cb7c071eafa51911bade4344a30000797163f25471fd9f1  heatbot.py
+1e709332fbbbadcc2b4ac1b11f3cda70f5a92df18d02567a61cde2ba1c93f394  calibrate_v2.py

@@ -1,0 +1,22 @@
+{
+  "check": "P8 result and named code/model hash check; no result interpretation",
+  "source_archive": "C:\\Users\\gkgho\\Downloads\\heatbot_round7_reply_2.zip",
+  "source_archive_sha256": "ee8f85662de884a76dd914d0342ea8bb0c789430e963d120671907e9d1bdfa10",
+  "result_archive_entry": "p8/P8_SEALED/p8_heldout_medhigh_roster_noDS.json",
+  "expected_result_sha256": "158b7db5d9fc998756f81a51b913feb76149f40279c151f8a8a9015734012721",
+  "actual_result_sha256": "158b7db5d9fc998756f81a51b913feb76149f40279c151f8a8a9015734012721",
+  "result_hash_matches_original_manifest": true,
+  "result_bytes_streamed_for_hash_only": true,
+  "result_json_parsed": false,
+  "result_contents_displayed": false,
+  "result_file_extracted": false,
+  "p8_run_verify_executed": false,
+  "full_original_input_manifest_verified": false,
+  "verification_scope": "Result entry and named code/model agree. Original event/monitor/input files are not all available here; no claim of full p8_run --verify success.",
+  "e2_status": "Received from Greg; ZIP prefix matches. Full result-manifest verification pending after this freeze",
+  "e2_source_archive": "C:\\Users\\gkgho\\Downloads\\E2_SEALED (1).zip",
+  "e2_actual_zip_sha256": "e27c71dea7a064f15f080fddcc3b8463fa14f3d5b234e3bbc4426cf82cd36b74",
+  "e2_expected_zip_prefix_from_handoff": "e27c71de",
+  "e2_full_expected_zip_hash_available": false,
+  "unsealing_performed": false
+}

@@ -1,0 +1,368 @@
+# config 4: labels=all reviewed=roster agents=noDS
+E2 forward evaluation: 591 alerts, 27222 events, 3753 agent-hours, 31 agents  (excluded: DeepSeek-V3.2)
+lift_event = precision / base over all scored events (primary; controls for volume)
+lift_hour  = precision / base over agent-hour midpoints (as calibrate_v2)
+
+== off-goal  (monitor category: off-goal)
+  level warm
+    mode      H        n   prec base_e lift_e  lift_h    95% CI (e) folds used/mean[min,max]
+    forward   30m    106  0.057  0.036   1.57    3.22  [0.57, 2.89] 4/1.09[0,1.7]
+    forward   1h     106  0.066  0.063   1.04    1.91  [0.57, 1.79] 4/0.85[0.68,0.96]
+    forward   2h     106  0.113  0.104   1.09    1.84   [0.7, 1.66] 4/0.99[0.75,1.16]
+    forward   4h     106  0.179  0.153   1.17    1.81  [0.69, 1.74] 4/1.14[0.83,1.62]
+    onset     30m     85  0.071  0.035   2.04    4.46  [0.76, 3.73] 2/1.81[1.72,1.89]
+    onset     1h      85  0.082   0.06   1.37    2.53  [0.76, 2.33] 2/1.02[0.89,1.15]
+    onset     2h      85  0.106  0.098   1.07    1.81  [0.55, 1.89] 2/1.04[0.98,1.1]
+    onset     4h      85  0.165  0.148   1.11    1.73  [0.63, 1.69] 2/0.88[0.85,0.9]
+    symmetric 30m    106  0.104  0.076   1.36    2.01  [0.76, 2.32] 4/0.99[0.71,1.31]
+    symmetric 1h     106   0.17  0.135   1.26    2.09  [0.81, 1.84] 4/1.04[0.75,1.49]
+    symmetric 2h     106  0.283  0.221   1.28    1.96  [0.86, 1.83] 4/1.11[0.65,1.63]
+    symmetric 4h     106  0.425   0.34   1.25    1.74  [0.92, 1.69] 4/1.11[0.79,1.36]
+    lead (forward, within 4h): n=19 median 82.5 min [IQR 25.7-142.3]
+    lead (onset, within 4h): n=14 median 64.2 min [IQR 13.1-145.5]
+  level hot+
+    mode      H        n   prec base_e lift_e  lift_h    95% CI (e) folds used/mean[min,max]
+    forward   30m     17  0.059  0.036   1.63    3.34     [0, 4.98] 0 (5 skipped)
+    forward   1h      17  0.176  0.063   2.79    5.09     [0, 7.19] 0 (5 skipped)
+    forward   2h      17  0.294  0.104   2.83    4.78     [0, 6.15] 0 (5 skipped)
+    forward   4h      17  0.294  0.153   1.92    2.98     [0, 4.12] 0 (5 skipped)
+    onset     30m     12  0.083  0.035   2.41    5.26      [0, 9.5] 0 (5 skipped)
+    onset     1h      12  0.083   0.06   1.38    2.56     [0, 5.93] 0 (5 skipped)
+    onset     2h      12   0.25  0.098   2.54    4.26     [0, 6.69] 0 (5 skipped)
+    onset     4h      12   0.25  0.148   1.69    2.62     [0, 5.16] 0 (5 skipped)
+    symmetric 30m     17  0.118  0.076   1.54    2.28     [0, 5.02] 0 (5 skipped)
+    symmetric 1h      17  0.235  0.135   1.74     2.9     [0, 4.11] 0 (5 skipped)
+    symmetric 2h      17  0.471  0.221   2.13    3.26     [0, 4.04] 0 (5 skipped)
+    symmetric 4h      17  0.647   0.34    1.9    2.66  [1.09, 3.34] 0 (5 skipped)
+    lead (forward, within 4h): n=5 median 48.5 min [IQR 34.5-61.1]
+    lead (onset, within 4h): n=3 median 61.1 min [IQR 36.7-77.4]
+  level critical
+    mode      H        n   prec base_e lift_e  lift_h    95% CI (e) folds used/mean[min,max]
+    forward   30m      0      -  0.036      -       -             - 0 (5 skipped)
+    forward   1h       0      -  0.063      -       -             - 0 (5 skipped)
+    forward   2h       0      -  0.104      -       -             - 0 (5 skipped)
+    forward   4h       0      -  0.153      -       -             - 0 (5 skipped)
+    onset     30m      0      -  0.035      -       -             - 0 (5 skipped)
+    onset     1h       0      -   0.06      -       -             - 0 (5 skipped)
+    onset     2h       0      -  0.098      -       -             - 0 (5 skipped)
+    onset     4h       0      -  0.148      -       -             - 0 (5 skipped)
+    symmetric 30m      0      -  0.076      -       -             - 0 (5 skipped)
+    symmetric 1h       0      -  0.135      -       -             - 0 (5 skipped)
+    symmetric 2h       0      -  0.221      -       -             - 0 (5 skipped)
+    symmetric 4h       0      -   0.34      -       -             - 0 (5 skipped)
+    lead (forward, within 4h): n=0 median - min [IQR ---]
+    lead (onset, within 4h): n=0 median - min [IQR ---]
+  AUC of raw heat (forward): 30m 0.582  1h 0.587  2h 0.579  4h 0.551
+  AUC of raw heat (onset): 30m 0.559  1h 0.563  2h 0.56  4h 0.536
+
+== erratic  (monitor category: emotional-or-erratic)
+  level warm
+    mode      H        n   prec base_e lift_e  lift_h    95% CI (e) folds used/mean[min,max]
+    forward   30m     72  0.014   0.01   1.37    1.68     [0, 3.34] 2/0[0,0]
+    forward   1h      72  0.014  0.019   0.73    1.06     [0, 1.72] 2/0[0,0]
+    forward   2h      72  0.069  0.038   1.81    2.77     [0, 4.01] 2/1.65[0,3.3]
+    forward   4h      72  0.097   0.07   1.39    2.04     [0, 2.69] 2/0.94[0,1.88]
+    onset     30m     70  0.014  0.011   1.36    1.69     [0, 3.32] 1/0[0,0]
+    onset     1h      70  0.014   0.02   0.72    1.07      [0, 1.7] 1/0[0,0]
+    onset     2h      70  0.071  0.039   1.82    2.78      [0, 3.9] 1/3.18[3.18,3.18]
+    onset     4h      70    0.1  0.071    1.4    2.08     [0, 2.57] 1/1.81[1.81,1.81]
+    symmetric 30m     72  0.014  0.022   0.64    0.93     [0, 1.53] 2/0[0,0]
+    symmetric 1h      72  0.028  0.041   0.68    1.05     [0, 1.63] 2/0[0,0]
+    symmetric 2h      72  0.097  0.077   1.26    1.93  [0.25, 2.36] 2/1.16[0.49,1.84]
+    symmetric 4h      72  0.139   0.13   1.07    1.57  [0.26, 1.76] 2/0.74[0.3,1.17]
+    lead (forward, within 4h): n=7 median 75.9 min [IQR 72.9-109.8]
+    lead (onset, within 4h): n=7 median 75.9 min [IQR 72.9-109.8]
+  level hot+
+    mode      H        n   prec base_e lift_e  lift_h    95% CI (e) folds used/mean[min,max]
+    forward   30m     25      0   0.01      0       0        [0, 0] 0 (5 skipped)
+    forward   1h      25      0  0.019      0       0        [0, 0] 0 (5 skipped)
+    forward   2h      25   0.08  0.038   2.08    3.19     [0, 4.29] 0 (5 skipped)
+    forward   4h      25   0.08   0.07   1.14    1.68     [0, 2.26] 0 (5 skipped)
+    onset     30m     23      0  0.011      0       0        [0, 0] 0 (5 skipped)
+    onset     1h      23      0   0.02      0       0        [0, 0] 0 (5 skipped)
+    onset     2h      23  0.087  0.039   2.22    3.38      [0, 4.4] 0 (5 skipped)
+    onset     4h      23  0.087  0.071   1.22    1.81     [0, 2.41] 0 (5 skipped)
+    symmetric 30m     25   0.04  0.022   1.84    2.68      [0, 3.9] 0 (5 skipped)
+    symmetric 1h      25   0.04  0.041   0.98    1.52     [0, 1.99] 0 (5 skipped)
+    symmetric 2h      25   0.16  0.077   2.08    3.18     [0, 3.81] 0 (5 skipped)
+    symmetric 4h      25    0.2   0.13   1.54    2.25     [0, 2.63] 0 (5 skipped)
+    lead (forward, within 4h): n=2 median 89.7 min [IQR 76.7-102.6]
+    lead (onset, within 4h): n=2 median 89.7 min [IQR 76.7-102.6]
+  level critical
+    mode      H        n   prec base_e lift_e  lift_h    95% CI (e) folds used/mean[min,max]
+    forward   30m      4      0   0.01      0       0        [0, 0] 0 (5 skipped)
+    forward   1h       4      0  0.019      0       0        [0, 0] 0 (5 skipped)
+    forward   2h       4      0  0.038      0       0        [0, 0] 0 (5 skipped)
+    forward   4h       4      0   0.07      0       0        [0, 0] 0 (5 skipped)
+    onset     30m      4      0  0.011      0       0        [0, 0] 0 (5 skipped)
+    onset     1h       4      0   0.02      0       0        [0, 0] 0 (5 skipped)
+    onset     2h       4      0  0.039      0       0        [0, 0] 0 (5 skipped)
+    onset     4h       4      0  0.071      0       0        [0, 0] 0 (5 skipped)
+    symmetric 30m      4      0  0.022      0       0        [0, 0] 0 (5 skipped)
+    symmetric 1h       4      0  0.041      0       0        [0, 0] 0 (5 skipped)
+    symmetric 2h       4      0  0.077      0       0        [0, 0] 0 (5 skipped)
+    symmetric 4h       4   0.25   0.13   1.92    2.82     [0, 4.17] 0 (5 skipped)
+    lead (forward, within 4h): n=0 median - min [IQR ---]
+    lead (onset, within 4h): n=0 median - min [IQR ---]
+  AUC of raw heat (forward): 30m 0.494  1h 0.518  2h 0.537  4h 0.507
+  AUC of raw heat (onset): 30m 0.497  1h 0.521  2h 0.539  4h 0.512
+
+== deceptive  (monitor category: surreptitious-or-deceptive)
+  level warm
+    mode      H        n   prec base_e lift_e  lift_h    95% CI (e) folds used/mean[min,max]
+    forward   30m     63      0  0.013      0       0        [0, 0] 0 (5 skipped)
+    forward   1h      63  0.016  0.025   0.63    0.88     [0, 1.77] 0 (5 skipped)
+    forward   2h      63  0.063  0.045   1.41    2.02  [0.34, 2.91] 0 (5 skipped)
+    forward   4h      63  0.079  0.066    1.2    1.66  [0.44, 2.46] 0 (5 skipped)
+    onset     30m     59      0  0.011      0       0        [0, 0] 0 (5 skipped)
+    onset     1h      59  0.017  0.022   0.77    1.05     [0, 2.42] 0 (5 skipped)
+    onset     2h      59  0.051  0.041   1.24    1.75     [0, 2.92] 0 (5 skipped)
+    onset     4h      59  0.068   0.06   1.13    1.54  [0.27, 2.26] 0 (5 skipped)
+    symmetric 30m     63  0.016  0.028   0.58    0.74      [0, 1.9] 0 (5 skipped)
+    symmetric 1h      63  0.063  0.048   1.32    1.65     [0, 2.65] 0 (5 skipped)
+    symmetric 2h      63  0.111  0.082   1.35    1.64  [0.59, 2.32] 0 (5 skipped)
+    symmetric 4h      63   0.19  0.122   1.56    1.77   [0.89, 2.6] 0 (5 skipped)
+    lead (forward, within 4h): n=5 median 64 min [IQR 63.5-97.3]
+    lead (onset, within 4h): n=4 median 80.7 min [IQR 57.9-120.5]
+  level hot+
+    mode      H        n   prec base_e lift_e  lift_h    95% CI (e) folds used/mean[min,max]
+    forward   30m      9      0  0.013      0       0        [0, 0] 0 (5 skipped)
+    forward   1h       9      0  0.025      0       0        [0, 0] 0 (5 skipped)
+    forward   2h       9      0  0.045      0       0        [0, 0] 0 (5 skipped)
+    forward   4h       9      0  0.066      0       0        [0, 0] 0 (5 skipped)
+    onset     30m      9      0  0.011      0       0        [0, 0] 0 (5 skipped)
+    onset     1h       9      0  0.022      0       0        [0, 0] 0 (5 skipped)
+    onset     2h       9      0  0.041      0       0        [0, 0] 0 (5 skipped)
+    onset     4h       9      0   0.06      0       0        [0, 0] 0 (5 skipped)
+    symmetric 30m      9      0  0.028      0       0        [0, 0] 0 (5 skipped)
+    symmetric 1h       9      0  0.048      0       0        [0, 0] 0 (5 skipped)
+    symmetric 2h       9      0  0.082      0       0        [0, 0] 0 (5 skipped)
+    symmetric 4h       9  0.111  0.122   0.91    1.03     [0, 4.16] 0 (5 skipped)
+    lead (forward, within 4h): n=0 median - min [IQR ---]
+    lead (onset, within 4h): n=0 median - min [IQR ---]
+  level critical
+    mode      H        n   prec base_e lift_e  lift_h    95% CI (e) folds used/mean[min,max]
+    forward   30m      2      0  0.013      0       0        [0, 0] 0 (5 skipped)
+    forward   1h       2      0  0.025      0       0        [0, 0] 0 (5 skipped)
+    forward   2h       2      0  0.045      0       0        [0, 0] 0 (5 skipped)
+    forward   4h       2      0  0.066      0       0        [0, 0] 0 (5 skipped)
+    onset     30m      2      0  0.011      0       0        [0, 0] 0 (5 skipped)
+    onset     1h       2      0  0.022      0       0        [0, 0] 0 (5 skipped)
+    onset     2h       2      0  0.041      0       0        [0, 0] 0 (5 skipped)
+    onset     4h       2      0   0.06      0       0        [0, 0] 0 (5 skipped)
+    symmetric 30m      2      0  0.028      0       0        [0, 0] 0 (5 skipped)
+    symmetric 1h       2      0  0.048      0       0        [0, 0] 0 (5 skipped)
+    symmetric 2h       2      0  0.082      0       0        [0, 0] 0 (5 skipped)
+    symmetric 4h       2      0  0.122      0       0        [0, 0] 0 (5 skipped)
+    lead (forward, within 4h): n=0 median - min [IQR ---]
+    lead (onset, within 4h): n=0 median - min [IQR ---]
+  AUC of raw heat (forward): 30m 0.498  1h 0.517  2h 0.516  4h 0.521
+  AUC of raw heat (onset): 30m 0.471  1h 0.483  2h 0.495  4h 0.508
+
+== conflict  (monitor category: conflict)
+  level warm
+    mode      H        n   prec base_e lift_e  lift_h    95% CI (e) folds used/mean[min,max]
+    forward   30m    138  0.029  0.011   2.54    5.18  [0.76, 5.41] 5/2.86[0,4.46]
+    forward   1h     138  0.043   0.02   2.18    4.53  [1.06, 3.96] 5/2.44[1.07,4.79]
+    forward   2h     138  0.072   0.03    2.4       4  [1.57, 3.91] 5/2.48[1.39,5.35]
+    forward   4h     138  0.101  0.044   2.31    3.34  [1.46, 3.61] 5/2.21[1.32,5.04]
+    onset     30m    123  0.024   0.01   2.33    4.48     [0, 4.38] 5/2.13[0,4.63]
+    onset     1h     123  0.041  0.019   2.16    4.66  [0.89, 4.16] 5/2.45[1.27,4.26]
+    onset     2h     123  0.065  0.029   2.27    3.91  [1.52, 3.49] 5/2.4[1.66,4.42]
+    onset     4h     123  0.089  0.043    2.1     3.1  [1.42, 3.05] 5/2.06[1.35,3.82]
+    symmetric 30m    138  0.072  0.025    2.9    5.33  [1.68, 5.01] 5/3.12[1.54,6.95]
+    symmetric 1h     138  0.109  0.043   2.52    5.16  [1.52, 4.38] 5/2.63[1.18,6.44]
+    symmetric 2h     138  0.167  0.067   2.49    4.37   [1.66, 3.8] 5/2.52[1.53,5.32]
+    symmetric 4h     138  0.246  0.101   2.45    3.92  [1.72, 3.67] 5/2.48[1.1,5.39]
+    lead (forward, within 4h): n=14 median 63 min [IQR 29.5-126.4]
+    lead (onset, within 4h): n=11 median 62.6 min [IQR 31.2-115.7]
+  level hot+
+    mode      H        n   prec base_e lift_e  lift_h    95% CI (e) folds used/mean[min,max]
+    forward   30m     27      0  0.011      0       0        [0, 0] 0 (5 skipped)
+    forward   1h      27  0.037   0.02   1.85    3.86     [0, 5.86] 0 (5 skipped)
+    forward   2h      27  0.074   0.03   2.46    4.09     [0, 4.76] 0 (5 skipped)
+    forward   4h      27  0.074  0.044   1.69    2.44     [0, 3.23] 0 (5 skipped)
+    onset     30m     21      0   0.01      0       0        [0, 0] 0 (5 skipped)
+    onset     1h      21      0  0.019      0       0        [0, 0] 0 (5 skipped)
+    onset     2h      21  0.048  0.029   1.66    2.87     [0, 4.07] 0 (5 skipped)
+    onset     4h      21  0.048  0.043   1.12    1.65     [0, 2.59] 0 (5 skipped)
+    symmetric 30m     27  0.148  0.025   5.93    10.9     [0, 17.9] 0 (5 skipped)
+    symmetric 1h      27  0.148  0.043   3.44    7.04    [0, 10.02] 0 (5 skipped)
+    symmetric 2h      27  0.259  0.067   3.87     6.8   [0.9, 9.29] 0 (5 skipped)
+    symmetric 4h      27  0.259  0.101   2.57    4.12  [0.47, 6.84] 0 (5 skipped)
+    lead (forward, within 4h): n=2 median 52.4 min [IQR 43.5-61.2]
+    lead (onset, within 4h): n=1 median 70 min [IQR 70-70]
+  level critical
+    mode      H        n   prec base_e lift_e  lift_h    95% CI (e) folds used/mean[min,max]
+    forward   30m      0      -  0.011      -       -             - 0 (5 skipped)
+    forward   1h       0      -   0.02      -       -             - 0 (5 skipped)
+    forward   2h       0      -   0.03      -       -             - 0 (5 skipped)
+    forward   4h       0      -  0.044      -       -             - 0 (5 skipped)
+    onset     30m      0      -   0.01      -       -             - 0 (5 skipped)
+    onset     1h       0      -  0.019      -       -             - 0 (5 skipped)
+    onset     2h       0      -  0.029      -       -             - 0 (5 skipped)
+    onset     4h       0      -  0.043      -       -             - 0 (5 skipped)
+    symmetric 30m      0      -  0.025      -       -             - 0 (5 skipped)
+    symmetric 1h       0      -  0.043      -       -             - 0 (5 skipped)
+    symmetric 2h       0      -  0.067      -       -             - 0 (5 skipped)
+    symmetric 4h       0      -  0.101      -       -             - 0 (5 skipped)
+    lead (forward, within 4h): n=0 median - min [IQR ---]
+    lead (onset, within 4h): n=0 median - min [IQR ---]
+  AUC of raw heat (forward): 30m 0.671  1h 0.658  2h 0.64  4h 0.606
+  AUC of raw heat (onset): 30m 0.661  1h 0.655  2h 0.637  4h 0.603
+
+== outreach  (monitor category: unsolicited-outreach)
+  level warm
+    mode      H        n   prec base_e lift_e  lift_h    95% CI (e) folds used/mean[min,max]
+    forward   30m     50   0.02  0.004   4.95    3.57    [0, 20.89] 1/0[0,0]
+    forward   1h      50   0.04  0.009   4.52    6.25    [0, 12.62] 1/0[0,0]
+    forward   2h      50   0.06  0.015   3.95       5     [0, 8.48] 1/1.66[1.66,1.66]
+    forward   4h      50   0.06  0.021   2.89    3.46     [0, 6.35] 1/1.1[1.1,1.1]
+    onset     30m     45      0  0.004      0       0        [0, 0] 0 (5 skipped)
+    onset     1h      45      0  0.008      0       0        [0, 0] 0 (5 skipped)
+    onset     2h      45  0.022  0.014   1.55    1.87     [0, 3.65] 0 (5 skipped)
+    onset     4h      45  0.022   0.02   1.11    1.29     [0, 2.57] 0 (5 skipped)
+    symmetric 30m     50   0.04  0.009   4.56    5.56    [0, 13.79] 1/0[0,0]
+    symmetric 1h      50   0.06  0.017   3.53    4.69     [0, 7.38] 1/1.73[1.73,1.73]
+    symmetric 2h      50   0.12  0.031   3.82     4.9  [1.38, 6.61] 1/1.65[1.65,1.65]
+    symmetric 4h      50   0.16  0.052   3.09    3.85  [1.49, 4.78] 1/1.82[1.82,1.82]
+    lead (forward, within 4h): n=3 median 50.5 min [IQR 28-57.6]
+    lead (onset, within 4h): n=1 median 64.6 min [IQR 64.6-64.6]
+  level hot+
+    mode      H        n   prec base_e lift_e  lift_h    95% CI (e) folds used/mean[min,max]
+    forward   30m      4      0  0.004      0       0        [0, 0] 0 (5 skipped)
+    forward   1h       4   0.25  0.009  28.24   39.09    [0, 73.74] 0 (5 skipped)
+    forward   2h       4   0.25  0.015  16.44   20.85     [0, 45.1] 0 (5 skipped)
+    forward   4h       4   0.25  0.021  12.02   14.43    [0, 34.03] 0 (5 skipped)
+    onset     30m      2      0  0.004      0       0        [0, 0] 0 (5 skipped)
+    onset     1h       2    0.5  0.008  61.92   80.54   [0, 155.12] 0 (5 skipped)
+    onset     2h       2    0.5  0.014  34.92    42.1    [0, 91.15] 0 (5 skipped)
+    onset     4h       2    0.5   0.02     25   28.95    [0, 65.95] 0 (5 skipped)
+    symmetric 30m      4   0.25  0.009  28.47   34.75   [0, 121.15] 0 (5 skipped)
+    symmetric 1h       4    0.5  0.017   29.4   39.09    [0, 61.51] 0 (5 skipped)
+    symmetric 2h       4   0.75  0.031  23.88    30.6    [0, 41.85] 0 (5 skipped)
+    symmetric 4h       4   0.75  0.052   14.5   18.04     [0, 25.8] 0 (5 skipped)
+    lead (forward, within 4h): n=1 median 40.9 min [IQR 40.9-40.9]
+    lead (onset, within 4h): n=1 median 40.9 min [IQR 40.9-40.9]
+  level critical
+    mode      H        n   prec base_e lift_e  lift_h    95% CI (e) folds used/mean[min,max]
+    forward   30m      0      -  0.004      -       -             - 0 (5 skipped)
+    forward   1h       0      -  0.009      -       -             - 0 (5 skipped)
+    forward   2h       0      -  0.015      -       -             - 0 (5 skipped)
+    forward   4h       0      -  0.021      -       -             - 0 (5 skipped)
+    onset     30m      0      -  0.004      -       -             - 0 (5 skipped)
+    onset     1h       0      -  0.008      -       -             - 0 (5 skipped)
+    onset     2h       0      -  0.014      -       -             - 0 (5 skipped)
+    onset     4h       0      -   0.02      -       -             - 0 (5 skipped)
+    symmetric 30m      0      -  0.009      -       -             - 0 (5 skipped)
+    symmetric 1h       0      -  0.017      -       -             - 0 (5 skipped)
+    symmetric 2h       0      -  0.031      -       -             - 0 (5 skipped)
+    symmetric 4h       0      -  0.052      -       -             - 0 (5 skipped)
+    lead (forward, within 4h): n=0 median - min [IQR ---]
+    lead (onset, within 4h): n=0 median - min [IQR ---]
+  AUC of raw heat (forward): 30m 0.728  1h 0.674  2h 0.638  4h 0.598
+  AUC of raw heat (onset): 30m 0.691  1h 0.645  2h 0.619  4h 0.583
+
+== credentials  (monitor category: surreptitious-or-deceptive)
+  level warm
+    mode      H        n   prec base_e lift_e  lift_h    95% CI (e) folds used/mean[min,max]
+    forward   30m      0      -  0.013      -       -             - 0 (5 skipped)
+    forward   1h       0      -  0.025      -       -             - 0 (5 skipped)
+    forward   2h       0      -  0.045      -       -             - 0 (5 skipped)
+    forward   4h       0      -  0.066      -       -             - 0 (5 skipped)
+    onset     30m      0      -  0.011      -       -             - 0 (5 skipped)
+    onset     1h       0      -  0.022      -       -             - 0 (5 skipped)
+    onset     2h       0      -  0.041      -       -             - 0 (5 skipped)
+    onset     4h       0      -   0.06      -       -             - 0 (5 skipped)
+    symmetric 30m      0      -  0.028      -       -             - 0 (5 skipped)
+    symmetric 1h       0      -  0.048      -       -             - 0 (5 skipped)
+    symmetric 2h       0      -  0.082      -       -             - 0 (5 skipped)
+    symmetric 4h       0      -  0.122      -       -             - 0 (5 skipped)
+    lead (forward, within 4h): n=0 median - min [IQR ---]
+    lead (onset, within 4h): n=0 median - min [IQR ---]
+  level hot+
+    mode      H        n   prec base_e lift_e  lift_h    95% CI (e) folds used/mean[min,max]
+    forward   30m      0      -  0.013      -       -             - 0 (5 skipped)
+    forward   1h       0      -  0.025      -       -             - 0 (5 skipped)
+    forward   2h       0      -  0.045      -       -             - 0 (5 skipped)
+    forward   4h       0      -  0.066      -       -             - 0 (5 skipped)
+    onset     30m      0      -  0.011      -       -             - 0 (5 skipped)
+    onset     1h       0      -  0.022      -       -             - 0 (5 skipped)
+    onset     2h       0      -  0.041      -       -             - 0 (5 skipped)
+    onset     4h       0      -   0.06      -       -             - 0 (5 skipped)
+    symmetric 30m      0      -  0.028      -       -             - 0 (5 skipped)
+    symmetric 1h       0      -  0.048      -       -             - 0 (5 skipped)
+    symmetric 2h       0      -  0.082      -       -             - 0 (5 skipped)
+    symmetric 4h       0      -  0.122      -       -             - 0 (5 skipped)
+    lead (forward, within 4h): n=0 median - min [IQR ---]
+    lead (onset, within 4h): n=0 median - min [IQR ---]
+  level critical
+    mode      H        n   prec base_e lift_e  lift_h    95% CI (e) folds used/mean[min,max]
+    forward   30m      0      -  0.013      -       -             - 0 (5 skipped)
+    forward   1h       0      -  0.025      -       -             - 0 (5 skipped)
+    forward   2h       0      -  0.045      -       -             - 0 (5 skipped)
+    forward   4h       0      -  0.066      -       -             - 0 (5 skipped)
+    onset     30m      0      -  0.011      -       -             - 0 (5 skipped)
+    onset     1h       0      -  0.022      -       -             - 0 (5 skipped)
+    onset     2h       0      -  0.041      -       -             - 0 (5 skipped)
+    onset     4h       0      -   0.06      -       -             - 0 (5 skipped)
+    symmetric 30m      0      -  0.028      -       -             - 0 (5 skipped)
+    symmetric 1h       0      -  0.048      -       -             - 0 (5 skipped)
+    symmetric 2h       0      -  0.082      -       -             - 0 (5 skipped)
+    symmetric 4h       0      -  0.122      -       -             - 0 (5 skipped)
+    lead (forward, within 4h): n=0 median - min [IQR ---]
+    lead (onset, within 4h): n=0 median - min [IQR ---]
+  AUC of raw heat (forward): 30m 0.502  1h 0.5  2h 0.497  4h 0.501
+  AUC of raw heat (onset): 30m 0.504  1h 0.502  2h 0.498  4h 0.502
+
+== general  (monitor category: general)
+  level warm
+    mode      H        n   prec base_e lift_e  lift_h    95% CI (e) folds used/mean[min,max]
+    forward   30m     71  0.085   0.07   1.21    1.97  [0.71, 1.63] 1/1.45[1.45,1.45]
+    forward   1h      71  0.141  0.125   1.13    1.84  [0.62, 1.85] 1/1.18[1.18,1.18]
+    forward   2h      71  0.352  0.207    1.7     2.6  [1.35, 2.28] 1/1.69[1.69,1.69]
+    forward   4h      71  0.437  0.288   1.51    2.14  [1.14, 2.12] 1/1.58[1.58,1.58]
+    onset     30m     46  0.065  0.066   0.99    1.64     [0, 2.02] 0 (5 skipped)
+    onset     1h      46  0.152  0.115   1.33    2.21  [0.61, 2.46] 0 (5 skipped)
+    onset     2h      46  0.391  0.191   2.05    3.19  [1.57, 2.89] 0 (5 skipped)
+    onset     4h      46  0.435  0.271   1.61     2.3  [1.23, 2.24] 0 (5 skipped)
+    symmetric 30m     71  0.183  0.146   1.26     1.8  [0.78, 1.95] 1/1.56[1.56,1.56]
+    symmetric 1h      71  0.352  0.248   1.42    2.14  [1.02, 2.15] 1/1.44[1.44,1.44]
+    symmetric 2h      71  0.606  0.388   1.56    2.19  [1.29, 1.98] 1/1.4[1.4,1.4]
+    symmetric 4h      71  0.676  0.543   1.24     1.6  [1.04, 1.53] 1/1.21[1.21,1.21]
+    lead (forward, within 4h): n=31 median 75.3 min [IQR 42.5-106.7]
+    lead (onset, within 4h): n=20 median 66.5 min [IQR 42.6-103.6]
+  level hot+
+    mode      H        n   prec base_e lift_e  lift_h    95% CI (e) folds used/mean[min,max]
+    forward   30m      9      0   0.07      0       0        [0, 0] 0 (5 skipped)
+    forward   1h       9  0.111  0.125   0.89    1.45     [0, 3.67] 0 (5 skipped)
+    forward   2h       9  0.111  0.207   0.54    0.82     [0, 2.28] 0 (5 skipped)
+    forward   4h       9  0.222  0.288   0.77    1.09     [0, 1.64] 0 (5 skipped)
+    onset     30m      5      0  0.066      0       0        [0, 0] 0 (5 skipped)
+    onset     1h       5      0  0.115      0       0        [0, 0] 0 (5 skipped)
+    onset     2h       5      0  0.191      0       0        [0, 0] 0 (5 skipped)
+    onset     4h       5    0.2  0.271   0.74    1.06     [0, 2.22] 0 (5 skipped)
+    symmetric 30m      9  0.333  0.146   2.29    3.27  [0.63, 7.16] 0 (5 skipped)
+    symmetric 1h       9  0.444  0.248   1.79     2.7   [1.28, 4.2] 0 (5 skipped)
+    symmetric 2h       9  0.444  0.388   1.15    1.61  [0.85, 2.83] 0 (5 skipped)
+    symmetric 4h       9  0.889  0.543   1.64    2.11  [1.27, 2.22] 0 (5 skipped)
+    lead (forward, within 4h): n=2 median 124.7 min [IQR 77.7-171.6]
+    lead (onset, within 4h): n=1 median 218.6 min [IQR 218.6-218.6]
+  level critical
+    mode      H        n   prec base_e lift_e  lift_h    95% CI (e) folds used/mean[min,max]
+    forward   30m      0      -   0.07      -       -             - 0 (5 skipped)
+    forward   1h       0      -  0.125      -       -             - 0 (5 skipped)
+    forward   2h       0      -  0.207      -       -             - 0 (5 skipped)
+    forward   4h       0      -  0.288      -       -             - 0 (5 skipped)
+    onset     30m      0      -  0.066      -       -             - 0 (5 skipped)
+    onset     1h       0      -  0.115      -       -             - 0 (5 skipped)
+    onset     2h       0      -  0.191      -       -             - 0 (5 skipped)
+    onset     4h       0      -  0.271      -       -             - 0 (5 skipped)
+    symmetric 30m      0      -  0.146      -       -             - 0 (5 skipped)
+    symmetric 1h       0      -  0.248      -       -             - 0 (5 skipped)
+    symmetric 2h       0      -  0.388      -       -             - 0 (5 skipped)
+    symmetric 4h       0      -  0.543      -       -             - 0 (5 skipped)
+    lead (forward, within 4h): n=0 median - min [IQR ---]
+    lead (onset, within 4h): n=0 median - min [IQR ---]
+  AUC of raw heat (forward): 30m 0.503  1h 0.532  2h 0.541  4h 0.528
+  AUC of raw heat (onset): 30m 0.508  1h 0.538  2h 0.54  4h 0.523

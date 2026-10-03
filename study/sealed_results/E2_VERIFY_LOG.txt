@@ -1,0 +1,14 @@
+ok    E2_SEALED/e2_1_medhigh_roster_noDS.json
+ok    E2_SEALED/e2_1_medhigh_roster_noDS.report.txt
+ok    E2_SEALED/e2_2_medhigh_roster_all.json
+ok    E2_SEALED/e2_2_medhigh_roster_all.report.txt
+ok    E2_SEALED/e2_3_medhigh_proxy_noDS.json
+ok    E2_SEALED/e2_3_medhigh_proxy_noDS.report.txt
+ok    E2_SEALED/e2_4_all_roster_noDS.json
+ok    E2_SEALED/e2_4_all_roster_noDS.report.txt
+ok    E2_SEALED/e2_5_all_proxy_all.json
+ok    E2_SEALED/e2_5_all_proxy_all.report.txt
+ok    E2_SEALED/e2_6_all_proxy_noDS.json
+ok    E2_SEALED/e2_6_all_proxy_noDS.report.txt
+
+12 match, 0 failed, 93 inputs not shipped here

@@ -1,0 +1,26 @@
+{
+  "created_at_utc": "2026-10-03T03:01:27.289062+00:00",
+  "status": "COMPARISON PACKET; ORIGINAL ASSESSMENTS PRESERVED",
+  "files": [
+    {
+      "path": "ADAM_SIDE_CATEGORISATION.md",
+      "sha256": "70fc2399d2442af99fc19af57e5f3449d9992ccb4eda60ef5f26be45196b6f20"
+    },
+    {
+      "path": "COMPARISON_RECORD.json",
+      "sha256": "c1498caa03a83d9c18be726c75b2b9533b24d12bdb7c07923bb4da979b0add4b"
+    },
+    {
+      "path": "CROSS_TEAM_COMPARISON.md",
+      "sha256": "99d005071c5aa0a636e9884c754575dfb69c3e0c46424f7cc5152bb4485f9bfb"
+    },
+    {
+      "path": "GREG_SIDE_INDEPENDENT_RATING.json",
+      "sha256": "2affc701adf0dc31825dd31ee6589d8ac92e256744c6054501ab79465e2bb3bf"
+    },
+    {
+      "path": "GREG_SIDE_INDEPENDENT_REVIEW.md",
+      "sha256": "50331206a04223847864214873f2aa892958647699e8b33ef51b13dd383697d6"
+    }
+  ]
+}
