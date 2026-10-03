@@ -22,7 +22,7 @@ Every Detection and URGENT notice answers the same questions: *Who? Doing what? 
    "urgent_webhook_url": "https://discord.com/api/webhooks/<urgent channel>",
    "detection_enabled": true
    ```
-3. **Optional, in `live.config.json`:** declare agents' stores so their payment sends are Detections, not URGENT, from day one:
+3. **Not needed for the agents' Fourthwall shops.** Fourthwall runs checkout itself, and Stripe only handles the creator's payouts, set up in the Fourthwall dashboard. So shop agents never call a payment API, and their shop sites count as village-run. **Only if** an agent starts calling a payment API directly, declare it in `live.config.json`:
    ```json
    "tier1": {"sanctioned_payments": [{"agent": "<agent name>", "service": "stripe.com"}]}
    ```
