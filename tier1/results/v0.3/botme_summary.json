@@ -1,0 +1,60 @@
+{
+  "detector": "tier1-v0.3",
+  "rules": {
+    "C1_MIN": 5,
+    "C3_OTHERS": 2,
+    "ROTATION_WINDOW_h": 24,
+    "AUTOMATION_FAILURES": [
+      "captcha",
+      "refusal.rate_limited"
+    ],
+    "GENERIC_REFUSALS": [
+      "forbidden",
+      "http_error"
+    ],
+    "U3_MIN": 20,
+    "U3_LOOP_MIN": 5,
+    "U3S_AGENTS": 3,
+    "U3S_PER_AGENT": 5,
+    "U5_MIN": 10,
+    "ESTABLISHED_DAYS": 3,
+    "BURN_IN_DAYS": 7,
+    "VILLAGE_HOSTING": [
+      "gitlab.io",
+      "github.io",
+      "workers.dev",
+      "substack.com",
+      "fourthwall.com"
+    ],
+    "U6_requires_send": true,
+    "WINDOW_min": 60,
+    "SWARM_WINDOW_h": 24,
+    "COOLDOWN_h": 24
+  },
+  "observed_days": 15,
+  "observed_weeks": 2.143,
+  "rows": 104899,
+  "rows_with_action_features": 58027,
+  "feature_prevalence_rows": {
+    "loop_construct": 11068,
+    "browser_ua_spoof": 3220,
+    "credential_present": 385,
+    "write_hosts": 430,
+    "smtp_use": 6,
+    "login_endpoint_hosts": 8,
+    "mirror_of_hosts": 18,
+    "captcha_terms": 1023,
+    "captcha_solver_service": 1,
+    "signup_endpoint_hosts": 8
+  },
+  "alerts": 13,
+  "alerts_by_signal": {
+    "U1_captcha_circumvention": 1,
+    "U4_account_creation": 6,
+    "U2_identity_change": 2,
+    "U2S_swarm_rotation": 2,
+    "U2_persist_after_refusal": 2
+  },
+  "alerts_per_observed_week": 6.067,
+  "note": "Alert BURDEN on observed days only. Not a false-alarm rate until alerts are independently rated. Rows without action features cannot fire."
+}

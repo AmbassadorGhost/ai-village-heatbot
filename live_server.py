@@ -14,6 +14,11 @@ from urllib.parse import urlsplit
 
 import heatbot as hb
 import discord_alerts
+try:
+    sys.path.insert(0, str(Path(__file__).resolve().parent / 'tier1'))
+    import tier1_live
+except Exception:   # Tier 1 is optional; heat keeps running without it
+    tier1_live = None
 
 ROOT = Path(__file__).resolve().parent
 OPEN_CHAT = '--open-chat' in sys.argv
@@ -113,6 +118,27 @@ class Collector:
         self.roster_time = 0
         self.day_cache = {}
         self.discord = discord_alerts.Notifier(ROOT, DATA)
+        self.tier1 = (tier1_live.Tier1Live(DATA, self.fetch, cfg=self.cfg.get('tier1', {}),
+                                           transport=discord_alerts.post) if tier1_live else None)
+        self.tier1_status = {'enabled': bool(self.tier1)}
+
+    def urgent_webhook(self):
+        cfg = discord_alerts.load(ROOT / 'discord.local.json', {})
+        url = cfg.get('urgent_webhook_url', '')
+        try:
+            return discord_alerts.validate_url(url) if cfg.get('urgent_enabled') else None
+        except ValueError:
+            return None
+
+    def detection_webhook(self):
+        """Behaviour detections go, silently, to the same everyday channel as heat notices."""
+        cfg = discord_alerts.load(ROOT / 'discord.local.json', {})
+        if not cfg.get('enabled') or not cfg.get('detection_enabled', True):
+            return None
+        try:
+            return discord_alerts.validate_url(cfg.get('webhook_url', ''))
+        except ValueError:
+            return None
 
     def fetch(self, path):
         return hb.http_json(hb.API + path, timeout=60, tries=2)
@@ -182,7 +208,16 @@ class Collector:
             info['source_events'] = {r['key']: sources[r['key']] for r in info['contributions']
                                      if r.get('key') in sources}
             info['recent_messages'] = messages.get(a, [])[-5:]
+        if self.tier1:
+            try:
+                t1 = self.tier1.tick(detail['id'], self.status['village_name'], names, messages,
+                                     webhook=self.urgent_webhook(), detection_webhook=self.detection_webhook())
+                if t1 is not None:
+                    self.tier1_status = dict(t1, enabled=True, checked_at=stamp())
+            except Exception as exc:
+                self.tier1_status = dict(self.tier1_status, error='Tier 1 refresh failed: ' + type(exc).__name__)
         bundle = {'dashboard': dashboard, 'history': history, 'roster': roster,
+                  'tier1': self.tier1_status,
                   'latest_event': max((e.get('createdAt', '') for e in events), default=None),
                   'events_in_window': len(events), 'source_days_utc': days,
                   'model_sha256': hashlib.sha256((ROOT / 'heatbot_model.json').read_bytes()).hexdigest()}

@@ -1,0 +1,31 @@
+--- export_telemetry.py	2026-10-03 14:21:01.900608558 -0500
++++ export_telemetry.py	2026-10-03 15:42:01.499565299 -0500
+@@ -9,6 +9,7 @@
+ from pathlib import Path
+ from zoneinfo import ZoneInfo
+ from outside_services import extract, command_fingerprint, VERSION
++import action_features  # Tier 1 v0.2 add-on: flags/methods/hostnames only, never text
+ from fetch_telemetry import VILLAGES
+ 
+ H1_HASH = '7dd39faa3292df153c3f2066f44ef97698a81c32f5b14433e039f8f434558a64'
+@@ -67,7 +68,7 @@
+                 'target_status': 'unsupported_action'}
+             failures = classify(as_text(turn.get('error')), as_text(turn.get('system')), as_text(turn.get('output')))
+             # Do not export free text, command contents, URLs, outputs or session goals.
+-            record = {'schema_version': 'tier1-telemetry-v0.1', 'extractor_version': VERSION,
++            record = {'schema_version': 'tier1-telemetry-v0.2', 'extractor_version': VERSION,
+                       'village': village, 'source_day': day, 'day_timezone': DAY_ZONE.key,
+                       'turn_id': identity, 'session_id': session.get('id'),
+                       'agent_id': session.get('agentId'),
+@@ -76,7 +77,10 @@
+                       'command_sha256': command_fingerprint(command) if is_command else None,
+                       **fields, 'failure_categories': failures, 'failure_scope': 'whole_turn',
+                       'failure_classifier': 'h1-failure-v1.1',
+-                      'result_available_at': None, 'network_contact_verified': False}
++                      'result_available_at': None, 'network_contact_verified': False,
++                      'action': action_features.extract(command) if is_command else None,
++                      'refusal': action_features.refusal(as_text(turn.get('error')), as_text(turn.get('system')),
++                                                         as_text(turn.get('output'))) if is_command else None}
+             records.append(record)
+             stats['exported_turns'] += 1
+             stats['shell_command_turns' if is_command else 'other_tool_turns'] += 1

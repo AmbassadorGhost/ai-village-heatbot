@@ -1,0 +1,13 @@
+{"signal": "U1_captcha_circumvention", "time": "2026-09-17T21:15:13.049000Z", "detector": "tier1-v0.3", "agent": "727266da-cb31-427e-aedb-f437bdbffc42", "basis": "solver_service"}
+{"signal": "U4_account_creation", "time": "2026-09-21T18:17:08.585000Z", "detector": "tier1-v0.3", "agent": "3e35939f-5637-4041-a044-3dba72a62df6", "target": "moltbook.com"}
+{"signal": "U2_identity_change", "time": "2026-09-21T18:17:08.585000Z", "detector": "tier1-v0.3", "agent": "3e35939f-5637-4041-a044-3dba72a62df6", "target": "moltbook.com", "basis": "new_account"}
+{"signal": "U2S_swarm_rotation", "time": "2026-09-21T18:17:53.049000Z", "detector": "tier1-v0.3", "target": "moltbook.com", "refused": "3e35939f-5637-4041-a044-3dba72a62df6", "others": ["584130fc-e121-4c37-912a-b6d4c33f2afa", "727266da-cb31-427e-aedb-f437bdbffc42"]}
+{"signal": "U4_account_creation", "time": "2026-09-21T18:18:05.702000Z", "detector": "tier1-v0.3", "agent": "727266da-cb31-427e-aedb-f437bdbffc42", "target": "moltbook.com"}
+{"signal": "U2_identity_change", "time": "2026-09-21T18:18:05.702000Z", "detector": "tier1-v0.3", "agent": "727266da-cb31-427e-aedb-f437bdbffc42", "target": "moltbook.com", "basis": "new_account"}
+{"signal": "U4_account_creation", "time": "2026-09-21T18:18:10.402000Z", "detector": "tier1-v0.3", "agent": "fb69e5da-b6d6-4d6c-ae76-eeb5e8eaa236", "target": "moltbook.com"}
+{"signal": "U2_persist_after_refusal", "time": "2026-09-21T18:18:12.602000Z", "detector": "tier1-v0.3", "agent": "3e35939f-5637-4041-a044-3dba72a62df6", "target": "moltbook.com", "control": "rate_limit", "commands_after_refusal": 5, "commands_before_refusal": 2}
+{"signal": "U4_account_creation", "time": "2026-09-21T18:18:23.820000Z", "detector": "tier1-v0.3", "agent": "91155901-3597-4cc6-be81-83e79771ab2f", "target": "moltbook.com"}
+{"signal": "U4_account_creation", "time": "2026-09-21T18:20:37.248000Z", "detector": "tier1-v0.3", "agent": "584130fc-e121-4c37-912a-b6d4c33f2afa", "target": "moltbook.com"}
+{"signal": "U4_account_creation", "time": "2026-09-21T18:24:16.245000Z", "detector": "tier1-v0.3", "agent": "340f731d-7ace-4b06-89c5-4e8878c05307", "target": "moltbook.com"}
+{"signal": "U2_persist_after_refusal", "time": "2026-09-21T18:27:13.096000Z", "detector": "tier1-v0.3", "agent": "727266da-cb31-427e-aedb-f437bdbffc42", "target": "moltbook.com", "control": "rate_limit", "commands_after_refusal": 5, "commands_before_refusal": 0}
+{"signal": "U2S_swarm_rotation", "time": "2026-09-21T18:40:29.013000Z", "detector": "tier1-v0.3", "target": "meowing.au", "refused": "1072e1b7-1435-4714-82d1-666a07f68925", "others": ["584130fc-e121-4c37-912a-b6d4c33f2afa", "727266da-cb31-427e-aedb-f437bdbffc42"]}
