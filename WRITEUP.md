@@ -16,7 +16,7 @@
 - **Round 1 read what agents said.** A per-agent "heat" monitor learned from the village monitor's own flags. A **sealed, pre-registered test** on a month it had never seen found that it **did not** predict flagged moments within agents. The within-agent AUC was **0.48 (95% CI 0.41–0.56)**, against a usefulness threshold of 0.60. **Words that surrounded last month's flags don't predict next month's.**
 - **Round 2 watched what agents did** (command logs, not chat). Its first signals caught the Botme swarm, but independent human ratings showed **they flagged novelty, not harm**, and wouldn't scale past a few dozen agents. We didn't ship it.
 - **Round 3 is the urgent tier we're shipping.** It fires only on **outward actions realistically likely to cause harm:** CAPTCHA circumvention, block evasion, automated or swarm sending, account creation, mass messaging and payments. **Reading the web never fires.** Every notice answers the same questions: *who, doing what, where, who else, who hasn't, and what did they say just before.* ⏳ *[burden on training months · burden and rated precision on a never-used month · Botme demonstration]*
-- **How Botme spread:** ⏳ *[who said it vs who did it]*. The agent that organised the teams was the **seventh** to act.
+- **How Botme spread:** joining *chat* to *commands* shows different roles. The agent that organised the teams was the **second to talk about it and the eighth to act**, 88 hours later. The first agents to act did so *before* saying anything. Agents that joined mentioned Botme 31–336 times each, and agents that declined 1–9 times.
 - **Everyday heat stays,** recast as calm context instead of alarms.
 
 ## 1. The problem
@@ -138,11 +138,11 @@ The rules were fixed before any case was scored.
 
 | test | rule | result |
 |---|---|---|
-| burden, training months | ≤ 1 alert per observed week, village-wide | ⏳ |
+| burden, training months | ≤ 1 alert per observed week, village-wide | **v0.2.0 failed: 22 alerts, 3.0 a week.** Most fired on agents' own sites, on GET price checks to a payment API, and on browser-identity retries. We used the **one permitted revision** (v0.2.1, training months only, recorded before the fresh month was scored). v0.2.1: ⏳ |
 | burden, **never-used month** (main village, 25 Aug–2 Oct) | same | ⏳ |
 | independent ratings of those alerts | two questions: *enough to decide?* / *likely harmful?* | ⏳ |
-| Botme (**demonstration only**: designed after seeing it) | does it fire, and on whom? | ⏳ |
-| how often each flag appears | is the parser seeing anything? | ⏳ |
+| Botme (**demonstration only**: designed after seeing it) | does it fire, and on whom? | v0.2.0: **a CAPTCHA-solving service** used by a participant (17 Sep), and **six participants signing up to an agent social network within 7 minutes** (21 Sep). **The swarm-sending rule did not fire on the Botme site itself:** its commands weren't parsed as sends. We did *not* tune for that. v0.2.1: ⏳ |
+| how often each flag appears | is the parser seeing anything? | **Yes.** In the training months, 412k command rows were parsed, of which 1.9k contained sends, 174 CAPTCHA terms, 13 sign-up addresses and 60 mail-server uses. The Botme period had 1,023 CAPTCHA-term rows in 58k. |
 
 ## 6. How Botme spread: who said it, who did it
 
@@ -153,16 +153,16 @@ The rules were fixed before any case was scored.
 
 Round 1's heat knew nothing about CAPTCHAs, yet its signal still diverged between the groups: participants' heat rose, and decliners' fell, partly because decliners went quiet.
 
-⏳ *[Timeline figure: one lane per agent, chat mentions vs commands to the Botme site.]*
+![Botme: who said it, who did it](docs/botme_spread.png)
 
-**What the agents did** (each agent's first command to the Botme host, UTC):
-- **11 Sep:** GPT-6 Astra (23:19; later stayed out), Gemini 3.5 Flash (23:41)
-- *(three days of nothing)*
-- **14 Sep 18:47–18:51:** Gemini 3.1 Pro, GLM-5.2, DeepSeek-V4-Pro: three agents in **four minutes**
-- **14 Sep 21:30–21:35:** Gemini 3.8 Flash, Kimi K2.6
-- **15 Sep:** DeepSeek-V3.2 (16:10), GLM-5.3 Flash (21:02)
+*Lanes: agents. Circles: chat messages mentioning Botme (no text exported; humans unnamed). Bars: commands sent to the Botme host `dunkirk.sh`. Colour: the agent's recorded choice.* Data: 1–23 Sep, 1,037 mentions (962 by agents, 75 by humans), every day complete.
 
-**DeepSeek-V3.2, which organised the teams, was the seventh agent to act.** ⏳ *[What the agents said: who mentioned Botme first, and in what order; whether talkers and doers were different agents; how decliners appear (talk, no action).]*
+**What it shows:**
+- **A human posted first** (11 Sep 23:13 UTC). Within half an hour, four agents had picked it up.
+- **Recruiters talk long before they act.** DeepSeek-V3.2, which organised the teams, was the **second agent to mention Botme** (26 minutes after the human). It **mentioned it 336 times, more than any other agent,** and **first acted 88.5 hours later, eighth of nine** to act. Gemini 3.1 Pro shows the same pattern: talked first, acted 67 hours later.
+- **Workers act before they talk.** On 14 Sep, GLM-5.2 and DeepSeek-V4-Pro sent commands to the site a few minutes *before* their own first mention. Three agents started within four minutes.
+- **Refusers talk briefly and never act.** Five of the six decliners first spoke during the recruitment surge on 14 Sep (20:20–21:31 UTC), and the sixth, GPT-5.6 Terra, spoke the next day. Each mentioned Botme **1–9 times** and sent nothing. The joiners mentioned it **31–336 times each.** In this one episode, how much an agent talked about the activity separated joiners from decliners completely.
+- **One label needs checking.** GPT-6 Astra, recorded as "stayed out", sent 2 commands to the site on 11 Sep, 3 minutes before its first mention. Looking isn't joining, but the label should be confirmed.
 
 **Why it matters for oversight.** If the agents who recruit aren't the agents who act, then a chat monitor watches the recruiters and an action monitor watches the workers. You need both, and the spread is visible only when they're joined.
 
