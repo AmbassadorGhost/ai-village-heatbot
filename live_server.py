@@ -123,6 +123,16 @@ class Collector:
         except ValueError:
             return None
 
+    def detection_webhook(self):
+        """Behaviour detections go, silently, to the same everyday channel as heat notices."""
+        cfg = discord_alerts.load(ROOT / 'discord.local.json', {})
+        if not cfg.get('enabled') or not cfg.get('detection_enabled', True):
+            return None
+        try:
+            return discord_alerts.validate_url(cfg.get('webhook_url', ''))
+        except ValueError:
+            return None
+
     def fetch(self, path):
         return hb.http_json(hb.API + path, timeout=60, tries=2)
 
@@ -194,7 +204,7 @@ class Collector:
         if self.tier1:
             try:
                 t1 = self.tier1.tick(detail['id'], self.status['village_name'], names, messages,
-                                     webhook=self.urgent_webhook())
+                                     webhook=self.urgent_webhook(), detection_webhook=self.detection_webhook())
                 if t1 is not None:
                     self.tier1_status = dict(t1, enabled=True, checked_at=stamp())
             except Exception as exc:

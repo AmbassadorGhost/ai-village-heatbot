@@ -53,7 +53,12 @@ class Live(unittest.TestCase):
         self.tmp.cleanup()
 
     def live(self):
-        return L.Tier1Live(self.dir, self.api, transport=lambda url, msg: self.sent.append(msg) or {"ok": True})
+        def transport(url, msg):
+            self.sent.append(msg)
+            self.urls.append(url)
+            return {"ok": True}
+        self.urls = []
+        return L.Tier1Live(self.dir, self.api, transport=transport)
 
     def burst(self, start, n=20):
         for i in range(n):
@@ -62,23 +67,26 @@ class Live(unittest.TestCase):
 
     def test_startup_history_is_never_paged(self):
         self.burst(NOW - dt.timedelta(minutes=30))
-        st = self.live().tick("v1", "Main village", {"a1": "Agent One"}, {}, now=NOW, webhook="w")
+        st = self.live().tick("v1", "Main village", {"a1": "Agent One"}, {}, now=NOW, webhook="w", detection_webhook="d")
         self.assertTrue(st["baseline_only"])
         self.assertEqual(self.sent, [])
         self.assertEqual(st["alerts_total"], 1)
 
     def test_new_alert_is_paged_with_chat_line(self):
         live = self.live()
-        live.tick("v1", "Main village", {"a1": "Agent One"}, {}, now=NOW, webhook="w")
+        live.tick("v1", "Main village", {"a1": "Agent One"}, {}, now=NOW, webhook="w", detection_webhook="d")
         later = NOW + dt.timedelta(minutes=15)
         self.burst(later - dt.timedelta(minutes=12))
         msgs = {"Agent One": [{"time": (later - dt.timedelta(minutes=14)).isoformat().replace("+00:00", "Z"),
                                "text": "I'll post our items to the new directory site."}]}
-        st = live.tick("v1", "Main village", {"a1": "Agent One"}, msgs, now=later, webhook="w")
+        st = live.tick("v1", "Main village", {"a1": "Agent One"}, msgs, now=later, webhook="w", detection_webhook="d")
         self.assertEqual(st["new_alerts"], 1)
         self.assertEqual(len(self.sent), 1)
         emb = self.sent[0]["embeds"][0]
-        self.assertTrue(emb["title"].startswith("URGENT · Automated sending at volume"))
+        # automated sending is a Detection: silent, to the everyday channel, never "URGENT"
+        self.assertTrue(emb["title"].startswith("Detection · Automated sending at volume"), emb["title"])
+        self.assertEqual(self.sent[0]["flags"], L.SILENT_FLAG)
+        self.assertEqual(self.urls, ["d"])
         blob = json.dumps(self.sent[0])
         self.assertIn("new directory site", blob)
         self.assertIn("submit.example", blob)
@@ -89,26 +97,26 @@ class Live(unittest.TestCase):
 
     def test_same_alert_not_paged_twice(self):
         live = self.live()
-        live.tick("v1", "Main village", {"a1": "A"}, {}, now=NOW, webhook="w")
+        live.tick("v1", "Main village", {"a1": "A"}, {}, now=NOW, webhook="w", detection_webhook="d")
         later = NOW + dt.timedelta(minutes=15)
         self.burst(later - dt.timedelta(minutes=12))
-        live.tick("v1", "Main village", {"a1": "A"}, {}, now=later, webhook="w")
-        live.tick("v1", "Main village", {"a1": "A"}, {}, now=later + dt.timedelta(minutes=11), webhook="w")
+        live.tick("v1", "Main village", {"a1": "A"}, {}, now=later, webhook="w", detection_webhook="d")
+        live.tick("v1", "Main village", {"a1": "A"}, {}, now=later + dt.timedelta(minutes=11), webhook="w", detection_webhook="d")
         self.assertEqual(len(self.sent), 1)
 
     def test_reads_never_page(self):
         live = self.live()
-        live.tick("v1", "Main village", {"a1": "A"}, {}, now=NOW, webhook="w")
+        live.tick("v1", "Main village", {"a1": "A"}, {}, now=NOW, webhook="w", detection_webhook="d")
         later = NOW + dt.timedelta(minutes=15)
         for i in range(100):
             self.api.add(later - dt.timedelta(minutes=10, seconds=-i), "a1", "curl https://brand-new.example/p%d" % i)
-        st = live.tick("v1", "Main village", {"a1": "A"}, {}, now=later, webhook="w")
+        st = live.tick("v1", "Main village", {"a1": "A"}, {}, now=later, webhook="w", detection_webhook="d")
         self.assertEqual(st["new_alerts"], 0)
 
     def test_no_command_text_or_secrets_on_disk(self):
         live = self.live()
         self.burst(NOW - dt.timedelta(minutes=30))
-        live.tick("v1", "Main village", {"a1": "A"}, {}, now=NOW, webhook="w")
+        live.tick("v1", "Main village", {"a1": "A"}, {}, now=NOW, webhook="w", detection_webhook="d")
         for p in self.dir.iterdir():
             body = p.read_text(encoding="utf-8")
             self.assertNotIn(SECRET, body, p.name)
@@ -142,6 +150,48 @@ class StandardQuestions(unittest.TestCase):
         self.assertEqual(f["Who else?"], "Two (2)")
         self.assertTrue(f["Who hasn't?"].startswith("1 agents active online sent nothing to this site: Three"))
         self.assertEqual(f["Who?"], "One")
+
+
+class Tiers(unittest.TestCase):
+    NAMES = {"a1": "Shop Agent"}
+
+    def pay_alert(self, day="2026-09-10", hosts=("api.stripe.com",)):
+        return {"signal": "U6_payment", "time": day + "T18:00:00Z", "detector": "v", "agent": "a1",
+                "targets": list(hosts)}
+
+    def pay_row(self, day):
+        return {"agent_id": "a1", "source_day": day, "timestamp_utc": day + "T17:00:00Z",
+                "outside_services": ["api.stripe.com"],
+                "action": {"payment_hosts": ["api.stripe.com"], "write_hosts": ["api.stripe.com"]}}
+
+    def test_urgent_signals(self):
+        for sig in ("U1_captcha_circumvention", "U5_mass_messaging"):
+            self.assertEqual(L.tier_for({"signal": sig, "time": "2026-09-10T00:00:00Z"}), "urgent")
+        self.assertEqual(L.tier_for(self.pay_alert(), [], [], self.NAMES), "urgent")
+
+    def test_behaviour_signals_are_detections(self):
+        for sig in ("U2_persist_after_refusal", "U2_identity_change", "U2S_swarm_rotation",
+                    "U3_automated_writes", "U3S_swarm_writes", "U4_account_creation"):
+            self.assertEqual(L.tier_for({"signal": sig, "time": "2026-09-10T00:00:00Z"}), "detection")
+
+    def test_declared_store_payments_are_detections(self):
+        sanctioned = [{"agent": "Shop Agent", "service": "stripe.com"}]
+        self.assertEqual(L.tier_for(self.pay_alert(), [], sanctioned, self.NAMES), "detection")
+
+    def test_routine_payment_service_is_detection(self):
+        rows = [self.pay_row(d) for d in ("2026-09-01", "2026-09-03", "2026-09-05")]
+        self.assertEqual(L.tier_for(self.pay_alert(), rows, [], self.NAMES), "detection")
+        self.assertEqual(L.tier_for(self.pay_alert(), rows[:2], [], self.NAMES), "urgent")
+
+    def test_crypto_transaction_always_urgent(self):
+        sanctioned = [{"agent": "Shop Agent", "service": "stripe.com"}]
+        self.assertEqual(L.tier_for(self.pay_alert(hosts=()), [], sanctioned, self.NAMES), "urgent")
+
+    def test_urgent_notice_is_not_silent(self):
+        n = L.notice({"signal": "U1_captcha_circumvention", "time": "2026-09-10T00:00:00Z", "detector": "v",
+                      "agent": "a1", "basis": "solver_service"}, self.NAMES, {}, "Main village", [], "urgent")
+        self.assertNotIn("flags", n)
+        self.assertTrue(n["embeds"][0]["title"].startswith("URGENT · CAPTCHA"))
 
 
 class Nearest(unittest.TestCase):

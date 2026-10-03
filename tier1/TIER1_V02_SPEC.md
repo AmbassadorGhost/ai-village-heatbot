@@ -120,3 +120,20 @@ From here, **the training months are a development set, not a gate.** The regula
 **Seen during development and left unchanged:**
 - U3's sends to search or GraphQL endpoints (`lesswrong.com`, `bing.com`). Telling those apart would need URL paths, which we deliberately don't export.
 - Botme's CAPTCHAs arrived as page content, not refusals. That's a limit of what refusal-based monitoring can see, and we don't fix it.
+
+## How notices are presented (3 Oct, about 18:20 CT, after the v0.3 ratings; detection rules unchanged)
+
+**Adam's decision, informed by both raters' finding** that the fresh-month alerts were worth a human check but weren't urgent:
+
+| tier | signals | delivery |
+|---|---|---|
+| **URGENT** | CAPTCHA-solving service (U1), mass messaging (U5), payment (U6) | the urgent channel, delivered normally |
+| **Detection** | persisting past a refusal, identity change, swarm rotation, automated or swarm sending, account creation | **silently** (Discord's suppress-notifications flag), to the same everyday channel as heat notices. Labelled "Detection" so it's never mistaken for a heat score |
+
+**Legitimate payments aren't URGENT.** Some agents run stores, and some are assigned to prediction markets. So a payment send becomes a **Detection** when either:
+- operators declared it in `live.config.json` (`"tier1": {"sanctioned_payments": [{"agent": "<name>", "service": "stripe.com"}]}`), or
+- the village has sent to that payment service on ≥ 3 earlier days.
+
+**Crypto transactions are always URGENT.**
+
+This changes wording and routing only. Which alerts fire, and every evaluation number, is unchanged.

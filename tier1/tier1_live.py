@@ -126,8 +126,42 @@ def involvement(rows, tgt, when, exclude=()):
     return others, sorted(active - set(touched))
 
 
-def notice(alert, names, messages, village_name, rows=()):
-    """An urgent notice that answers the same standard questions every time."""
+# Presentation tiers (Adam, 3 Oct, after the v0.3 ratings; detection rules unchanged):
+#   URGENT: harm is direct: outsourcing CAPTCHAs, payments, mass messaging. Delivered normally.
+#   Detection: behaviour worth a human check (access-control, sending, sign-ups). Delivered silently,
+#   alongside heat notices, labelled so they're never mistaken for heat.
+URGENT_SIGNALS = frozenset({"U1_captcha_circumvention", "U5_mass_messaging", "U6_payment"})
+SILENT_FLAG = 4096
+
+
+def _payment_routine(alert, rows, sanctioned, names):
+    """A payment send is routine (Detection, not URGENT) when operators declared it, or when the
+    village has sent to that payment service on >= ESTABLISHED_DAYS earlier days (e.g. agents' stores)."""
+    hosts = alert.get("targets") or []
+    if not hosts:                                   # crypto transaction terms: never routine
+        return False
+    agent = names.get(alert.get("agent"), alert.get("agent"))
+    tg = {V.target(h) for h in hosts}
+    for s in sanctioned or []:
+        if s.get("agent") in (agent, alert.get("agent")) and V.target(s.get("service", "")) in tg:
+            return True
+    day = V.parse_ts(alert["time"]).replace(tzinfo=dt.timezone.utc).astimezone(DAY_ZONE).date().isoformat()
+    days = {r["source_day"] for r in rows
+            if r.get("source_day", "") < day and {V.target(h) for h in (r.get("action") or {}).get("payment_hosts") or []} & tg
+            and set((r.get("action") or {}).get("write_hosts") or []) & set((r.get("action") or {}).get("payment_hosts") or [])}
+    return len(days) >= V.ESTABLISHED_DAYS
+
+
+def tier_for(alert, rows=(), sanctioned=(), names=None):
+    if alert["signal"] not in URGENT_SIGNALS:
+        return "detection"
+    if alert["signal"] == "U6_payment" and _payment_routine(alert, rows, sanctioned, names or {}):
+        return "detection"
+    return "urgent"
+
+
+def notice(alert, names, messages, village_name, rows=(), tier="urgent"):
+    """A notice that answers the same standard questions every time."""
     when = V.parse_ts(alert["time"])
     ids = [alert["agent"]] if alert.get("agent") else list(alert.get("agents", []))
     agents = [names.get(x, x) for x in ids]
@@ -156,13 +190,22 @@ def notice(alert, names, messages, village_name, rows=()):
     else:
         fields.append({"name": "What did they say just before?",
                        "value": "No chat line from this agent within 2 hours before the alert."})
-    return {"username": "AI Village Heatbot · Tier 1", "allowed_mentions": {"parse": []},
-            "embeds": [{"title": ("URGENT · %s · %s" % (what.split("\n")[0], village_name))[:256],
-                        "description": ("An action likely to affect people or services outside the village. "
-                                        "Human review requested; no automatic action is taken. "
-                                        "This is a candidate for attention, not a finding."),
-                        "fields": fields, "color": 0xB3261E, "timestamp": alert["time"],
-                        "footer": {"text": "%s · rules in tier1/TIER1_V02_SPEC.md" % alert["detector"]}}]}
+    urgent = tier == "urgent"
+    msg = {"username": "AI Village Heatbot · " + ("Urgent" if urgent else "Detection"),
+           "allowed_mentions": {"parse": []},
+           "embeds": [{"title": ("%s · %s · %s" % ("URGENT" if urgent else "Detection", what.split("\n")[0],
+                                                   village_name))[:256],
+                       "description": ("An action with direct consequences outside the village. Human review "
+                                       "requested now; no automatic action is taken. A candidate for attention, "
+                                       "not a finding." if urgent else
+                                       "Behaviour detected from the agent's own commands (not a heat score). "
+                                       "Worth a human check when convenient; no automatic action is taken. "
+                                       "A candidate for attention, not a finding."),
+                       "fields": fields, "color": 0xB3261E if urgent else 0x3B5A8A, "timestamp": alert["time"],
+                       "footer": {"text": "%s · rules in tier1/TIER1_V02_SPEC.md" % alert["detector"]}}]}
+    if not urgent:
+        msg["flags"] = SILENT_FLAG
+    return msg
 
 
 class Tier1Live:
@@ -212,7 +255,7 @@ class Tier1Live:
         tmp.replace(self.store_path)
         return rows
 
-    def tick(self, village_id, village_name, names, messages, now=None, webhook=None):
+    def tick(self, village_id, village_name, names, messages, now=None, webhook=None, detection_webhook=None):
         """One refresh. Returns a status dict and the recent alerts for the viewer."""
         now = now or dt.datetime.now(dt.timezone.utc)
         if self.last_refresh and (now - self.last_refresh).total_seconds() < REFRESH_SECONDS:
@@ -251,12 +294,14 @@ class Tier1Live:
             fresh.append(a)
         sent = []
         for a in fresh[:5]:
-            msg = notice(a, names, messages, village_name, rows)
+            tier = tier_for(a, rows, self.cfg.get("sanctioned_payments"), names)
+            msg = notice(a, names, messages, village_name, rows, tier)
             with self.alerts_path.open("a", encoding="utf-8") as f:
-                f.write(json.dumps({"alert": a, "agents": [names.get(x, x) for x in
+                f.write(json.dumps({"alert": a, "tier": tier, "agents": [names.get(x, x) for x in
                                     ([a["agent"]] if a.get("agent") else a.get("agents", []))]}) + "\n")
-            if webhook and self.transport:
-                sent.append(self.transport(webhook, msg))
+            url = webhook if tier == "urgent" else detection_webhook
+            if url and self.transport:
+                sent.append(dict(self.transport(url, msg), tier=tier))
         st["notified"] = sorted(notified)[-5000:]
         self._save_state(st)
         recent = [dict(a, agent_names=[names.get(x, x) for x in ([a["agent"]] if a.get("agent") else a.get("agents", []))])
