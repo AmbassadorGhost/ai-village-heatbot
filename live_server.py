@@ -114,9 +114,16 @@ def source_context(events, names, goals):
     return sources, messages
 
 
+# Live-product defaults shared by BOTH villages (each still keeps its own state).
+# heatbot.DEFAULT_CONFIG keeps novelty off so frozen-study replays are unchanged;
+# the live viewer turns it on for main village and Open Chat alike.
+PRODUCT_DEFAULTS = {"term_novelty": {"enabled": True, "window_minutes": 120, "repeat_factor": 0.5}}
+
+
 class Collector:
     def __init__(self):
-        self.cfg = hb.deep_merge(hb.DEFAULT_CONFIG, read_json('live.config.json', {}))
+        self.cfg = hb.deep_merge(hb.deep_merge(hb.DEFAULT_CONFIG, PRODUCT_DEFAULTS),
+                                 read_json('live.config.json', {}))
         if OPEN_CHAT:
             self.cfg['village_slug'] = 'open-chat'
             self.cfg['poll_seconds'] = 120

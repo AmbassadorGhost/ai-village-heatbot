@@ -1,4 +1,5 @@
 import copy
+import json
 import datetime as dt
 import tempfile
 from pathlib import Path
@@ -62,7 +63,8 @@ class Alerts(unittest.TestCase):
     def test_critical_escalation_bypasses_cooldown(self):
         self.tick(); self.tick(15); self.now += 60; self.tick(21)
         self.assertEqual(len(self.sent),2)
-        self.assertIn('CRITICAL', self.sent[-1]['embeds'][0]['title'])
+        self.assertIn('high', self.sent[-1]['embeds'][0]['title'])
+        self.assertNotIn('CRITICAL', json.dumps(self.sent[-1]))
 
     def test_rate_limit_keeps_pending_and_waits(self):
         self.tick()
@@ -116,4 +118,77 @@ class Alerts(unittest.TestCase):
             with self.assertRaises(ValueError): da.validate_url(url)
 
 
-if __name__=='__main__':unittest.main()
+
+
+class FrictionDoesNotPage(unittest.TestCase):
+    """2 Oct: friction is dashboard-only, even if an older saved config lists it."""
+    def test_saved_conflict_channel_is_ignored(self):
+        tmp = tempfile.TemporaryDirectory(); self.addCleanup(tmp.cleanup)
+        root = Path(tmp.name); sent = []
+        n = da.Notifier(root, root, lambda u, p: (sent.append(p), {'ok': True})[1])
+        da.save(n.config_path, {'enabled': True, 'generation': 'g',
+                                'webhook_url': 'https://discord.com/api/webhooks/123/test_token',
+                                'channels': ['conflict']})
+        now = 1800000000
+        def b(h):
+            return {'dashboard': {'village': 'actual-launch-1',
+                    'generated_at': dt.datetime.fromtimestamp(now, dt.timezone.utc).isoformat(),
+                    'channels': {'conflict': {'thresholds': {'hot': 15.4, 'critical': 31.3}}},
+                    'agents': {'Terra': {'participating': True, 'heat': {'conflict': h},
+                                         'contributions': [], 'source_events': {}}}}}
+        n.tick(b(0), now); n.tick(b(34.5), now)
+        self.assertEqual(sent, [])
+        self.assertNotIn('conflict', da.CHANNELS)
+
+
+class CalmNotices(unittest.TestCase):
+    """2 Oct (Adam): everyday heat goes out live, as calm, silent notices."""
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory(); self.addCleanup(self.tmp.cleanup)
+        self.root = Path(self.tmp.name); self.sent = []
+        self.n = da.Notifier(self.root, self.root, lambda u, p: (self.sent.append(p), {'ok': True})[1])
+        self.cfg = {'enabled': True, 'generation': 'g',
+                    'webhook_url': 'https://discord.com/api/webhooks/123/test_token',
+                    'channels': list(da.CHANNELS)}
+        da.save(self.n.config_path, self.cfg)
+        self.now = 1800000000
+
+    def bundle(self, heat):
+        return {'dashboard': {'village': 'actual-launch-1',
+                'generated_at': dt.datetime.fromtimestamp(self.now, dt.timezone.utc).isoformat(),
+                'channels': {'off-goal': {'thresholds': {'hot': 6.8, 'critical': 14.0}}},
+                'agents': {'Sonnet': {'participating': True, 'heat': {'off-goal': heat},
+                                      'contributions': [], 'source_events': {}}}}}
+
+    def cross(self, h=20):
+        self.n.tick(self.bundle(0), self.now); self.now += 60
+        self.n.tick(self.bundle(h), self.now)
+
+    def test_everyday_crossing_is_sent_live(self):
+        self.cross()
+        self.assertEqual(len(self.sent), 1)
+
+    def test_calm_wording_never_critical_or_urgent(self):
+        self.cross(20)
+        body = json.dumps(self.sent[0])
+        self.assertIn('Heat notice', body)
+        self.assertIn('high', body)
+        self.assertNotIn('critical', body.lower())
+        self.assertNotIn('urgent', self.sent[0]['embeds'][0]['title'].lower())
+        self.assertEqual(self.sent[0]['allowed_mentions'], {'parse': []})
+
+    def test_notices_are_silent_by_default(self):
+        self.cross()
+        self.assertEqual(self.sent[0].get('flags'), da.SILENT_FLAG)
+
+    def test_silence_can_be_turned_off(self):
+        da.save(self.n.config_path, dict(self.cfg, silent_notices=False))
+        self.cross()
+        self.assertNotIn('flags', self.sent[0])
+
+    def test_urgent_tier_is_reserved_and_empty(self):
+        self.assertEqual(da.URGENT_CHANNELS, ())
+
+
+if __name__ == '__main__':
+    unittest.main()

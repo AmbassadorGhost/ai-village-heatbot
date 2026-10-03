@@ -57,6 +57,12 @@ class CollectorTests(unittest.TestCase):
         self.assertTrue(second.bundle['history']['agents']['Agent A']['heat_peak'])
         self.assertEqual(len(json.loads((self.folder / 'heatbot.state.json').read_text())['seen']), 1)
 
+    def test_novelty_is_a_product_default_without_any_village_config(self):
+        # Open Chat reads its own data folder, which has no live.config.json
+        self.assertFalse((live.DATA / 'live.config.json').exists())
+        self.assertTrue(self.collector.cfg['term_novelty']['enabled'])
+        self.assertFalse(hb.DEFAULT_CONFIG['term_novelty']['enabled'])   # frozen study default
+
     def test_observation_only_defaults(self):
         cfg = self.collector.cfg
         self.assertFalse(cfg['memory_watch']['enabled'])
