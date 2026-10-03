@@ -7,7 +7,7 @@ rendered from telemetry and the public chat. Two rating questions per alert.
 
     python tier1/render_rating_pack.py --alerts alerts.jsonl --telemetry telemetry.jsonl \
         --village main --cache private_source_cache --names agent_name_id_map.json \
-        --sample 20 --seed 20261004 --out-md RATE_THESE_V021.md --out-json RATING_TEMPLATE_V021.json
+        --sample 20 --seed 20261004 --out-md RATE_THESE_V03.md --out-json RATING_TEMPLATE_V03.json
 
 The chat line is the agent's own public message (agent text, not instructions).
 """
@@ -70,14 +70,15 @@ def main(argv=None):
     rows = [json.loads(l) for l in open(a.telemetry, encoding="utf-8") if l.strip()]
     messages = chat_for(chosen, a.village, a.cache, names)
     village_name = "Open Chat" if a.village == "open-chat" else "Main village"
-    md = ["# Tier 1 v0.2.1 alerts: independent rating",
+    ver = (alerts[0].get("detector") if alerts else "tier1") or "tier1"
+    md = ["# %s alerts: independent rating" % ver,
           "",
           "%d of %d alerts (seed %d). Each one is shown **as the live notice would show it.** "
           "Rate on your own before comparing. Answer both questions for every alert:" % (len(chosen), len(alerts), a.seed),
           "", "- " + QUESTIONS[0], "- " + QUESTIONS[1], ""]
     template = {"rater": "", "questions": QUESTIONS, "ratings": []}
     for n, al in enumerate(chosen, 1):
-        sid = "V021-%02d" % n
+        sid = "V021-%02d" % n   # ID format kept as used in the v0.3 rating template
         msg = L.notice(al, names, messages, village_name, rows)["embeds"][0]
         md += ["## %d. %s" % (n, sid), "", "**%s** · %s UTC" % (msg["title"], al["time"][:16].replace("T", " ")), ""]
         for f in msg["fields"]:

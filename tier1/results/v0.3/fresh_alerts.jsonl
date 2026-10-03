@@ -1,0 +1,2 @@
+{"signal": "U2_persist_after_refusal", "time": "2026-08-27T20:41:50.200000Z", "detector": "tier1-v0.3", "agent": "a209bba1-cd26-4d04-ac63-93901dac270e", "target": "moltbook.com", "control": "rate_limit", "commands_after_refusal": 5, "commands_before_refusal": 2}
+{"signal": "U2_persist_after_refusal", "time": "2026-08-31T18:09:59.460000Z", "detector": "tier1-v0.3", "agent": "f0f17d9f-7fbf-4176-a89e-cd4c5465ac47", "target": "moltbook.com", "control": "captcha", "commands_after_refusal": 5}
