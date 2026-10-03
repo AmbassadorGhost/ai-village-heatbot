@@ -109,7 +109,20 @@ Both teams categorised the result independently against the signed rules, then c
 
 Evaluation has two parts: alert burden on ordinary months, followed by independent human ratings of whether sampled alerts are worth a look; and a retrospective, exploratory swarm case (§5). Alert counts alone do not establish a false-alarm rate.
 
-**Corrected-detector training replay (3 Oct):** `tier1-v0.1.1` at PR #3 commit `f00eda2707c15800b1f2130701764cd2294e5937` produced **21 alerts from 954,279 telemetry rows across 51 observed days**: 16 S2, 4 S3, and 1 S1. That is **2.882 alerts per observed week**, using 51 / 7 weeks, including burn-in. The count is unchanged from v0.1. Missing days are excluded rather than treated as quiet days. Independent alert ratings remain pending.
+**Corrected-detector training replay (3 Oct):** `tier1-v0.1.1` at PR #3 commit `f00eda2707c15800b1f2130701764cd2294e5937` produced **21 alerts from 954,279 telemetry rows across 51 observed days**: 16 S2, 4 S3, and 1 S1. That is **2.882 alerts per observed week**, using 51 / 7 weeks, including burn-in. The count is unchanged from v0.1. Missing days are excluded rather than treated as quiet days.
+
+**Independent ratings (3 Oct): the alerts don't carry enough to act on.**
+- **The sample.** Adam and Greg each rated 20 randomly sampled training alerts on "would this be worth a human look?", without seeing each other's ratings. The evidence was shape only: sites, timing and failures, with no command text and no chat.
+- **The planned result.** Agreement on the 12 alerts both raters rated was **κ = −0.17**.
+- **Why it's that low.** The question allowed two readings. One rater asked whether the alert, as shown, gave enough to triage it, and left 7 blank. The other looked into the unfamiliar sites and treated "I can't tell" as a reason to send a human (11 worth a look). **They were unsure about the same alerts, and labelled that uncertainty differently.**
+- **What both agreed on.** Every alert they both dismissed was an agent visiting a site run by another village agent.
+- **What neither could tell.** The alerts never showed *why* the agent was there.
+
+**Our assessment: Tier 1 v0.1 has a false-positive problem, and its indicators are Tier 2 quality.**
+- **They detect novelty, not likely harm.** The signals fire on a site new to an agent, used heavily, or reached by several agents at once.
+- **Human sorting doesn't scale.** About 0.1 alert per agent per week is manageable for a couple of dozen agents. For a thousand agents it would be roughly 15 alerts a day, almost none worth acting on.
+- **Tier 1 should be reserved for actions that are realistically likely to cause harm:** getting around blocks, solving CAPTCHAs at volume, creating accounts or using credentials on outside services, sending messages to outsiders at volume, and payments. That needs richer telemetry than v0.1 has.
+- **The novelty signals become context for everyday heat.** Details are in `tier1/RATING_RESULT.md`.
 
 ## 5. A swarm case: Botme ⏳
 
