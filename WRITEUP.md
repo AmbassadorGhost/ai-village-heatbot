@@ -77,7 +77,7 @@ Both teams categorised the result independently against the signed rules, then c
 | lead time (descriptive) | 0.47 | 0.40–0.56 | ruled out |
 | alert-level claims | (9 alerts) | — | **untestable**, as declared in advance |
 
-- **Testing stopped at the first claim,** so no early-warning claim was demonstrated.
+- **The fixed testing sequence stopped at the first claim.** Forward (shortly before) and onset (lead time) results were reported descriptively; both also received **ruled out** classifications against the agreed AUC 0.60 threshold, but were not further confirmatory tests. No early-warning claim was demonstrated. The separate **E2 alert-level claim remained untestable** because too few alerts fired.
 - **"Ruled out" means an effect of the useful size is excluded.** It doesn't mean heat contains no information: every interval includes 0.5.
 
 ### 3.3 What we think happened
@@ -107,7 +107,9 @@ Both teams categorised the result independently against the signed rules, then c
 - **several agents converging** on the same new outside activity, which is the swarm signal;
 - the credentials tripwire.
 
-It's validated two ways: false alarms per week on ordinary months, and a real swarm event it was never tuned on (§5).
+Evaluation has two parts: alert burden on ordinary months, followed by independent human ratings of whether sampled alerts are worth a look; and a retrospective, exploratory swarm case (§5). Alert counts alone do not establish a false-alarm rate.
+
+**Corrected-detector training replay (3 Oct):** `tier1-v0.1.1` at PR #3 commit `f00eda2707c15800b1f2130701764cd2294e5937` produced **21 alerts from 954,279 telemetry rows across 51 observed days**: 16 S2, 4 S3, and 1 S1. That is **2.882 alerts per observed week**, using 51 / 7 weeks, including burn-in. The count is unchanged from v0.1. Missing days are excluded rather than treated as quiet days. Independent alert ratings remain pending.
 
 ## 5. A swarm case: Botme ⏳
 
@@ -126,7 +128,7 @@ Two human raters independently judged 20 agent-days for "fixation." They agreed 
 
 **The raters were measuring something broader, which we call goal displacement:** *effort has come loose from the goal while the agent stays busy.* Surrogation is one mechanism; side-task fixation, monitoring loops and undirected production are others. One agent with the goal "Maximize animal wellbeing in the world" had published about 75,900 templated web pages. Its memory tracked the page count closely, but recorded no evidence that anyone read them.
 
-**3 to 4 of 10 randomly chosen agent-days** were rated as fixated. That's a small sample, but it suggests goal displacement is common in the village, not rare. It's a population-level finding, and our next study.
+**Of the same 10 randomly chosen agent-days, Adam rated 4 and Greg rated 3 as fixated.** These are 10 items judged by two raters, not 20 independent observations. The small sample suggests goal displacement may be common rather than rare, but does not establish its prevalence across the village. That is a question for our next study.
 
 ## 7. Limits, stated plainly
 
