@@ -1,5 +1,5 @@
 --- export_telemetry.py	2026-10-03 14:21:01.900608558 -0500
-+++ export_telemetry.py	2026-10-03 14:21:01.914447472 -0500
++++ export_telemetry.py	2026-10-03 15:42:01.499565299 -0500
 @@ -9,6 +9,7 @@
  from pathlib import Path
  from zoneinfo import ZoneInfo
@@ -17,13 +17,15 @@
                        'village': village, 'source_day': day, 'day_timezone': DAY_ZONE.key,
                        'turn_id': identity, 'session_id': session.get('id'),
                        'agent_id': session.get('agentId'),
-@@ -76,7 +77,8 @@
+@@ -76,7 +77,10 @@
                        'command_sha256': command_fingerprint(command) if is_command else None,
                        **fields, 'failure_categories': failures, 'failure_scope': 'whole_turn',
                        'failure_classifier': 'h1-failure-v1.1',
 -                      'result_available_at': None, 'network_contact_verified': False}
 +                      'result_available_at': None, 'network_contact_verified': False,
-+                      'action': action_features.extract(command) if is_command else None}
++                      'action': action_features.extract(command) if is_command else None,
++                      'refusal': action_features.refusal(as_text(turn.get('error')), as_text(turn.get('system')),
++                                                         as_text(turn.get('output'))) if is_command else None}
              records.append(record)
              stats['exported_turns'] += 1
              stats['shell_command_turns' if is_command else 'other_tool_turns'] += 1

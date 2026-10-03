@@ -235,3 +235,18 @@ def extract(command):
     out["payment_hosts"] = sorted(pay)
     out["mirror_of_hosts"] = sorted(mirrored)
     return out
+
+
+# ---------------------------------------------------------------------------
+# v0.2.1: refusal flags from a turn's error/system/output text (booleans only).
+# A rate limit is a control with unambiguous intent ("not this fast"). The frozen
+# failure classifier files 429s under a generic HTTP error, so this separates it.
+_RATE_LIMIT = re.compile(r"(?i)\bHTTP/\d(?:\.\d)?\s+429\b|\b429\s+too\s+many\s+requests\b|"
+                         r"[\"']?status(?:_code|code)?[\"']?\s*[:=]\s*429\b|\bstatus code 429\b|"
+                         r"\btoo many requests\b|\brate[ -]?limit(?:ed| exceeded)\b|\bratelimitexceeded\b")
+
+
+def refusal(error_text="", system_text="", output_text=""):
+    """-> {"refusal_features_version", "rate_limited"}. Never returns any text."""
+    blob = "\n".join(x for x in (error_text, system_text, output_text) if isinstance(x, str))
+    return {"refusal_features_version": VERSION, "rate_limited": bool(_RATE_LIMIT.search(blob))}

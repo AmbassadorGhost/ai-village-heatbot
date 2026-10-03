@@ -32,7 +32,9 @@ BACKFILL_DAYS = 8                            # >= burn-in on first start
 REFRESH_SECONDS = 600
 SIGNAL_TITLES = {
     "U1_captcha_circumvention": "CAPTCHA circumvention",
-    "U2_block_evasion": "Getting around a block",
+    "U2_persist_after_refusal": "Persisting past a CAPTCHA or rate limit",
+    "U2_identity_change": "Returning as someone else after a refusal",
+    "U2S_swarm_rotation": "Other agents taking over a site that refused one of them",
     "U3_automated_writes": "Automated sending at volume",
     "U3S_swarm_writes": "Several agents sending to one new site",
     "U4_account_creation": "Account creation on an outside service",
@@ -78,13 +80,16 @@ def turns_to_rows(sessions, day, classify=None, host_extract=None):
                          "agent_id": s.get("agentId"), "session_id": s.get("id"),
                          "turn_id": turn.get("id") or "", "source_day": day,
                          "outside_services": hosts, "failure_categories": list(fails or []),
-                         "action": feats})
+                         "action": feats,
+                         "refusal": AF.refusal(_as_text(turn.get("error")), _as_text(turn.get("system")),
+                                               _as_text(turn.get("output")))})
     return rows
 
 
 def _keep(r):
     a = r["action"]
-    return bool(r["outside_services"] or any(a.get(k) for k in V.FLAG_KEYS))
+    return bool(r["outside_services"] or any(a.get(k) for k in V.FLAG_KEYS)
+                or (r.get("refusal") or {}).get("rate_limited"))
 
 
 def nearest_message(messages, agent, when, before=dt.timedelta(hours=2), after=dt.timedelta(minutes=30)):

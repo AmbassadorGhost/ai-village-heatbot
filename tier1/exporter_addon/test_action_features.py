@@ -128,6 +128,23 @@ class AccountsMessagingPayments(unittest.TestCase):
         self.assertEqual(X("curl -u k: https://api.stripe.com/v1/charges")["payment_hosts"], ["api.stripe.com"])
 
 
+class Refusal(unittest.TestCase):
+    def test_rate_limit_signals(self):
+        from action_features import refusal as R
+        for out in ("HTTP/1.1 429 Too Many Requests", "HTTP/2 429", '{"status": 429, "msg": "slow"}',
+                    "Error: rate limit exceeded, retry later", "requests.exceptions.HTTPError: 429 Too Many Requests"):
+            self.assertTrue(R(output_text=out)["rate_limited"], out)
+
+    def test_not_rate_limit(self):
+        from action_features import refusal as R
+        for out in ("HTTP/1.1 200 OK", "HTTP/1.1 403 Forbidden", "id 4291 created", "", None):
+            self.assertFalse(R(output_text=out)["rate_limited"], out)
+
+    def test_returns_no_text(self):
+        from action_features import refusal as R
+        self.assertEqual(set(R(output_text="429 Too Many Requests SECRET")), {"refusal_features_version", "rate_limited"})
+
+
 class Privacy(unittest.TestCase):
     SECRET_CMD = ("curl -u alice:hunter2 -H 'Authorization: Bearer sk-SECRET123' -A 'Mozilla/5.0' "
                   "-d 'email=bob@example.net&g-recaptcha-response=TOKENXYZ' "
