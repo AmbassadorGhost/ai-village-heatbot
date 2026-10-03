@@ -1,7 +1,7 @@
 # Handoff: v0.3 (final). Run it, then score the fresh month once
 
 **From:** Adam and Claude · **To:** Greg and his agent · **When:** Sat 3 Oct, about 17:20 CT
-**Branch:** `tier1-detector` at `5971452` or later. **Detector only:** your v0.2.1 exports are reused as they are.
+**Branch:** `tier1-detector`, latest commit (pull; updated about 17:25 CT). **Detector only:** your v0.2.1 exports are reused as they are.
 
 Thank you again. Stopping at the gate, and the rotation bug report, were both exactly right. Adam has decided to **depart from the one-revision rule, openly**. It's recorded as Deviation D-v0.3 in `tier1/TIER1_V02_SPEC.md`:
 - **The training months are now our development set,** not a gate.
@@ -12,11 +12,11 @@ Thank you again. Stopping at the gate, and the rotation bug report, were both ex
 1. A rate limit counts as persisting only if the agent **didn't slow down**.
 2. A browser identity alone moves to Tier 2.
 3. Your U2S fix: refused agents are no longer counted as "others".
-4. "Established" needs use that's **at least 7 days old**, so a swarm can't make its own target look normal.
+A fourth change ("established" needs use at least 7 days old) was **dropped before any run.** A new in-scope service would draw a week of alerts. The loophole it would have closed is reported as a limitation.
 
 ## Steps (no re-export needed)
 
-1. **Pull.** `tier1/tier1_v02.py` should hash to `71070232…`, and `action_features.py` is unchanged (`4b0929ed…`). Tests:
+1. **Pull.** `tier1/tier1_v02.py` should hash to `911d2728…`, and `action_features.py` is unchanged (`4b0929ed…`). Tests:
    - `cd tier1 && python -m unittest test_tier1_v02 test_tier1_live test_tier1_detector` should give **77 OK**;
    - `test_action_features` should give **32 OK**.
 2. **Training (development set, for the record):** `python tier1/tier1_v02.py <v021 training telemetry 6a7d6226…> --out training_alerts.jsonl --summary training_summary.json`. **Whatever the number, continue.**

@@ -98,11 +98,12 @@ class U3Writes(unittest.TestCase):
         rows = burn() + [write(B, i, "A", "grok-news-1a2b.gitlab.io", loop_construct=True) for i in range(10)]
         self.assertEqual(sigs(rows), [])
 
-    def test_recent_routine_use_does_not_establish_v03(self):
-        # used on 3 earlier days, but all within the last week: not yet "established"
+    def test_three_recent_days_establish_v03(self):
+        # Adam, 3 Oct: no age requirement. Use on 3 earlier days establishes a site, even if
+        # recent (stated limit: a slow-starting swarm can make its own target look normal).
         hist = [write(B - d, 0, "Z", "api.new.example") for d in (1, 2, 3)]
         rows = burn() + hist + [write(B, 10 + i, "A", "api.new.example") for i in range(20)]
-        self.assertIn("U3_automated_writes", sigs(rows))
+        self.assertNotIn("U3_automated_writes", sigs(rows))
 
     def test_burn_in_suppresses_writes(self):
         self.assertEqual(sigs([write(0, i, "A", "api.submit.example") for i in range(40)]), [])

@@ -190,12 +190,10 @@ def detect(rows):
         alerts.append(dict(signal=signal, time=t.isoformat() + "Z", detector=DETECTOR_VERSION, **info))
 
     def aged(day_set, day):
-        """v0.3: routine use must be OLD: >= ESTABLISHED_DAYS earlier days, the first at least
-        BURN_IN_DAYS before today. A swarm can't make its own target look normal in 3 days."""
-        earlier = sorted(d for d in day_set if d < day)
-        if len(earlier) < ESTABLISHED_DAYS:
-            return False
-        return (dt.date.fromisoformat(day) - dt.date.fromisoformat(earlier[0])).days >= BURN_IN_DAYS
+        """Routine use: named or written on >= ESTABLISHED_DAYS earlier days. (A 7-day age
+        requirement was considered for v0.3 and dropped by Adam: a legitimate new service in
+        scope would draw a week of alerts. The self-made-normal loophole is a stated limit.)"""
+        return len({d for d in day_set if d < day}) >= ESTABLISHED_DAYS
 
     def established(tg, day):
         return tg in NEVER_TARGET or aged(write_days[tg], day)
