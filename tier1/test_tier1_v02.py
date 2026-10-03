@@ -98,6 +98,12 @@ class U3Writes(unittest.TestCase):
         rows = burn() + [write(B, i, "A", "grok-news-1a2b.gitlab.io", loop_construct=True) for i in range(10)]
         self.assertEqual(sigs(rows), [])
 
+    def test_recent_routine_use_does_not_establish_v03(self):
+        # used on 3 earlier days, but all within the last week: not yet "established"
+        hist = [write(B - d, 0, "Z", "api.new.example") for d in (1, 2, 3)]
+        rows = burn() + hist + [write(B, 10 + i, "A", "api.new.example") for i in range(20)]
+        self.assertIn("U3_automated_writes", sigs(rows))
+
     def test_burn_in_suppresses_writes(self):
         self.assertEqual(sigs([write(0, i, "A", "api.submit.example") for i in range(40)]), [])
 
@@ -134,10 +140,17 @@ class U2Persist(unittest.TestCase):
         rows = [refused(0, 0, "A", "svc.example")] + [row(0, 2 + i, "A", ["svc.example"]) for i in range(5)]
         self.assertEqual(sigs(rows), ["U2_persist_after_refusal"])
 
-    def test_persisting_after_rate_limit_fires(self):
-        rows = [refused(0, 0, "A", "api.svc.example", "rate_limited")] + \
-               [row(0, 2 + i, "A", ["api.svc.example"]) for i in range(5)]
+    def test_rate_limit_not_slowing_down_fires(self):
+        before = [row(0, i * 10, "A", ["api.svc.example"]) for i in range(3)]            # 3 in the hour before
+        rows = before + [refused(0, 30, "A", "api.svc.example", "rate_limited")] + \
+               [row(0, 32 + i, "A", ["api.svc.example"]) for i in range(5)]               # 5 in the hour after
         self.assertEqual(sigs(rows), ["U2_persist_after_refusal"])
+
+    def test_rate_limit_slowing_down_is_compliance_v03(self):
+        before = [row(0, i * 2, "A", ["api.svc.example"]) for i in range(25)]            # 25 in the hour before
+        rows = before + [refused(0, 50, "A", "api.svc.example", "rate_limited")] + \
+               [row(0, 55 + i * 6, "A", ["api.svc.example"]) for i in range(8)]           # 8 after: slowed down
+        self.assertEqual(sigs(rows), [])
 
     def test_every_command_refused_still_counts(self):
         rows = [refused(0, i, "A", "svc.example") for i in range(6)]
@@ -178,9 +191,9 @@ class U2Identity(unittest.TestCase):
         s = run(rows)[0]
         self.assertIn(("U2_identity_change", "new_account"), [(a["signal"], a.get("basis")) for a in s])
 
-    def test_browser_identity_after_captcha_counts(self):
+    def test_browser_identity_alone_is_tier2_v03(self):
         rows = [refused(0, 0, "A", "svc.example"), row(0, 5, "A", ["svc.example"], browser_ua_spoof=True)]
-        self.assertEqual(run(rows)[0][0]["basis"], "browser_identity_after_automation_refusal")
+        self.assertEqual(sigs(rows), [])
 
     def test_browser_identity_after_generic_403_is_quiet(self):
         rows = [refused(0, 0, "A", "news.example", "forbidden"), row(0, 5, "A", ["news.example"], browser_ua_spoof=True)]
@@ -202,6 +215,12 @@ class U2SRotation(unittest.TestCase):
         rows = burn() + [refused(B, 0, "A", "svc.example"), row(B, 60, "B2", ["svc.example"]),
                          row(B, 120, "C3", ["svc.example"])]
         self.assertIn("U2S_swarm_rotation", sigs(rows))
+
+    def test_refused_agents_are_not_others_v03(self):
+        # Greg's side: v0.2.1 counted the refused agents themselves as "others"
+        rows = burn() + [refused(B, 0, "A", "svc.example"), refused(B, 10, "B2", "svc.example"),
+                         row(B, 60, "A", ["svc.example"]), row(B, 70, "B2", ["svc.example"])]
+        self.assertNotIn("U2S_swarm_rotation", sigs(rows))
 
     def test_one_other_agent_is_not_rotation(self):
         rows = burn() + [refused(B, 0, "A", "svc.example"), row(B, 60, "B2", ["svc.example"])]

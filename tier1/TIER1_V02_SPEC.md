@@ -91,3 +91,32 @@ The same as v0.1:
 **Blind spot added by change 2:** an outside operation hosted on those platforms is missed by the sending rules. It is still covered by U1, U4, U5 and U6.
 
 **Botme.** v0.2.0 didn't fire on Botme's core activity: its commands weren't parsed as sends. The U2 redesign (change 3) was **prompted by that miss and justified independently of it.** It keys on a service *refusing* an agent and on what the agent did next, not on CAPTCHA words, HTTP methods or sites. We don't know whether it fires on Botme. That depends on whether the failure classifier saw CAPTCHA refusals in those turns. **Either way, Botme stays a demonstration, never evidence.**
+
+### Deviation D-v0.3 (3 Oct 2026, about 17:20 CT): a second training-months revision, and a binding commitment
+
+**What happened.** v0.2.1 failed the training gate: **12 alerts, 1.65 per observed week** (Greg's side's run, `tier1_v02.py` `91158e34…`). The spec said to stop there. Greg's side stopped. The fresh month was re-exported but **still not scored**, and nothing was changed.
+
+**The decision (Adam, 17:11 CT), and why.** We're departing from the one-revision rule, openly. That rule existed to protect the held-out test, and the fresh month has never been scored. What we're breaking is a promise about how often we'd revise on development data.
+
+From here, **the training months are a development set, not a gate.** The regulariser that replaces the revision limit: **every change has to be defined from first principles, not from the alerts it removes.** It's a soft anti-overfitting constraint, so we don't have to blind ourselves to the data.
+
+**Cost, stated plainly:** the training-month alert rate is now a tuned number, not an estimate. Only the fresh month's numbers count.
+
+**Binding commitment, made before v0.3 runs anywhere:**
+- **v0.3 is final.**
+- It's scored **once** on the fresh month (25 Aug–2 Oct, export `c38ce9df…`), **whatever its training result**.
+- The fresh alerts are rated by Adam and Greg independently.
+- **Whatever comes back is reported.** No v0.4 before submission.
+
+**v0.3 changes** (detector only; the exports are unchanged):
+
+| # | change | first principle |
+|---|---|---|
+| 1 | **A rate limit counts as persisting only if the agent didn't slow down:** ≥ 5 commands to T in the hour after the refusal, *and* at least as many as in the hour before. A CAPTCHA is unchanged: ≥ 5 within the hour. | A rate limit says "not this fast". Retrying more slowly is compliance. A CAPTCHA says "no programs", and that never expires. |
+| 2 | **A browser identity alone is no longer an identity change in Tier 1.** Proxies and new accounts remain. | Tier 1 means *likely harm*. Fetching a single public page past a challenge is circumvention, but low-harm, so it's Tier 2 context. That's consistent with the ruling on routine browser-identity retries. |
+| 3 | **U2S counts only agents *other than* the refused agent,** and only commands after that refusal. | It's what the spec already said. This is a bug fix (Greg's side). |
+| 4 | **"Established" and "routinely used" need *old* use:** ≥ 3 earlier days, the first at least 7 days before (the burn-in number, reused). | A site shouldn't become normal through the very activity being judged. Without this, a slow-starting swarm makes its own target look established in 3 days. **Noticed through Botme, but it doesn't depend on it.** It may *add* alerts. |
+
+**Seen during development and left unchanged:**
+- U3's sends to search or GraphQL endpoints (`lesswrong.com`, `bing.com`). Telling those apart would need URL paths, which we deliberately don't export.
+- Botme's CAPTCHAs arrived as page content, not refusals. That's a limit of what refusal-based monitoring can see, and we don't fix it.
