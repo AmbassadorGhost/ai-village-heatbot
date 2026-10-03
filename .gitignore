@@ -22,3 +22,5 @@ review_context.json
 reviews/
 discord.local.json
 discord.state.json
+tier1_state.json
+tier1_rows.jsonl

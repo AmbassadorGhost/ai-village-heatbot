@@ -1,7 +1,7 @@
 # Tier 1 v0.2: harm-likely actions, not novelty
 
 **Status:** rules fixed on 3 Oct 2026, about 15:00 CT, **before any v0.2 feature data exists.** Exploratory, and not part of the signed pre-registration.
-**Code:** `tier1_v02.py` with `test_tier1_v02.py` (25 tests). Exporter add-on: `exporter_addon/action_features.py` with `test_action_features.py` (28 tests), and `export_telemetry_v02.patch`.
+**Code:** `tier1_v02.py` with `test_tier1_v02.py` (26 tests). Live path: `tier1_live.py` with `test_tier1_live.py` (9 tests), wired into `live_server.py`. Exporter add-on: `exporter_addon/action_features.py` with `test_action_features.py` (28 tests), and `export_telemetry_v02.patch`.
 **Replaces:** v0.1 as the *urgent* tier. v0.1's novelty signals move to everyday heat as context. They don't page anyone.
 
 ## Why
@@ -30,6 +30,7 @@ v0.1 fired on "a site new to this agent". Independent ratings (`RATING_RESULT.md
 - Code hosting (GitHub, GitLab), package registries and the village's own API never count.
 
 **Guards:**
+- U3 and U3S stay silent until the village has more than 7 observed days of history, so that "established" has data behind it. This was added on 3 Oct, before any v0.2 data existed;
 - a 24 h cooldown per signal and key;
 - a command's own failure or send counts only toward *later* commands;
 - rows without action features can't fire.

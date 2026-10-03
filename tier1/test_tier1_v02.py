@@ -35,6 +35,13 @@ def write(day, minute, agent, host, **kw):
     return row(day, minute, agent, [host], request_methods=["POST"], write_hosts=[host], **kw)
 
 
+def burn(days=8):
+    return [row(d, 0, "Z", ["github.com"], request_methods=["GET"]) for d in range(days)]
+
+
+B = 9   # first day after burn-in
+
+
 def run(rows):
     return V.detect(sorted(rows, key=lambda r: (r["timestamp_utc"], r["turn_id"])))
 
@@ -51,30 +58,30 @@ class Reading(unittest.TestCase):
 
 class U3Writes(unittest.TestCase):
     def test_many_writes_to_new_outside_target_fire(self):
-        rows = [write(0, i, "A", "api.submit.example") for i in range(20)]
+        rows = burn() + [write(B, i, "A", "api.submit.example") for i in range(20)]
         self.assertEqual(sigs(rows), ["U3_automated_writes"])
 
     def test_below_threshold_quiet(self):
-        self.assertEqual(sigs([write(0, i, "A", "api.submit.example") for i in range(19)]), [])
+        self.assertEqual(sigs(burn() + [write(B, i, "A", "api.submit.example") for i in range(19)]), [])
 
     def test_spread_over_two_hours_quiet(self):
-        self.assertEqual(sigs([write(0, i * 7, "A", "api.submit.example") for i in range(20)]), [])
+        self.assertEqual(sigs(burn() + [write(B, i * 7, "A", "api.submit.example") for i in range(20)]), [])
 
     def test_loop_writes_fire_sooner(self):
-        rows = [write(0, i, "A", "api.submit.example", loop_construct=True) for i in range(5)]
+        rows = burn() + [write(B, i, "A", "api.submit.example", loop_construct=True) for i in range(5)]
         self.assertEqual(sigs(rows), ["U3_automated_writes"])
 
     def test_code_hosting_never_fires(self):
-        self.assertEqual(sigs([write(0, i, "A", "api.github.com") for i in range(50)]), [])
+        self.assertEqual(sigs(burn() + [write(B, i, "A", "api.github.com") for i in range(50)]), [])
 
     def test_established_target_quiet(self):
         hist = [write(d, 0, "B", "api.manifold.markets") for d in range(3)]
-        rows = hist + [write(5, i, "A", "api.manifold.markets") for i in range(40)]
+        rows = burn() + hist + [write(B, i, "A", "api.manifold.markets") for i in range(40)]
         self.assertEqual(sigs(rows), [])
 
     def test_two_days_history_is_not_established(self):
         hist = [write(d, 0, "B", "api.manifold.markets") for d in range(2)]
-        rows = hist + [write(5, i, "A", "api.manifold.markets") for i in range(20)]
+        rows = burn() + hist + [write(B, i, "A", "api.manifold.markets") for i in range(20)]
         self.assertIn("U3_automated_writes", sigs(rows))
 
     def test_platform_sites_are_separate_targets(self):
@@ -84,16 +91,20 @@ class U3Writes(unittest.TestCase):
         self.assertEqual(V.target("botme.idk.dunkirk.sh"), "dunkirk.sh")
 
     def test_cooldown(self):
-        self.assertEqual(len(run([write(0, i * 0.5, "A", "api.x.example") for i in range(100)])[0]), 1)
+        self.assertEqual(len(run(burn() + [write(B, i * 0.5, "A", "api.x.example") for i in range(100)])[0]), 1)
+
+
+    def test_burn_in_suppresses_writes(self):
+        self.assertEqual(sigs([write(0, i, "A", "api.submit.example") for i in range(40)]), [])
 
 
 class U3Swarm(unittest.TestCase):
     def test_three_agents_writing_to_same_target(self):
-        rows = [write(0, i * 30 + j, ag, "submit.example") for j, ag in enumerate("ABC") for i in range(5)]
+        rows = burn() + [write(B, i * 30 + j, ag, "submit.example") for j, ag in enumerate("ABC") for i in range(5)]
         self.assertIn("U3S_swarm_writes", sigs(rows))
 
     def test_two_agents_are_not_a_swarm(self):
-        rows = [write(0, i * 30 + j, ag, "submit.example") for j, ag in enumerate("AB") for i in range(5)]
+        rows = burn() + [write(B, i * 30 + j, ag, "submit.example") for j, ag in enumerate("AB") for i in range(5)]
         self.assertNotIn("U3S_swarm_writes", sigs(rows))
 
 

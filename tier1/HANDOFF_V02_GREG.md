@@ -21,7 +21,7 @@ v0.2 needs to know whether a request **read or wrote**, along with browser-ident
    - `'action': action_features.extract(command) if is_command else None` on each row.
 2. **Run the tests:**
    - `cd tier1/exporter_addon && python -m unittest -v test_action_features`, which should give 28 OK, including a privacy test: no command text, paths, queries, header values or credentials in the output;
-   - `cd tier1 && python -m unittest test_tier1_v02 test_tier1_detector`, which should give 47 OK.
+   - `cd tier1 && python -m unittest test_tier1_v02 test_tier1_detector`, which should give 48 OK, and `python -m unittest test_tier1_live`, which should give 9 OK.
 3. **Re-export three periods from your private cache.** Fetch only what's missing.
 
    | period | village | dates | purpose |
@@ -42,6 +42,26 @@ v0.2 needs to know whether a request **read or wrote**, along with browser-ident
 - **Run the training months first.** If the burden is over 1 alert per week, the spec allows **one** threshold change, on the training months only, recorded as v0.2.1. **Please send us the numbers before changing anything.**
 - **Then run the fresh period once.**
 - **Botme can run any time,** but it's a demonstration only: we designed v0.2 after seeing it.
+
+## Also tonight, if you can: deploy the live urgent tier
+
+`live_server.py` on this branch now runs Tier 1 v0.2 live, with all tests passing:
+- **Every 10 min it reads the public command logs,** and stores flags and hostnames only, never command text.
+- **It runs v0.2 and posts an "URGENT" notice for any new alert.** Each notice carries the **agent's own nearest chat line**, the context both raters were missing.
+- **Startup history is never paged.**
+- **The viewer has a new "Urgent tier" panel.**
+
+**To turn on Discord notices:** create a *separate* webhook for an urgent channel, then add two keys to `discord.local.json`:
+- `"urgent_enabled": true`
+- `"urgent_webhook_url": "https://discord.com/api/webhooks/…"`
+
+Heat notices are unaffected.
+
+**Optional:**
+- To activate block evasion (U2) live, set `"tier1": {"h1_classifier": "<path to frozen h1_telemetry.py>"}` in `live.config.json`.
+- Copy your `outside_services.py` into `tier1/exporter_addon/` for the same host parser as the export.
+
+**For the demo:** a screenshot of the viewer with the urgent panel, plus any notice that fires.
 
 ## Privacy
 
