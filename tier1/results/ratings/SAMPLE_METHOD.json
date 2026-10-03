@@ -1,0 +1,32 @@
+{
+  "method": "simple random sample without replacement; alerts canonically sorted before selection",
+  "rng": "Python random.Random.sample",
+  "seed": 20261003,
+  "population": 21,
+  "sample_size": 20,
+  "selected_sorted_indices": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20
+  ],
+  "alerts_sha256": "1da0d9e456aad04a395c61c0a9b27167aef913e06c248c7fe002c3d73be58b91",
+  "ratings_filled": false,
+  "evidence": "Sanitized target-bearing turns in preceding 1h (S2), 2h (S1), or 6h (S3). Raw command/chat contents excluded."
+}
