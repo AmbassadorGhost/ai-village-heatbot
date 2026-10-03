@@ -1,5 +1,7 @@
 // Public agent text is untrusted data. Always render it with textContent.
 const expandedEvidence = new Set();
+// Scroll offsets of long message bodies, so a snapshot refresh does not jump back to the top.
+const evidenceScroll = new Map();
 function evidenceText(tag, text, cls) {
   const node = document.createElement(tag);
   node.textContent = text;
@@ -18,6 +20,8 @@ function evidenceCard(source, key, title) {
   card.append(evidenceText('p', meta, 'muted'));
   const body = evidenceText('div', source.text ?? source.summary ?? 'No public message text available.');
   body.style.cssText = 'white-space:pre-wrap;overflow-wrap:anywhere;max-height:380px;overflow:auto;margin:10px 0';
+  body.dataset.scrollKey = key;
+  body.addEventListener('scroll', () => evidenceScroll.set(key, body.scrollTop));
   card.append(body);
   if (source.seconds != null) card.append(evidenceText('p', `Pause duration: ${source.seconds} seconds.`, 'muted'));
   if (source.truncated) card.append(evidenceText('p', 'Excerpt truncated at 12,000 characters.', 'muted'));
@@ -53,4 +57,8 @@ function renderEvidence(agent, channel, info) {
   }
   if (!info?.recent_messages?.length) section.append(evidenceText('p', 'No public chat observed in the fetched window.', 'muted'));
   document.getElementById('detail').append(section);
+  for (const body of section.querySelectorAll('[data-scroll-key]')) {
+    const top = evidenceScroll.get(body.dataset.scrollKey);
+    if (top) body.scrollTop = top;
+  }
 }

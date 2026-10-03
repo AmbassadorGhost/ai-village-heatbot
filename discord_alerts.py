@@ -152,14 +152,15 @@ class Notifier:
                 cooldown_done = now - entry['sent_at'] >= 90 * 60
                 if level and ((entry['armed'] and cooldown_done) or (level == 2 and entry['level'] == 1)):
                     state['pending'].setdefault(key, {'agent': a, 'channel': c, 'created': now})
-        # Drop expired or no-longer-hot pending alerts. Never deliver startup history.
+        # Pending alerts wait out delivery failures but are dropped once the signal
+        # is no longer hot. Startup history never enters pending (quiet baseline).
         groups = {}
         for key, item in list(state['pending'].items()):
             a, c = item['agent'], item['channel']
             info = active.get(a, {})
             h = info.get('heat', {}).get(c, 0)
             th = dashboard['channels'].get(c, {}).get('thresholds', {})
-            if now - item['created'] > 600 or not info.get('participating') or c not in allowed or h < th.get('hot', float('inf')):
+            if not info.get('participating') or c not in allowed or h < th.get('hot', float('inf')):
                 del state['pending'][key]
                 continue
             level = 2 if h >= th['critical'] else 1

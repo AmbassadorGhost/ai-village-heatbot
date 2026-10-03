@@ -86,7 +86,8 @@ class Routes(unittest.TestCase):
         h.code = None
         h.send_error = lambda code: setattr(h, 'code', code)
         h.send_response = lambda code: setattr(h, 'code', code)
-        h.send_header = lambda *args: None
+        h.sent_headers = {}
+        h.send_header = lambda k, v: h.sent_headers.__setitem__(k, v)
         h.end_headers = lambda: None
         return h
 
@@ -106,6 +107,48 @@ class Routes(unittest.TestCase):
         h.do_GET()
         self.assertEqual(h.code, 200)
         self.assertIn(b'Live behavioral heat', h.wfile.getvalue())
+
+    def test_scripts_served_and_csp_forbids_inline_scripts(self):
+        for p in ['/app.js', '/evidence.js', '/discord_setup.js']:
+            h = self.handler(p)
+            h.do_GET()
+            self.assertEqual(h.code, 200)
+            self.assertTrue(h.sent_headers['Content-Type'].startswith('text/javascript'))
+        csp = h.sent_headers['Content-Security-Policy']
+        self.assertIn("script-src 'self';", csp)
+        for p in ['/', '/discord']:
+            h = self.handler(p)
+            h.do_GET()
+            page = h.wfile.getvalue().decode()
+            self.assertNotRegex(page, r'<script>|<script(?![^>]*\ssrc=)[^>]*>')
+        self.assertIn('<meta name="csrf" content="%s">' % live.SETUP_TOKEN, page)
+
+    def test_feed_url_is_page_configuration_not_script_constant(self):
+        h = self.handler('/')
+        h.do_GET()
+        self.assertIn(b'<meta name="heat-feed" content="/api/live">', h.wfile.getvalue())
+        script = (live.ROOT / 'app.js').read_text(encoding='utf-8')
+        self.assertIn('meta[name="heat-feed"]', script)
+        self.assertNotIn("fetch('/api/live'", script)
+
+    def test_discord_setup_unavailable_through_tunnel(self):
+        for header in live.PROXY_HEADERS:
+            h = self.handler('/discord')
+            h.headers[header] = '203.0.113.9'
+            h.do_GET()
+            self.assertEqual(h.code, 404)
+            self.assertNotIn(live.SETUP_TOKEN.encode(), h.wfile.getvalue())
+            # Host and Origin forged to look local, with a valid token: still refused.
+            p = self.post_handler({'csrf': live.SETUP_TOKEN, 'action': 'disable'})
+            p.headers[header] = '203.0.113.9'
+            with patch.object(live.discord_alerts, 'save') as save:
+                p.do_POST()
+                self.assertEqual(p.code, 403)
+                save.assert_not_called()
+        h = self.handler('/')
+        h.headers['Cf-Connecting-IP'] = '203.0.113.9'
+        h.do_GET()
+        self.assertEqual(h.code, 200)
 
     def post_handler(self, body, origin='http://127.0.0.1:8765'):
         h = self.handler('/api/discord-config')
@@ -147,6 +190,35 @@ class Routes(unittest.TestCase):
             h.do_POST()
             self.assertEqual(h.code, 400)
             send.assert_not_called()
+
+
+class LogTrimTests(unittest.TestCase):
+    def test_old_rows_dropped_recent_and_unparseable_kept(self):
+        with tempfile.TemporaryDirectory() as folder, patch.object(live, 'DATA', Path(folder)):
+            now = dt.datetime(2026, 10, 2, 17, 0)
+            rows = {'heatbot.log.jsonl': ('ts', '2026-08-01T10:00:00', '2026-09-30T10:00:00'),
+                    'situation.jsonl': ('hour', '2026-08-01T10:00Z', '2026-09-30T10:00Z'),
+                    'heat_hourly.jsonl': ('hour', '2026-08-01T10:00Z', '2026-09-30T10:00Z')}
+            for name, (field, old, new) in rows.items():
+                (Path(folder) / name).write_text(
+                    json.dumps({field: old}) + '\n' + 'not json\n' + json.dumps({field: new}) + '\n', encoding='utf-8')
+            live.trim_logs(now)
+            for name, (field, old, new) in rows.items():
+                text = (Path(folder) / name).read_text(encoding='utf-8')
+                self.assertNotIn(old, text)
+                self.assertIn(new, text)
+                self.assertIn('not json', text)
+
+    def test_undated_and_non_object_rows_kept_without_crashing(self):
+        with tempfile.TemporaryDirectory() as folder, patch.object(live, 'DATA', Path(folder)):
+            odd = ['{"hour": "2026-08-01T10:00Z"}', '{}', '{"hour": ""}', '{"hour": null}', '{"hour": 7}',
+                   '{"hour": "yesterday"}', 'null', '[1, 2]', '"text"', '42', '{"hour": "2026-09-30T10:00Z"}']
+            (Path(folder) / 'situation.jsonl').write_text('\n'.join(odd) + '\n', encoding='utf-8')
+            with patch('builtins.print') as log:
+                live.trim_logs(dt.datetime(2026, 10, 2, 17, 0))
+            kept = (Path(folder) / 'situation.jsonl').read_text(encoding='utf-8').splitlines()
+            self.assertEqual(kept, odd[1:])
+            self.assertIn(9, log.call_args.args)
 
 
 class EvidenceTests(unittest.TestCase):

@@ -1,6 +1,6 @@
 {
   "village_slug": "actual-launch-1",
-  "poll_seconds": 60,
+  "poll_seconds": 120,
   "memory_watch": {"enabled": false},
   "monitor_watch": {"enabled": false}
 }

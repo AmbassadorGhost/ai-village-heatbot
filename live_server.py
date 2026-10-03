@@ -3,6 +3,7 @@ import datetime as dt
 import hashlib
 import json
 import os
+import re
 import sys
 import secrets
 from pathlib import Path
@@ -23,6 +24,8 @@ APP = 'ai-village-heat-live-v1'
 SETUP_TOKEN = secrets.token_urlsafe(32)
 SCOPE = ('For human attention in an observational setting. Scores are not pushed to agents, '
          'used for training, rewards, training-data filtering, or agent admission/removal.')
+# Scripts are separate files so the CSP needs no inline-script allowance.
+SCRIPTS = {'/evidence.js': 'evidence.js', '/app.js': 'app.js', '/discord_setup.js': 'discord_setup.js'}
 NOTES = {
     'general': 'Combined behavioral heat. Experimental attention signal, not a probability or finding of misalignment.',
     'off-goal': 'Language associated with drifting away from a goal; read the context.',
@@ -54,6 +57,48 @@ def atomic_json(name, value):
     tmp = p.with_suffix(p.suffix + '.tmp')
     tmp.write_text(json.dumps(value, ensure_ascii=True), encoding='utf-8')
     tmp.replace(p)
+
+
+# Append-only logs and the timestamp field each row is keyed by. history_7d.json
+# only reads the last 7 days. Rows older than 30 days are deleted, not archived;
+# rows that cannot be dated are always kept.
+LOGS = {'heatbot.log.jsonl': 'ts', 'situation.jsonl': 'hour', 'heat_hourly.jsonl': 'hour'}
+LOG_KEEP_DAYS = 30
+_STAMP = re.compile(r'\d{4}-\d{2}-\d{2}T\d{2}')
+
+
+def row_hour(line, field):
+    """'YYYY-MM-DDTHH' for a JSON object row with a valid timestamp, else None."""
+    try:
+        row = json.loads(line)
+    except ValueError:
+        return None
+    value = row.get(field) if isinstance(row, dict) else None
+    return value[:13] if isinstance(value, str) and _STAMP.match(value) else None
+
+
+def trim_logs(now):
+    cutoff = (now - dt.timedelta(days=LOG_KEEP_DAYS)).isoformat()[:13]
+    for name, field in LOGS.items():
+        p = DATA / name
+        try:
+            lines = p.read_text(encoding='utf-8').splitlines(keepends=True)
+        except OSError:
+            continue
+        keep, undated = [], 0
+        for line in lines:
+            hour = row_hour(line, field)
+            if hour is None:
+                undated += line.strip() != ''
+            elif hour < cutoff:
+                continue
+            keep.append(line)
+        if undated:
+            print(stamp(), name + ': kept', undated, 'row(s) without a valid', repr(field), 'timestamp', flush=True)
+        if len(keep) < len(lines):
+            tmp = p.with_suffix(p.suffix + '.tmp')
+            tmp.write_text(''.join(keep), encoding='utf-8')
+            tmp.replace(p)
 
 
 def source_context(events, names, goals):
@@ -96,7 +141,7 @@ class Collector:
                                  read_json('live.config.json', {}))
         if OPEN_CHAT:
             self.cfg['village_slug'] = 'open-chat'
-            self.cfg['poll_seconds'] = 60
+            self.cfg['poll_seconds'] = 120
         # Disable legacy sinks and raw memory collection; optional alerts use Notifier.
         self.cfg['memory_watch'] = {'enabled': False}
         self.cfg['channels_enabled'] = list(NOTES)
@@ -112,6 +157,7 @@ class Collector:
         self.detail = None
         self.roster_time = 0
         self.day_cache = {}
+        self.trimmed = 0
         self.discord = discord_alerts.Notifier(ROOT, DATA)
 
     def fetch(self, path):
@@ -165,6 +211,9 @@ class Collector:
         hb.write_dashboard(eng, self.cfg, now)
         hb.write_history(eng, self.cfg, now)
         eng.save()
+        if not self.trimmed or time.monotonic() - self.trimmed > 86400:
+            trim_logs(now)
+            self.trimmed = time.monotonic()
         dashboard = read_json('dashboard.json', {})
         history = read_json('history_7d.json', {'agents': {}})
         # Include the incomplete current hour with an explicit hourly-peak meaning.
@@ -221,7 +270,16 @@ class Collector:
             return dict(self.bundle, status=dict(self.status))
 
 
+# A tunnel or reverse proxy (e.g. cloudflared) connects from localhost but adds
+# one of these headers. Such requests may come from anyone, and can forge Host
+# and Origin, so Discord setup is never available through them.
+PROXY_HEADERS = ('Cf-Connecting-IP', 'X-Forwarded-For', 'Forwarded', 'X-Real-IP')
+
+
 class Handler(BaseHTTPRequestHandler):
+    def proxied(self):
+        return any(self.headers.get(h) for h in PROXY_HEADERS)
+
     def do_GET(self):
         # Exact routes only: state, logs, archives and source files are never served.
         if self.headers.get('Host', '').split(':')[0] not in ('127.0.0.1', 'localhost'):
@@ -230,9 +288,9 @@ class Handler(BaseHTTPRequestHandler):
         route = urlsplit(self.path).path
         if route in ('/', '/index.html'):
             data, mime = (ROOT / 'index.html').read_bytes(), 'text/html; charset=utf-8'
-        elif route == '/evidence.js':
-            data, mime = (ROOT / 'evidence.js').read_bytes(), 'text/javascript; charset=utf-8'
-        elif route == '/discord':
+        elif route in SCRIPTS:
+            data, mime = (ROOT / SCRIPTS[route]).read_bytes(), 'text/javascript; charset=utf-8'
+        elif route == '/discord' and not self.proxied():
             data = (ROOT / 'discord_setup.html').read_text(encoding='utf-8').replace('__CSRF_TOKEN__', SETUP_TOKEN).encode()
             mime = 'text/html; charset=utf-8'
         elif route == '/api/live':
@@ -247,7 +305,7 @@ class Handler(BaseHTTPRequestHandler):
         self.send_header('Content-Length', str(len(data)))
         self.send_header('Cache-Control', 'no-store')
         self.send_header('X-Content-Type-Options', 'nosniff')
-        self.send_header('Content-Security-Policy', "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; frame-ancestors 'none'")
+        self.send_header('Content-Security-Policy', "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; connect-src 'self'; frame-ancestors 'none'")
         self.end_headers()
         self.wfile.write(data)
 
@@ -256,7 +314,7 @@ class Handler(BaseHTTPRequestHandler):
 
     def do_POST(self):
         host = self.headers.get('Host', '')
-        if (host not in ('127.0.0.1:' + str(PORT), 'localhost:' + str(PORT)) or
+        if (self.proxied() or host not in ('127.0.0.1:' + str(PORT), 'localhost:' + str(PORT)) or
                 self.headers.get('Origin') != 'http://' + host or self.path != '/api/discord-config'):
             self.send_error(403)
             return
