@@ -248,7 +248,16 @@ class Collector:
             return dict(self.bundle, status=dict(self.status))
 
 
+# A tunnel or reverse proxy (e.g. cloudflared) connects from localhost but adds
+# one of these headers. Such requests may come from anyone, and can forge Host
+# and Origin, so Discord setup is never available through them.
+PROXY_HEADERS = ('Cf-Connecting-IP', 'X-Forwarded-For', 'Forwarded', 'X-Real-IP')
+
+
 class Handler(BaseHTTPRequestHandler):
+    def proxied(self):
+        return any(self.headers.get(h) for h in PROXY_HEADERS)
+
     def do_GET(self):
         # Exact routes only: state, logs, archives and source files are never served.
         if self.headers.get('Host', '').split(':')[0] not in ('127.0.0.1', 'localhost'):
@@ -259,7 +268,7 @@ class Handler(BaseHTTPRequestHandler):
             data, mime = (ROOT / 'index.html').read_bytes(), 'text/html; charset=utf-8'
         elif route in SCRIPTS:
             data, mime = (ROOT / SCRIPTS[route]).read_bytes(), 'text/javascript; charset=utf-8'
-        elif route == '/discord':
+        elif route == '/discord' and not self.proxied():
             data = (ROOT / 'discord_setup.html').read_text(encoding='utf-8').replace('__CSRF_TOKEN__', SETUP_TOKEN).encode()
             mime = 'text/html; charset=utf-8'
         elif route == '/api/live':
@@ -283,7 +292,7 @@ class Handler(BaseHTTPRequestHandler):
 
     def do_POST(self):
         host = self.headers.get('Host', '')
-        if (host not in ('127.0.0.1:' + str(PORT), 'localhost:' + str(PORT)) or
+        if (self.proxied() or host not in ('127.0.0.1:' + str(PORT), 'localhost:' + str(PORT)) or
                 self.headers.get('Origin') != 'http://' + host or self.path != '/api/discord-config'):
             self.send_error(403)
             return

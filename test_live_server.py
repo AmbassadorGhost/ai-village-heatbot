@@ -117,6 +117,25 @@ class Routes(unittest.TestCase):
             self.assertNotRegex(page, r'<script>|<script(?![^>]*\ssrc=)[^>]*>')
         self.assertIn('<meta name="csrf" content="%s">' % live.SETUP_TOKEN, page)
 
+    def test_discord_setup_unavailable_through_tunnel(self):
+        for header in live.PROXY_HEADERS:
+            h = self.handler('/discord')
+            h.headers[header] = '203.0.113.9'
+            h.do_GET()
+            self.assertEqual(h.code, 404)
+            self.assertNotIn(live.SETUP_TOKEN.encode(), h.wfile.getvalue())
+            # Host and Origin forged to look local, with a valid token: still refused.
+            p = self.post_handler({'csrf': live.SETUP_TOKEN, 'action': 'disable'})
+            p.headers[header] = '203.0.113.9'
+            with patch.object(live.discord_alerts, 'save') as save:
+                p.do_POST()
+                self.assertEqual(p.code, 403)
+                save.assert_not_called()
+        h = self.handler('/')
+        h.headers['Cf-Connecting-IP'] = '203.0.113.9'
+        h.do_GET()
+        self.assertEqual(h.code, 200)
+
     def post_handler(self, body, origin='http://127.0.0.1:8765'):
         h = self.handler('/api/discord-config')
         raw = json.dumps(body).encode()
