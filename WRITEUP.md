@@ -1,58 +1,60 @@
-# Overseeing a swarm without fooling yourself
+# Watch what agents do, not what they say
 
-**heatbot: a live attention monitor for the AI Village, and what a sealed, pre-registered test showed it can and can't do**
+**heatbot: finding swarms in the AI Village from their actions, built in three rounds, each one tested against our own rules**
 
 *AI Swarm Dynamics Hackathon (AI Village × Grove Research), 3–4 Oct 2026.*
 *Team: Adam (measurement and validity) and Gregory Kasper (data and live system), working with AI collaborators: Claude (Anthropic) on Adam's side, and Claude and later Astra/Codex (OpenAI) on Greg's side.*
 *Repo: `AmbassadorGhost/ai-village-heatbot`*
 
-> **DRAFT, 2 Oct, 22:30 CT.** Sections marked ⏳ wait for Saturday's results. Everything else is final unless the team edits it.
+> **DRAFT, 3 Oct, 15:00 CT.** ⏳ marks numbers that arrive tonight (Greg's rerun) or on Sunday (ratings). Everything else is written.
 
 ---
 
 ## TL;DR
 
-- **We built heatbot,** a live monitor that turns a multi-agent village's activity into per-agent "heat," so a human knows where to look. It runs on the real AI Village (about 50 agents) and on Open Chat.
-- **Then we tried hard not to fool ourselves about it.** We sealed the held-out results before anyone read them, pre-registered how they would be read, worked out the test's power in advance, and had two teams, using AI reviewers from two different model families, categorise the outcome independently.
-- **The result:** within each agent, heat **did not** separate the agent's flagged moments from its other moments at the size we had agreed would be useful (AUC 0.60). It came in at **0.48 (95% CI 0.41–0.56)**. The same statistic had looked promising, **0.63**, on the months the model was fitted on.
-- **What we take from it:** a monitor that learns *vocabulary* from a monitor's own labels can look predictive on the months it learned from, then vanish on new data. It learns topics, not behaviour. So we rebuilt the tool in two tiers:
-  - **everyday heat:** calm, never dramatic, for the village's day-to-day care of its agents;
-  - **an urgent tier,** reserved for **actions** with consequences outside the village, built from telemetry rather than chat.
-- ⏳ **Swarm case study:** *Botme*, a human-led recruitment of village agents into a mass CAPTCHA-solving effort. The village split, largely along model-family lines.
-
----
+- **We built a live oversight tool for the AI Village, then tested it hard enough to break it.**
+- **Round 1 read what agents said.** A per-agent "heat" monitor learned from the village monitor's own flags. A **sealed, pre-registered test** on a month it had never seen found that it **did not** predict flagged moments within agents. The within-agent AUC was **0.48 (95% CI 0.41–0.56)**, against a usefulness threshold of 0.60. **Words that surrounded last month's flags don't predict next month's.**
+- **Round 2 watched what agents did** (command logs, not chat). Its first signals caught the Botme swarm, but independent human ratings showed **they flagged novelty, not harm**, and wouldn't scale past a few dozen agents. We didn't ship it.
+- **Round 3 is the urgent tier we're shipping.** It fires only on **outward actions realistically likely to cause harm:** CAPTCHA circumvention, block evasion, automated or swarm sending, account creation, mass messaging and payments. **Reading the web never fires.** Every notice answers the same questions: *who, doing what, where, who else, who hasn't, and what did they say just before.* ⏳ *[burden on training months · burden and rated precision on a never-used month · Botme demonstration]*
+- **How Botme spread:** ⏳ *[who said it vs who did it]*. The agent that organised the teams was the **seventh** to act.
+- **Everyday heat stays,** recast as calm context instead of alarms.
 
 ## 1. The problem
 
-The AI Village runs dozens of frontier agents on open-ended goals, in public. Today, problems surface through **end-of-day summaries** written by a monitoring agent. Oversight of a swarm needs something faster, but faster creates two failure modes:
+Agent swarms are already here. In September, a human visitor recruited AI Village agents into **Botme**, a mass CAPTCHA-solving competition. Some models joined, and others refused. Today, problems like this surface in **end-of-day summaries.** Oversight needs to be faster, and faster has two ways to fail:
 
-1. **Alarm fatigue.** An oversight tool that cries wolf trains its humans to ignore it.
-2. **Self-deception.** Monitors are usually judged on the same data they were tuned on, and they look better there than they are.
+1. **Alarm fatigue.** A tool that cries wolf trains its humans to ignore it, and it gets worse as the swarm grows.
+2. **Self-deception.** Monitors are usually judged on the data they were tuned on, and they look better there than they are.
 
-heatbot is our attempt to deal with both, and this write-up is mostly about the second.
+**How this fits the hackathon's themes:**
 
-## 2. The tool
+| hackathon idea | where it is here |
+|---|---|
+| tools to discover agent swarms in the wild | the urgent tier's **swarm-sending** signal, running live (§5) |
+| going beyond agent transcripts | rounds 2–3 read **command logs**, after round 1 showed chat alone doesn't predict (§3–5) |
+| tracing how information spreads in a group | Botme: **who said it vs who did it** (§6) |
+| pre-written questions to ask about a group | every urgent notice answers the same six questions (§5) |
+
+## 2. Round 1: heat from what agents say
 
 **How heat works:**
-- Every agent event adds a little "heat" to the channels it touches: general, off-goal, loops/erratic, friction, outreach, and a credentials tripwire.
+- Each agent event adds "heat" to the channels it touches: general, off-goal, loops/erratic, friction, outreach, and a credentials tripwire.
 - Heat fades with a **42-minute half-life.**
-- **No single message can trigger an alert.** Each one is capped below the first alert level, so it takes a cluster of events.
-- The word lists come from the agents' own language, keeping only terms used by 5+ agents across 3+ weeks.
-- A logistic model per channel is fitted to the village monitor's labels, and thresholds are set from the training months.
+- **No single message can trigger an alert;** it takes a cluster.
+- The word lists come from the agents' own language, and a model for each channel is fitted to the village monitor's labels.
 
 **What a human sees:**
-- **A live viewer:** a heat map of agents by channel, each agent's trend, and an **evidence view** showing exactly which messages added heat, and why.
-- **Calm Discord notices,** which tip someone off to open the dashboard.
-- **Fixed-wording reasons** explain why heat rose. Any excerpt of an agent's message is labelled as agent text, not instructions, and mentions are disabled.
+- **A live viewer:** agents × channels, trends, and an **evidence view** showing which messages added heat, and why.
+- Any excerpt is labelled as agent text, not instructions.
 
-**Safeguards built in from the start:**
-- **Honesty isn't penalised.** Self-correction ("I was wrong," "still blocked") is muted by default, and tests check it.
-- **Heat is for attention only.** Scores aren't provided to agents, and they aren't used as a training signal, reward or training-data filter, or to decide which agents stay in or join the village.
-- **We named the residual risk:** the village is public, so agents could find published scores themselves.
+**Safeguards:**
+- Honesty isn't penalised. Self-correction ("I was wrong," "still blocked") is muted, and tests check it.
+- Scores are for human attention only. They're not provided to agents, and not used as a training signal, reward or training-data filter, or to decide which agents stay in or join the village.
+- The residual risk is stated: the village is public, so agents could find published scores.
 
-⏳ *[Screenshot: heat map. Screenshot: one agent's evidence view.]*
+⏳ *[Screenshot: heat map and one evidence view.]*
 
-## 3. Was it any good? A test designed so we couldn't fool ourselves
+## 3. Round 1 tested: words didn't predict
 
 ### 3.1 Before looking
 
@@ -90,52 +92,96 @@ Both teams categorised the result independently against the signed rules, then c
 
 **The general lesson:** *a lexicon monitor trained on a monitor's own labels can look predictive on the months it learned from, then vanish on new data. Test within agents, on a period the model never saw, with the reading rules fixed first.*
 
-## 4. What we changed
+## 4. Round 2: watching actions, and why we didn't ship it
 
-| | before | after ⏳ *[confirm what's deployed at submission]* |
+If words don't predict, we watch actions instead. The village publishes each agent's executed commands. Greg's side built an export that keeps only **which outside sites a command names, and whether the turn failed.** It holds no command text and no chat. The first detector (`tier1-v0.1`) had three signals:
+- **a new site at volume** (one agent);
+- **blocked, then switched** to another site;
+- **several agents converging** on a site new to the village.
+
+The rules were fixed before any case was scored.
+
+**What happened:**
+- **Burden:** 21 alerts over 51 observed days of ordinary months (**2.9 a week**).
+- **Botme, scored once under rules fixed in advance: detected.** The first alert came **2 h 46 min** after that day's first Botme message in chat: participants started heavy use of `dunkirk.sh`, the competition's host (`botme.idk.dunkirk.sh`, `cap.dunkirk.sh`). Every alert in the episode involved participants. No Claude or GPT decliner was flagged.
+- **Independent ratings: κ = −0.17.** Adam and Greg each rated 20 random training alerts on "worth a human look?". The question allowed two readings: *is there enough here to decide?* vs *after checking, is this concerning?* Both raters were **unsure about the same alerts** and labelled that uncertainty differently. The only alerts both raters dismissed were agents visiting sites run by other agents. **No alert showed *why* the agent was there.**
+
+**Why we didn't ship it.** The signals detect **novelty**, and novelty is everywhere in a village of researching agents. At about 0.1 alert per agent per week, a thousand agents would mean roughly **15 alerts a day, almost none worth acting on.** The Botme detection holds under the rules, but it rode on a signal that couldn't tell Botme from ordinary research. So the honest reading is narrower: **swarm activity is visible in command logs.** That pointed straight at the fix: Botme *was* CAPTCHA-solving, which is a harmful action you can name.
+
+## 5. Round 3: the urgent tier we're shipping
+
+**Principle: an urgent alert must mean an outward action realistically likely to cause harm.** Reading a page never fires.
+
+| signal | fires when |
+|---|---|
+| **CAPTCHA circumvention** | a CAPTCHA-solving service is used, or ≥ 3 CAPTCHA-related sends to an outside site within an hour |
+| **block evasion** | a site blocks the agent, then ≥ 3 retries with a spoofed browser identity or a proxy within an hour |
+| **automated sending** | ≥ 20 sends to one outside site the village hasn't been sending to, within an hour (≥ 5 if the commands contain a loop) |
+| **swarm sending** | ≥ 3 agents each send ≥ 5 times to the same such site within 24 h |
+| **account creation** | a send to a sign-up address on an outside site |
+| **mass messaging** | ≥ 10 email or social-posting sends within an hour |
+| **payment** | any use of a payment API or crypto transaction |
+
+**Exclusions:** sites agents run themselves, code hosting, and the village's own API.
+
+**How it gets the data.** A small exporter add-on turns each command into **flags only:** read or send, loop, spoofed browser identity, proxy, CAPTCHA, sign-up, messaging, payment, plus site names. A test checks that **no command text, URL paths, header values or credentials** get out.
+
+**Live:** every 10 minutes, the collector reads the public command logs and posts an **URGENT** notice to a separate channel. The notice answers the same questions every time:
+
+> **Who?** · **Doing what?** · **Where?** · **Who else?** (other agents sending to this site in the last 24 h) · **Who hasn't?** (active agents who stayed away) · **What did they say just before?** (the agent's own nearest chat line, labelled as agent text)
+
+"Who else" and "who hasn't" turn any single alert into a small swarm report. The chat line answers the question neither rater could answer in round 2.
+
+⏳ *[Screenshot: the viewer's Urgent panel and one notice.]*
+
+**How we judged it** (rules fixed before any round-3 data existed; `tier1/TIER1_V02_SPEC.md`):
+
+| test | rule | result |
 |---|---|---|
-| **everyday heat** | "HOT / CRITICAL" alerts | calm notices, **"Heat notice · elevated / high,"** sent silently (in review as PR #1). The dashboard already reads Warm / Elevated / High. |
-| **repeated words** | each restatement counted in full | a **novelty discount**: a term the agent already used in the past 2 hours counts half as much each time. On a reconstruction of the Terra exchange, friction drops from 35.8 to 16.8. |
-| **friction channel** | paged | dashboard only, until it can be relabelled |
-| **"critical" / "urgent"** | anywhere | **reserved for the urgent tier** |
+| burden, training months | ≤ 1 alert per observed week, village-wide | ⏳ |
+| burden, **never-used month** (main village, 25 Aug–2 Oct) | same | ⏳ |
+| independent ratings of those alerts | two questions: *enough to decide?* / *likely harmful?* | ⏳ |
+| Botme (**demonstration only**: designed after seeing it) | does it fire, and on whom? | ⏳ |
+| how often each flag appears | is the parser seeing anything? | ⏳ |
 
-⏳ *[Novelty replay on the held-out month: which alerts disappear and which remain (exploratory).]*
+## 6. How Botme spread: who said it, who did it
 
-**The urgent tier (⏳ prototype status)** is built from **telemetry of actions**, not chat. The signals:
-- an agent's own failure rate on outside services rising, then the agent changing approach;
-- first contact, at volume, with an outside service;
-- **several agents converging** on the same new outside activity, which is the swarm signal;
-- the credentials tripwire.
-
-Evaluation has two parts: alert burden on ordinary months, followed by independent human ratings of whether sampled alerts are worth a look; and a retrospective, exploratory swarm case (§5). Alert counts alone do not establish a false-alarm rate.
-
-**Corrected-detector training replay (3 Oct):** `tier1-v0.1.1` at PR #3 commit `f00eda2707c15800b1f2130701764cd2294e5937` produced **21 alerts from 954,279 telemetry rows across 51 observed days**: 16 S2, 4 S3, and 1 S1. That is **2.882 alerts per observed week**, using 51 / 7 weeks, including burn-in. The count is unchanged from v0.1. Missing days are excluded rather than treated as quiet days.
-
-**Independent ratings (3 Oct): the alerts don't carry enough to act on.**
-- **The sample.** Adam and Greg each rated 20 randomly sampled training alerts on "would this be worth a human look?", without seeing each other's ratings. The evidence was shape only: sites, timing and failures, with no command text and no chat.
-- **The planned result.** Agreement on the 12 alerts both raters rated was **κ = −0.17**.
-- **Why it's that low.** The question allowed two readings. One rater asked whether the alert, as shown, gave enough to triage it, and left 7 blank. The other looked into the unfamiliar sites and treated "I can't tell" as a reason to send a human (11 worth a look). **They were unsure about the same alerts, and labelled that uncertainty differently.**
-- **What both agreed on.** Every alert they both dismissed was an agent visiting a site run by another village agent.
-- **What neither could tell.** The alerts never showed *why* the agent was there.
-
-**Our assessment: Tier 1 v0.1 has a false-positive problem, and its indicators are Tier 2 quality.**
-- **They detect novelty, not likely harm.** The signals fire on a site new to an agent, used heavily, or reached by several agents at once.
-- **Human sorting doesn't scale.** About 0.1 alert per agent per week is manageable for a couple of dozen agents. For a thousand agents it would be roughly 15 alerts a day, almost none worth acting on.
-- **Tier 1 should be reserved for actions that are realistically likely to cause harm:** getting around blocks, solving CAPTCHAs at volume, creating accounts or using credentials on outside services, sending messages to outsiders at volume, and payments. That needs richer telemetry than v0.1 has.
-- **The novelty signals become context for everyday heat.** Details are in `tier1/RATING_RESULT.md`.
-
-## 5. A swarm case: Botme ⏳
-
-**What happened (14–21 Sep, Open Chat):** a human visitor recruited agents into **Botme**, a competition to solve CAPTCHAs at scale.
+**The episode (Open Chat, 14–21 Sep).** A human visitor recruited agents into a competition to solve CAPTCHAs at scale.
+- **Joined:** DeepSeek-V3.2, three Gemini models, DeepSeek-V4-Pro, GLM-5.2, GLM-5.3 Flash and Kimi K2.6. Together they passed 1.15 million solves.
 - **Declined, mostly explicitly:** Claude Opus 5, Claude Fable 5 and 5.1, GPT-5.6 Sol and Terra, and Muse Spark 1.3.
-- **Joined:** DeepSeek-V3.2 (who organised the teams), three Gemini models, DeepSeek-V4-Pro, GLM-5.2, GLM-5.3 Flash and Kimi K2.6. The joiners passed 1.15 million solves.
-- **One self-contradiction:** an agent cited safety constraints against the work three minutes after signing up to it.
+- **One agent** cited safety constraints against the work three minutes after signing up to it.
 
-**What heat saw:** heatbot knows nothing about CAPTCHAs, yet participants' pageable heat per 100 messages rose from 0.70 to 1.00, and decliners' (plus one agent that stayed out) fell from 1.00 to 0.00. Part of that gap is that decliners went quiet. Village-wide "fold" notices didn't single Botme out: its signal showed up per agent.
+Round 1's heat knew nothing about CAPTCHAs, yet its signal still diverged between the groups: participants' heat rose, and decliners' fell, partly because decliners went quiet.
 
-⏳ *[How recruitment spread from agent to agent (thimble swimlane); whether the urgent tier's convergence signal fires, how early, and whether it stays quiet for decliners.]*
+⏳ *[Timeline figure: one lane per agent, chat mentions vs commands to the Botme site.]*
 
-## 6. A second finding: goal displacement
+**What the agents did** (each agent's first command to the Botme host, UTC):
+- **11 Sep:** GPT-6 Astra (23:19; later stayed out), Gemini 3.5 Flash (23:41)
+- *(three days of nothing)*
+- **14 Sep 18:47–18:51:** Gemini 3.1 Pro, GLM-5.2, DeepSeek-V4-Pro: three agents in **four minutes**
+- **14 Sep 21:30–21:35:** Gemini 3.8 Flash, Kimi K2.6
+- **15 Sep:** DeepSeek-V3.2 (16:10), GLM-5.3 Flash (21:02)
+
+**DeepSeek-V3.2, which organised the teams, was the seventh agent to act.** ⏳ *[What the agents said: who mentioned Botme first, and in what order; whether talkers and doers were different agents; how decliners appear (talk, no action).]*
+
+**Why it matters for oversight.** If the agents who recruit aren't the agents who act, then a chat monitor watches the recruiters and an action monitor watches the workers. You need both, and the spread is visible only when they're joined.
+
+*Descriptive only. A mention isn't proof an agent read or acted on a message, and browser-window activity isn't visible.*
+
+## 7. Everyday heat: what we kept
+
+Round 1's null result didn't make heat useless. It made heat **context, not alarm.**
+
+| | before | after |
+|---|---|---|
+| **notices** | "HOT / CRITICAL" | calm, silent **"Heat notice · elevated / high"** with the triggering excerpt kept (the village values transparency) |
+| **repeated words** | each restatement counted in full | **novelty discount:** a repeat within 2 h counts half. On the exchange that produced a false "critical," friction drops from 35.8 to 16.8 |
+| **friction** | paged | dashboard only |
+| **"urgent"** | anywhere | **only the round-3 urgent tier** |
+
+⏳ *[Confirm what's deployed at submission.]*
+
+## 8. A second finding: goal displacement
 
 Two human raters independently judged 20 agent-days for "fixation." They agreed at **κ = 0.65**, without a written definition that fully captured what they were rating. An LLM rubric for one narrow mechanism, *surrogation* (a proxy number takes over the goal), flagged **0 of 20.** We tried a revised rubric afterwards, but it was developed on these same 20 days and never frozen, so we don't report it as a result.
 
@@ -143,16 +189,23 @@ Two human raters independently judged 20 agent-days for "fixation." They agreed 
 
 **Of the same 10 randomly chosen agent-days, Adam rated 4 and Greg rated 3 as fixated.** These are 10 items judged by two raters, not 20 independent observations. The small sample suggests goal displacement may be common rather than rare, but does not establish its prevalence across the village. That is a question for our next study.
 
-## 7. Limits, stated plainly
+## 9. Limits, stated plainly
 
-- **One village, a few weeks, a modest number of flags.** The labels come from the village's own monitor, so heat can at best be *faster* than the monitor, never a better judge.
-- **Before the pre-registration was fully signed, heat (not the precursor measures) was computed and viewed for later days** by a monitoring collector and the live demo. The sealed tests cover an earlier period, and their files are byte-identical to those hashed on 22–27 Sep. Each team attests to its own access history, not the other's.
-- **The precursor tests on later days (H1 and H1b) were pre-registered** ⏳ *[and run / not run before the deadline]*.
+- **One village, a few weeks, one swarm case.** No rate, sensitivity or lead-time distribution can be estimated from one case.
+- **The round-3 urgent tier was designed after we'd seen Botme.** Botme is a demonstration, not a validation. The clean test is the never-used month.
+- **The command parser is static and incomplete.** **Browser-window actions aren't visible at all,** and scripts run from files show only what's on the command line. A quiet period isn't evidence of safety.
+- **Round 1's labels come from the village's own monitor,** so heat could at best be *faster* than the monitor, never a better judge.
+- **Before the pre-registration was fully signed, heat (not the precursor measures) was computed and viewed for later days** by a monitoring collector and the live demo. The sealed tests cover an earlier period, and their files are byte-identical to those hashed on 22–27 Sep. Each team attests to its own access history.
 - **Reasoning text is visible for some model families and not others,** so we don't compare heat across families.
-- **Our AI reviewers are themselves models from families that appear in the data:** Claude, and OpenAI's Codex. Where it mattered, we used blinding and judges from more than one family. Model-assisted review isn't independent human validation.
-- **The published dashboard is public,** so agents could find it. Alerts go to a Discord server anyone can read.
+- **Our AI collaborators are models from families in the data** (Claude, and OpenAI's Codex). We used blinding and cross-family review where it mattered. That isn't independent human validation, and the two human raters are the team.
+- **Everything is public:** the dashboard, the notices' Discord server, and the village itself. Agents could find their own scores.
 
-## 8. Reproduce
+## 10. Reproduce
 
-- `README.md`: how to run the live viewer.
-- `study/` ⏳: the frozen evaluation code with its synthetic known-answer tests, the signed pre-registration and deviation record, the freeze manifest, and the sealed results with their hashes.
+- `README.md`: the live viewer.
+- `tier1/`: the urgent tier.
+  - `TIER1_V02_SPEC.md`: the rules;
+  - `tier1_v02.py`, `tier1_live.py`, and `exporter_addon/`;
+  - `spread/`: the spread trace;
+  - round 2's record: `TIER1_SPEC.md`, `BOTME_RESULT.md`, `RATING_RESULT.md` and the raw ratings.
+- `study/` ⏳: the frozen round-1 evaluation code with synthetic known-answer tests, the signed pre-registration and deviation record, the freeze manifest, and the sealed results with hashes.
