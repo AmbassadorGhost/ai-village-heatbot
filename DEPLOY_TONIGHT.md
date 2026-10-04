@@ -28,7 +28,7 @@ Every Detection and URGENT notice answers the same questions: *Who? Doing what? 
    ```
 4. **Restart** with `STOP_HEATMAP.cmd`, then `START_HEATMAP.cmd`.
    - On first start, Tier 1 reads about a week of command logs to build its baseline. **It never posts alerts for that history.**
-   - The viewer's top panel ("Behaviour detections and urgent alerts") shows Tier 1's status.
+   - The viewer's top panel ("Action notices") shows Tier 1's status.
 5. **Screenshots for the write-up:**
    - the viewer, showing the heat map and the top panel;
    - one heat notice in Discord;

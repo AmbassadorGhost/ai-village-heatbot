@@ -21,6 +21,7 @@ from pathlib import Path
 from zoneinfo import ZoneInfo
 
 HERE = Path(__file__).resolve().parent
+DEFAULT_CLASSIFIER = HERE.parent / "study" / "analysis" / "h1_telemetry.py"
 sys.path.insert(0, str(HERE))
 sys.path.insert(0, str(HERE / "exporter_addon"))
 import action_features as AF  # noqa: E402
@@ -57,7 +58,7 @@ def _as_text(x):
     return x if isinstance(x, str) else ("" if x is None else json.dumps(x, sort_keys=True))
 
 
-def turns_to_rows(sessions, day, classify=None, host_extract=None):
+def turns_to_rows(sessions, day, classify=None, host_extract=None, classifier=None):
     """Public computer-use sessions -> privacy-safe tier1-telemetry-v0.2 rows."""
     rows = []
     for s in sessions or []:
@@ -82,6 +83,7 @@ def turns_to_rows(sessions, day, classify=None, host_extract=None):
                          "agent_id": s.get("agentId"), "session_id": s.get("id"),
                          "turn_id": turn.get("id") or "", "source_day": day,
                          "outside_services": hosts, "failure_categories": list(fails or []),
+                         "failure_classifier": classifier,
                          "action": feats,
                          "refusal": AF.refusal(_as_text(turn.get("error")), _as_text(turn.get("system")),
                                                _as_text(turn.get("output")))})
@@ -269,9 +271,12 @@ class Tier1Live:
         self.state_path = self.data / "tier1_state.json"
         self.alerts_path = self.data / "tier1_alerts_live.jsonl"
         self.last_refresh = None
-        clf = self.cfg.get("h1_classifier")
-        mod = _optional_module(clf, "h1_classifier") if clf else None
+        # The failure classifier the evaluation used (h1-failure-v1.1) ships in the repo; without it,
+        # CAPTCHA walls and HTTP refusals go unseen and only rate limits count as refusals.
+        clf = self.cfg.get("h1_classifier") or DEFAULT_CLASSIFIER
+        mod = _optional_module(clf, "h1_classifier") if clf and Path(clf).exists() else None
         self.classify = getattr(mod, "classify", None)
+        self.classifier = getattr(mod, "CLASSIFIER", "custom") if self.classify else None
         hx = HERE / "exporter_addon" / "outside_services.py"
         hmod = _optional_module(hx, "outside_services") if hx.exists() else None
         self.host_extract = getattr(hmod, "extract", None)
@@ -317,13 +322,14 @@ class Tier1Live:
         wanted = [(today - dt.timedelta(days=n)).isoformat() for n in range(BACKFILL_DAYS, -1, -1)]
         rows = [r for r in self._load_rows() if r["source_day"] != today.isoformat()]
         done = set(st["days_done"])
-        if any((r.get("action") or {}).get("action_features_version") not in (None, AF.VERSION) for r in rows):
+        if any((r.get("action") or {}).get("action_features_version") not in (None, AF.VERSION)
+               or r.get("failure_classifier") != self.classifier for r in rows):
             done = set()     # rules changed: re-fetch and re-extract every stored day
         for day in wanted:
             if day in done and day != today.isoformat():
                 continue
             page = self.fetch("/computer-use-sessions?villageId=%s&date=%s" % (village_id, day))
-            new = [r for r in turns_to_rows(page.get("sessions"), day, self.classify, self.host_extract) if _keep(r)]
+            new = [r for r in turns_to_rows(page.get("sessions"), day, self.classify, self.host_extract, self.classifier) if _keep(r)]
             rows = [r for r in rows if r["source_day"] != day] + new
             if day != today.isoformat():
                 done.add(day)
