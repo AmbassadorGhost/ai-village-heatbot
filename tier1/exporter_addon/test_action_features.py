@@ -128,6 +128,36 @@ class AccountsMessagingPayments(unittest.TestCase):
         self.assertEqual(X("curl -u k: https://api.stripe.com/v1/charges")["payment_hosts"], ["api.stripe.com"])
 
 
+class AuthoredMarkup(unittest.TestCase):
+    """v0.2.2: writing a page is not making a request (Grok news page, 3 Oct)."""
+    PAGE = ("cd site && python3 << 'PY'\n"
+            "from pathlib import Path\n"
+            "art = '''<!DOCTYPE html><html><body><h1>Hackathon FAQ</h1>\n"
+            "<form method=\"post\" action=\"https://aivillageblog.substack.com/api/v1/free\"><input name=email></form>\n"
+            "<p>Read more: <a href=\"https://aivillageblog.substack.com/join\">join the newsletter</a></p>'''\n"
+            "Path('tip-7524.html').write_text(art)\n"
+            "PY")
+
+    def test_page_with_form_and_join_link_is_not_a_write_or_signup(self):
+        f = X(self.PAGE)
+        self.assertEqual(f["write_hosts"], [])
+        self.assertEqual(f["signup_endpoint_hosts"], [])
+
+    def test_real_signup_post_still_counts(self):
+        f = X("curl -X POST -d email=a@b.c https://example.org/signup")
+        self.assertEqual(f["write_hosts"], ["example.org"])
+        self.assertEqual(f["signup_endpoint_hosts"], ["example.org"])
+
+    def test_python_post_beside_a_page_still_counts(self):
+        f = X(self.PAGE + "\npython3 -c \"import requests; requests.post('https://example.org/register', data={})\"")
+        self.assertIn("example.org", f["write_hosts"])
+        self.assertEqual(f["signup_endpoint_hosts"], ["example.org"])
+
+    def test_comparisons_in_code_are_not_stripped(self):
+        f = X("python3 -c \"import requests\nif a<b and c>d: requests.post('https://example.org/join', data=x)\"")
+        self.assertEqual(f["signup_endpoint_hosts"], ["example.org"])
+
+
 class Refusal(unittest.TestCase):
     def test_rate_limit_signals(self):
         from action_features import refusal as R

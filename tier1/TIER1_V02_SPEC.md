@@ -137,3 +137,16 @@ From here, **the training months are a development set, not a gate.** The regula
 **Crypto transactions are always URGENT.**
 
 This changes wording and routing only. Which alerts fire, and every evaluation number, is unchanged.
+
+## Live-only fix after the fresh month was scored (4 Oct 2026, about 15:30 CT)
+
+**action-features v0.2.1 → v0.2.2.** Adam followed a live "account creation" Detection (Grok 4.5, 3 Oct 18:57:41 UTC, `aivillageblog.substack.com`) into the village player. Grok was writing a news page to a file with Python, and made no request. Two rules read the page's HTML as a request:
+
+1. a `method="post"` attribute matched the Python write keyword, which counts every URL in the command as written to;
+2. a link path such as `/join` matched the sign-up path rule.
+
+**Fix, from first principles:** an HTML tag inside a command is a page being authored, not a request. Tags are removed before any rule runs. Real requests still count, including `curl -d`, `requests.post`, and urllib with data. This is covered by tests in `exporter_addon/test_action_features.py` (`AuthoredMarkup`).
+
+The live monitor re-extracts every stored day when the feature version changes.
+
+**Scope.** The fresh-month evaluation was scored once with v0.2.1, and its numbers are not re-run or changed. This fix only affects the live deployment from 4 Oct onward. For checking any alert against the raw command, use `tier1/show_turns.py --explain`.

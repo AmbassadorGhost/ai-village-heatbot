@@ -317,6 +317,8 @@ class Tier1Live:
         wanted = [(today - dt.timedelta(days=n)).isoformat() for n in range(BACKFILL_DAYS, -1, -1)]
         rows = [r for r in self._load_rows() if r["source_day"] != today.isoformat()]
         done = set(st["days_done"])
+        if any((r.get("action") or {}).get("action_features_version") not in (None, AF.VERSION) for r in rows):
+            done = set()     # rules changed: re-fetch and re-extract every stored day
         for day in wanted:
             if day in done and day != today.isoformat():
                 continue

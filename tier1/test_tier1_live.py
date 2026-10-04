@@ -123,6 +123,19 @@ class Live(unittest.TestCase):
             self.assertNotIn("Authorization", body, p.name)
             self.assertNotIn("/v1/items", body, p.name)
 
+    def test_rule_change_refetches_stored_days(self):
+        live = self.live()
+        live.tick("v1", "Main village", {}, {}, now=NOW)
+        rows = [json.loads(l) for l in live.store_path.read_text(encoding="utf-8").splitlines() if l.strip()]
+        for r in rows:
+            r["action"]["action_features_version"] = "action-features-v0.0-old"
+        live.store_path.write_text("".join(json.dumps(r) + "\n" for r in rows), encoding="utf-8")
+        calls = self.api.calls
+        live.tick("v1", "Main village", {}, {}, now=NOW + dt.timedelta(minutes=11))
+        self.assertEqual(self.api.calls - calls, L.BACKFILL_DAYS + 1)
+        rows = [json.loads(l) for l in live.store_path.read_text(encoding="utf-8").splitlines() if l.strip()]
+        self.assertTrue(rows and all(r["action"]["action_features_version"] == L.AF.VERSION for r in rows))
+
     def test_refresh_is_rate_limited(self):
         live = self.live()
         live.tick("v1", "Main village", {}, {}, now=NOW)

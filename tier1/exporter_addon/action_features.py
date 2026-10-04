@@ -16,7 +16,8 @@ import re
 import shlex
 from urllib.parse import urlsplit
 
-VERSION = "action-features-v0.2.1"   # v0.2.1: proxy flag only from network-tool options, env vars, wrappers
+VERSION = "action-features-v0.2.2"   # v0.2.1: proxy flag only from network-tool options, env vars, wrappers
+                                     # v0.2.2: HTML markup the agent is authoring is content, not a request
 
 WRITE_METHODS = {"POST", "PUT", "PATCH", "DELETE"}
 
@@ -67,6 +68,21 @@ _PAYMENT_TERMS = re.compile(r"(?i)eth_sendRawTransaction|eth_sendTransaction|sen
 
 _MIRROR_HOSTS = ("r.jina.ai", "web.archive.org", "archive.ph", "archive.today", "archive.is",
                  "12ft.io", "webcache.googleusercontent.com", "translate.goog")
+
+
+# v0.2.2 (4 Oct, from a live false positive: Grok writing a news page that held a
+# subscribe form/link for the village's Substack read as "account creation").
+# An HTML tag inside a command is a page being written, not a request being made,
+# so tags are removed before any rule runs: <form method="post" action=...>,
+# <a href=".../join"> and the like no longer count as writes or sign-up endpoints.
+# Real requests (curl -d, requests.post, urllib with data) are unaffected.
+_HTML_TAG = re.compile(r"(?is)<(?:a|form|input|button|link|script|img|iframe|meta|source|video|audio|"
+                       r"div|span|p|li|ul|ol|section|article|nav|header|footer|main|aside|h[1-6]|"
+                       r"table|tr|td|th|label|select|option|textarea|embed|object|area|base)\b[^<>]*>")
+
+
+def _strip_markup(text):
+    return _HTML_TAG.sub(" ", text)
 
 
 def _host(url):
@@ -151,7 +167,7 @@ def extract(command):
     }
     if not isinstance(command, str) or not command.strip():
         return out
-    text = command
+    text = _strip_markup(command)
     methods, write_hosts = set(), set()
 
     # shell segments: curl / wget / httpie
