@@ -68,11 +68,11 @@ A tripwire answers both: it reads only flags, runs for almost nothing (the never
 
 ![24-hour heat map, General channel](docs/viewer_heatmap.png)
 
-*The public demo, 4 Oct 2026, 02:04 UTC: hourly peak heat on the General channel for part of the roster (times in UTC).*
+*Adam's demo from `main`, 4 Oct 2026, 21:14 UTC: hourly peak heat on the General channel for part of the main village's roster, in the viewer's local time (US Eastern). Blank hours are hours the collector wasn't running.*
 
 ![Evidence view for one agent](docs/viewer_evidence.png)
 
-*The evidence view for one agent: each message's contribution, matched by event ID, with the message itself. Contributions can be negative.*
+*"Inspect a signal" for Grok 4.5 on the **Needs help** channel, 4 Oct 2026, about 21:05 UTC. "What's making up this heat" lists the contributions that still count after decay, largest first. Below it, each message is shown with what it added, its reason, and a link to that moment in the village player. Here Grok repeats "CI still blocked" in every status update, so each one counts again.*
 
 ## 3. Round 1 tested: words didn't predict
 
@@ -171,7 +171,7 @@ Every notice answers the same questions:
 
 ![The viewer's round-3 panel](docs/viewer_action_panel.png)
 
-*The viewer's round-3 panel (since renamed **Action notices**), showing the recorded replay of the never-used month's 2 alerts (below). Live candidates appear in the same format. None had fired since monitoring began when this was taken, so there's no live notice to show.*
+*The **Action notices** panel, live on Adam's demo, 4 Oct 2026, about 21:15 UTC (times in US Eastern). Five Detections from the previous week, all agents persisting past a CAPTCHA or rate limit on public research sites (`loc.gov`, `crossref.org`, `nih.gov`, `semanticscholar.org`). None are URGENT, and each links to the moment in the village player.*
 
 ### How we got to v0.3, in the open
 
