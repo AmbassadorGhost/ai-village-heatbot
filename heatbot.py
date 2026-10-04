@@ -79,6 +79,13 @@ DEFAULT_CONFIG = {
     # emphatic boundary messages are part of its signal), at the cost of
     # breaking the "one event never alerts" rule for that channel.
     "event_cap_overrides": {},
+    # Novelty discount (2 Oct): a lexicon term an agent already used recently
+    # counts for less each time (factor ** prior uses in the window), so a short
+    # exchange restating one point isn't scored as fresh evidence per message.
+    # OFF by default to preserve legacy scoring. Live use is exploratory.
+    # Retain three days for late arrivals; only prior uses in the 2h window count.
+    "term_novelty": {"enabled": False, "window_minutes": 120, "repeat_factor": 0.5,
+                     "retention_minutes": 4320},
     # A multi-hour PAUSE is scheduled downtime (nights, weekends), not idling.
     "pause_cap_seconds": 3600,
     # Only page for events this recent. Older events still build heat, but a
@@ -506,6 +513,10 @@ class HeatEngine:
         self.reasoning = {a: list(v) for a, v in st.get("reasoning", {}).items()}
         self.mon_known = set(st.get("mon_known", []))
         self.mon_check = st.get("mon_check")
+        self.term_seen = collections.defaultdict(dict)      # agent -> {term: [iso times]}
+        for a, d in st.get("term_seen", {}).items():
+            self.term_seen[a] = {t: list(v) for t, v in d.items()}
+        self._now = None
         self.recent = collections.defaultdict(list)
         for a, sets in st.get("recent", {}).items():
             self.recent[a] = [set(s) for s in sets]
@@ -576,15 +587,21 @@ class HeatEngine:
             tm = terms(strip_code(text))
             f["talk"] = 1
             hits = {}
+            nov = self.cfg.get("term_novelty") or {}
+            prior = self._term_priors(agent, tm) if nov.get("enabled") and self._now else {}
             for cat, lex in self.lex.items():
                 s = 0.0
                 for t, w in lex.items():
                     if t in tm:
                         ew = self.term_weight(cat, t, w)
                         if ew > 0:
+                            if nov.get("enabled"):
+                                ew *= nov.get("repeat_factor", 0.5) ** prior.get(t, 0)
                             s += ew
                             hits.setdefault(cat, []).append(t)
                 f["lex_" + cat] = s
+            if nov.get("enabled") and self._now:
+                self._term_record(agent, {t for v in hits.values() for t in v})
             self._observe_vocab(tm)
             gs = {w[:5] for w in toks(goal_text)} - self.goal_stop
             st = {w[:5] for w in toks(text)} - self.goal_stop
@@ -622,6 +639,29 @@ class HeatEngine:
         elif action == "REQUEST_HUMAN_HELPER":
             f["human_help"] = 1
         return f, {}
+
+    def _term_priors(self, agent, tm):
+        """How many times, within the novelty window, this agent already used each term."""
+        nov = self.cfg.get("term_novelty") or {}
+        window = nov.get("window_minutes", 120)
+        w = dt.timedelta(minutes=window)
+        lo = (self._now - w).isoformat()
+        hi = self._now.isoformat()
+        retained_after = (self._now - dt.timedelta(minutes=max(window, nov.get("retention_minutes", 4320)))).isoformat()
+        seen = self.term_seen[agent]
+        out = {}
+        for t in list(seen):
+            seen[t] = [x for x in seen[t] if x > retained_after]
+            if not seen[t]:
+                del seen[t]
+            elif t in tm:
+                out[t] = sum(lo < x <= hi for x in seen[t])
+        return out
+
+    def _term_record(self, agent, used):
+        ts = self._now.isoformat()
+        for t in used:
+            self.term_seen[agent].setdefault(t, []).append(ts)
 
     # ---- decay and feed ----------------------------------------------------
     def _decay_to(self, agent, now):
@@ -672,6 +712,7 @@ class HeatEngine:
 
     def feed(self, agent, when, action, data, goal_text=""):
         self._decay_to(agent, when)
+        self._now = when
         deltas, why = self.score_event(agent, action, data, goal_text)
         frac = self.cfg.get("event_cap_fraction", 0.95)
         over = self.cfg.get("event_cap_overrides") or {}
@@ -862,6 +903,8 @@ class HeatEngine:
             "reasoning": self.reasoning,
             "mon_known": sorted(self.mon_known), "mon_check": self.mon_check,
             "recent": {a: [sorted(s) for s in v[-8:]] for a, v in self.recent.items()},
+            **({"term_seen": {a: d for a, d in self.term_seen.items() if d}}
+               if (self.cfg.get("term_novelty") or {}).get("enabled") else {}),
             "reasons": {a: {c: [list(r) for r in rs] for c, rs in ch.items() if rs}
                         for a, ch in self.reasons.items()},
             "trips": {c: [(t.isoformat(), a, l) for t, a, l in tr] for c, tr in self.trips.items() if tr},

@@ -1,4 +1,5 @@
 import copy
+import json
 import datetime as dt
 import tempfile
 from pathlib import Path
@@ -19,14 +20,14 @@ class Alerts(unittest.TestCase):
         self.n = da.Notifier(self.root, self.root, transport)
         da.save(self.n.config_path, {'enabled': True, 'generation': 'test',
                                     'webhook_url': 'https://discord.com/api/webhooks/123/test_token',
-                                    'channels': ['general', 'erratic']})
+                                    'channels': ['general', 'erratic', 'credentials']})
         self.now = 1800000000
 
     def bundle(self, heat=0, erratic=0):
         return {'dashboard': {'village': 'actual-launch-1',
                 'generated_at': dt.datetime.fromtimestamp(self.now,dt.timezone.utc).isoformat(),
-                'channels': {c: {'thresholds': {'hot': 10, 'critical': 20}} for c in ['general','erratic']},
-                'agents': {'A': {'participating': True, 'heat': {'general': heat, 'erratic': erratic},
+                'channels': {c: {'thresholds': {'hot': 10, 'critical': 20}} for c in ['general','erratic','credentials']},
+                'agents': {'A': {'participating': True, 'heat': {'credentials': heat, 'general': erratic, 'erratic': erratic},
                                  'contributions': [], 'source_events': {}}}}}
 
     def tick(self, h=0, e=0):
@@ -37,13 +38,14 @@ class Alerts(unittest.TestCase):
         self.tick(15)
         self.assertEqual(self.sent, [])
 
-    def test_new_crossing_groups_channels_and_suppresses_duplicates(self):
+    def test_credential_crossing_suppresses_everyday_channels_and_duplicates(self):
         self.tick()
         self.now += 60
         self.tick(15,15)
         self.tick(15,15)
         self.assertEqual(len(self.sent),1)
-        self.assertEqual(len(self.sent[0]['embeds'][0]['fields']),2)
+        self.assertEqual(len(self.sent[0]['embeds'][0]['fields']),1)
+        self.assertEqual(self.sent[0]['embeds'][0]['fields'][0]['name'], 'Credentials (rule-based)')
 
     def test_restart_keeps_delivery_state(self):
         self.tick(); self.tick(15)
@@ -62,7 +64,8 @@ class Alerts(unittest.TestCase):
     def test_critical_escalation_bypasses_cooldown(self):
         self.tick(); self.tick(15); self.now += 60; self.tick(21)
         self.assertEqual(len(self.sent),2)
-        self.assertIn('CRITICAL', self.sent[-1]['embeds'][0]['title'])
+        self.assertIn('HIGH', self.sent[-1]['embeds'][0]['title'])
+        self.assertNotIn('CRITICAL', json.dumps(self.sent[-1]))
 
     def test_rate_limit_keeps_pending_and_waits(self):
         self.tick()
@@ -97,5 +100,51 @@ class Alerts(unittest.TestCase):
         for url in ['http://discord.com/api/webhooks/1/token','https://evil.test/api/webhooks/1/token','https://discord.com/api/webhooks/1/token?x=y']:
             with self.assertRaises(ValueError): da.validate_url(url)
 
+    def test_masked_link_is_not_clickable(self):
+        info = {'contributions': [{'channel': 'general', 'added': 2, 'key': 'x'}],
+                'source_events': {'x': {'text': '[friendly label](https://example.com/path)',
+                                        'time': '2026-10-02T12:00Z', 'key': 'x', 'action': 'AGENT_TALK'}}}
+        message = da.payload('open-chat', 'A', [('general', 15, 1)], info, '2026-10-02T12:00Z')
+        excerpt = next(f['value'] for f in message['embeds'][0]['fields'] if f['name'].startswith('Source excerpt'))
+        self.assertEqual(excerpt, r'\[friendly label\](https://example.com/path)')
+        self.assertEqual(message['allowed_mentions'], {'parse': []})
 
-if __name__=='__main__':unittest.main()
+    def test_everyday_heat_never_posts(self):
+        self.tick()
+        self.now += 60
+        self.tick(0, 100)
+        self.assertEqual(self.sent, [])
+
+    def test_saved_pending_everyday_alert_is_removed(self):
+        self.tick()
+        state = da.load(self.n.state_path, {})
+        state['pending']['A|general'] = {'agent': 'A', 'channel': 'general', 'created': self.now}
+        da.save(self.n.state_path, state)
+        self.tick(0, 100)
+        self.assertEqual(self.sent, [])
+        self.assertEqual(da.load(self.n.state_path, {})['pending'], {})
+
+
+class FrictionDoesNotPage(unittest.TestCase):
+    """2 Oct: friction is dashboard-only, even if an older saved config lists it."""
+    def test_saved_conflict_channel_is_ignored(self):
+        tmp = tempfile.TemporaryDirectory(); self.addCleanup(tmp.cleanup)
+        root = Path(tmp.name); sent = []
+        n = da.Notifier(root, root, lambda u, p: (sent.append(p), {'ok': True})[1])
+        da.save(n.config_path, {'enabled': True, 'generation': 'g',
+                                'webhook_url': 'https://discord.com/api/webhooks/123/test_token',
+                                'channels': ['conflict']})
+        now = 1800000000
+        def b(h):
+            return {'dashboard': {'village': 'actual-launch-1',
+                    'generated_at': dt.datetime.fromtimestamp(now, dt.timezone.utc).isoformat(),
+                    'channels': {'conflict': {'thresholds': {'hot': 15.4, 'critical': 31.3}}},
+                    'agents': {'Terra': {'participating': True, 'heat': {'conflict': h},
+                                         'contributions': [], 'source_events': {}}}}}
+        n.tick(b(0), now); n.tick(b(34.5), now)
+        self.assertEqual(sent, [])
+        self.assertNotIn('conflict', da.CHANNELS)
+
+
+if __name__ == '__main__':
+    unittest.main()

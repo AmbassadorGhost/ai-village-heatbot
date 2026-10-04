@@ -1,4 +1,4 @@
-"""Local, read-only live viewer around the unmodified round-7 heat scorer."""
+"""Local, read-only viewer with exploratory live novelty discounting."""
 import datetime as dt
 import hashlib
 import json
@@ -14,12 +14,15 @@ from urllib.parse import urlsplit
 
 import heatbot as hb
 import discord_alerts
+import action_monitor
+import action_v03_monitor
 
 ROOT = Path(__file__).resolve().parent
 OPEN_CHAT = '--open-chat' in sys.argv
 DATA = ROOT / 'open-chat' if OPEN_CHAT else ROOT
 PORT = 8766 if OPEN_CHAT else 8765
 APP = 'ai-village-heat-live-v1'
+SCORER_VERSION = 'everyday-novelty-v1'
 SETUP_TOKEN = secrets.token_urlsafe(32)
 SCOPE = ('For human attention in an observational setting. Scores are not pushed to agents, '
          'used for training, rewards, training-data filtering, or agent admission/removal.')
@@ -86,7 +89,11 @@ def source_context(events, names, goals):
 
 class Collector:
     def __init__(self):
-        self.cfg = hb.deep_merge(hb.DEFAULT_CONFIG, read_json('live.config.json', {}))
+        # Both villages inherit the same product config; per-village overrides
+        # remain optional. Never enable novelty in the frozen study defaults.
+        shared = hb.load_json(str(ROOT / 'live.config.json'), {})
+        self.cfg = hb.deep_merge(hb.DEFAULT_CONFIG, shared)
+        self.cfg = hb.deep_merge(self.cfg, read_json('live.config.json', {}))
         if OPEN_CHAT:
             self.cfg['village_slug'] = 'open-chat'
             self.cfg['poll_seconds'] = 60
@@ -178,6 +185,11 @@ class Collector:
         bundle = {'dashboard': dashboard, 'history': history, 'roster': roster,
                   'latest_event': max((e.get('createdAt', '') for e in events), default=None),
                   'events_in_window': len(events), 'source_days_utc': days,
+                  'scoring': {'version': SCORER_VERSION,
+                              'term_novelty_enabled': bool(self.cfg['term_novelty']['enabled']),
+                              'window_minutes': self.cfg['term_novelty']['window_minutes'],
+                              'repeat_factor': self.cfg['term_novelty']['repeat_factor'],
+                              'history_rebuilt_at': read_json('scoring_rollout.json', {}).get('rebuilt_at')},
                   'model_sha256': hashlib.sha256((ROOT / 'heatbot_model.json').read_bytes()).hexdigest()}
         atomic_json('live_snapshot.json', bundle)
         # Local review material only; excluded from Git and not a served route.
@@ -209,9 +221,16 @@ class Collector:
                     self.status['polling'] = False
             time.sleep(self.cfg['poll_seconds'])
 
+    def action_context(self):
+        with self.mutex:
+            return {name: info.get("recent_messages", []) for name, info in self.bundle.get("dashboard", {}).get("agents", {}).items()}
+
     def payload(self):
         with self.mutex:
-            return dict(self.bundle, status=dict(self.status))
+            payload = dict(self.bundle, status=dict(self.status))
+        if hasattr(self, 'actions'):
+            payload['action_alerts'] = self.actions.payload()
+        return payload
 
 
 class Handler(BaseHTTPRequestHandler):
@@ -225,6 +244,10 @@ class Handler(BaseHTTPRequestHandler):
             data, mime = (ROOT / 'index.html').read_bytes(), 'text/html; charset=utf-8'
         elif route == '/evidence.js':
             data, mime = (ROOT / 'evidence.js').read_bytes(), 'text/javascript; charset=utf-8'
+        elif route == '/action_alerts.js':
+            data, mime = (ROOT / 'action_alerts.js').read_bytes(), 'text/javascript; charset=utf-8'
+        elif route == '/api/actions':
+            data, mime = json.dumps(self.server.collector.actions.payload()).encode(), 'application/json'
         elif route == '/discord':
             data = (ROOT / 'discord_setup.html').read_text(encoding='utf-8').replace('__CSRF_TOKEN__', SETUP_TOKEN).encode()
             mime = 'text/html; charset=utf-8'
@@ -277,7 +300,7 @@ class Handler(BaseHTTPRequestHandler):
                 delivery = discord_alerts.post(url, test)
                 if not delivery['ok']:
                     raise ValueError(delivery.get('error', 'Test message delivery failed.'))
-                discord_alerts.save(path, {'enabled': True, 'webhook_url': url,
+                discord_alerts.save(path, {**discord_alerts.load(path, {}), 'enabled': True, 'webhook_url': url,
                                           'generation': secrets.token_hex(16),
                                           'villages': ['actual-launch-1', 'open-chat'],
                                           'channels': list(discord_alerts.CHANNELS)})
@@ -308,8 +331,10 @@ def main():
     try:
         server = ThreadingHTTPServer(('127.0.0.1', PORT), Handler)
         server.collector = Collector()
+        server.collector.actions = action_v03_monitor.V3ActionMonitor(ROOT, DATA, 'open-chat' if OPEN_CHAT else 'main', context=server.collector.action_context)
         atomic_json('live_process.json', {'pid': os.getpid(), 'app': APP})
         threading.Thread(target=server.collector.loop, daemon=True).start()
+        threading.Thread(target=server.collector.actions.loop, daemon=True).start()
         print('Live viewer: http://127.0.0.1:' + str(PORT), flush=True)
         server.serve_forever()
     finally:

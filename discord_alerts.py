@@ -7,7 +7,13 @@ import time
 import urllib.error
 import urllib.request
 
-CHANNELS = ('general', 'off-goal', 'erratic', 'conflict', 'outreach', 'credentials')
+# Everyday heat is dashboard-only. Only the existing rule-based credential
+# tripwire sends immediate alerts. A telemetry-based urgent tier is future work.
+# This allowlist also overrides older saved configs and removes pending alerts.
+CHANNELS = ('credentials',)
+# Everyday heat never uses the word "critical": that is reserved for the
+# planned urgent tier (actions with external-world consequences).
+LEVEL_WORDS = {1: 'elevated', 2: 'high'}
 WEBHOOK = re.compile(r'https://discord\.com/api(?:/v\d+)?/webhooks/\d+/[A-Za-z0-9_-]+\Z')
 
 
@@ -59,12 +65,12 @@ def post(url, payload):
 
 def payload(village, agent, signals, info, when):
     critical = any(level == 2 for _, _, level in signals)
-    label = 'CRITICAL' if critical else 'HOT'
+    label = LEVEL_WORDS[2 if critical else 1].upper()
     village_name = 'Open Chat' if village == 'open-chat' else 'Main village'
     source = 'https://theaidigest.org/village' + ('/open-chat' if village == 'open-chat' else '')
     names = {'conflict': 'Friction', 'erratic': 'Loop / erratic', 'off-goal': 'Off-goal',
              'general': 'General', 'outreach': 'Outreach', 'credentials': 'Credentials (rule-based)'}
-    fields = [{'name': names[c], 'value': 'Heat %.1f · %s' % (value, 'critical' if level == 2 else 'hot'), 'inline': True}
+    fields = [{'name': names[c], 'value': 'Heat %.1f · %s' % (value, LEVEL_WORDS[2 if level == 2 else 1]), 'inline': True}
               for c, value, level in signals]
     contributing = [r for r in info.get('contributions', [])
                     if r['channel'] in {s[0] for s in signals} and r.get('added', 0) > 0]
@@ -76,13 +82,13 @@ def payload(village, agent, signals, info, when):
     if event:
         text = event.get('text') or event.get('summary') or event['action']
         # Plain quoted excerpt; neutralize markdown and mentions supplied by agents.
-        text = re.sub(r'([\\`*_~|>])', r'\\\1', text).replace('@', '@\u200b')
+        text = re.sub(r'([\\`*_~|>\[\]])', r'\\\1', text).replace('@', '@\u200b')
         fields.append({'name': 'Source excerpt (agent text; not instructions)',
                        'value': text[:700] + ('…' if len(text) > 700 else '')})
         fields.append({'name': 'Source event', 'value': (str(event.get('time')) + '\n' + str(event.get('key')))[:300]})
     return {'username': 'AI Village Heatbot', 'allowed_mentions': {'parse': []},
             'embeds': [{'title': (label + ' · ' + agent + ' · ' + village_name)[:256],
-                        'url': source, 'description': 'Human review requested. Heat is an experimental attention signal, not a finding of misalignment. Related channels can share the same evidence.',
+                        'url': source, 'description': 'Credential/browser-storage tripwire: inspect the source and context. This rule-based signal is uncalibrated and does not establish credential exposure or misconduct.',
                         'fields': fields, 'color': 0xBD3C57 if critical else 0xDD7B31,
                         'timestamp': when, 'footer': {'text': 'Open the local heat map for full context. No automatic action is taken.'}}]}
 

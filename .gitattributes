@@ -1,0 +1,2 @@
+*.py text eol=lf
+tier1/detector.py -text

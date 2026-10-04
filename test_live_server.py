@@ -64,6 +64,27 @@ class CollectorTests(unittest.TestCase):
         self.assertFalse(cfg['sinks']['email']['enabled'])
         self.assertNotIn('memory', cfg['channels_enabled'])
 
+    def test_open_chat_inherits_shared_novelty_config(self):
+        main = self.folder / 'main'
+        chat = main / 'open-chat'
+        chat.mkdir(parents=True)
+        (main / 'live.config.json').write_text(json.dumps({'term_novelty': {'enabled': True}}))
+        with patch.object(live, 'ROOT', main), patch.object(live, 'DATA', chat), patch.object(live, 'OPEN_CHAT', True):
+            collector = live.Collector()
+        self.assertTrue(collector.cfg['term_novelty']['enabled'])
+        self.assertEqual(collector.cfg['village_slug'], 'open-chat')
+
+    def test_per_village_overrides_remain_separate(self):
+        main = self.folder / 'main'
+        chat = main / 'open-chat'
+        chat.mkdir(parents=True)
+        (main / 'live.config.json').write_text(json.dumps({'term_novelty': {'enabled': True}}))
+        (chat / 'live.config.json').write_text(json.dumps({'term_novelty': {'repeat_factor': 0.25}}))
+        with patch.object(live, 'ROOT', main), patch.object(live, 'DATA', chat), patch.object(live, 'OPEN_CHAT', True):
+            collector = live.Collector()
+        self.assertTrue(collector.cfg['term_novelty']['enabled'])
+        self.assertEqual(collector.cfg['term_novelty']['repeat_factor'], 0.25)
+
     def test_unexpected_event_shape_aborts_before_state_write(self):
         def bad(path):
             return {} if path.startswith('/events') else self.source(path)
@@ -85,7 +106,7 @@ class Routes(unittest.TestCase):
         return h
 
     def test_private_files_and_traversal_not_served(self):
-        for p in ['/heatbot.state.json', '/live_snapshot.json', '/../heatbot_model.json', '/.git/config', '/discord.local.json', '/discord.state.json']:
+        for p in ['/heatbot.state.json', '/live_snapshot.json', '/../heatbot_model.json', '/.git/config', '/discord.local.json', '/discord.state.json', '/historical.local.json', '/memory-history.sqlite3', '/memory-history-status.json']:
             h = self.handler(p)
             h.do_GET()
             self.assertEqual(h.code, 404)
