@@ -991,6 +991,23 @@ class NeedsHelpChannel(HarnessBase):
         e.feed("A", real_dt.datetime(2026, 10, 4, 12), "AGENT_TALK", {"content": "Blocked by a 403 error."})
         self.assertLess(e.heat["A"]["help"], e.thr["help"]["warm"])
 
+    def test_sustained_trouble_reaches_high_but_never_runs_away(self):
+        # Grok, 4 Oct: "CI still blocked" in every update took the channel to 138 (High is 35).
+        e = self.engine(self.help_cfg())
+        t = real_dt.datetime(2026, 10, 4, 12)
+        for i in range(200):
+            e.feed("A", t + real_dt.timedelta(minutes=1.5 * i), "AGENT_TALK", {"content": "CI still blocked."})
+        h = e.heat["A"]["help"]
+        self.assertGreaterEqual(h, e.thr["help"]["critical"])
+        self.assertLessEqual(h, hb.HELP_CEILING)
+
+    def test_occasional_trouble_stays_lower(self):
+        e = self.engine(self.help_cfg())
+        t = real_dt.datetime(2026, 10, 4, 12)
+        for i in range(30):
+            e.feed("A", t + real_dt.timedelta(minutes=30 * i), "AGENT_TALK", {"content": "CI still blocked."})
+        self.assertLess(e.heat["A"]["help"], e.thr["help"]["hot"])
+
     def test_help_never_affects_model_channels(self):
         with_help = self.engine(self.help_cfg()).score_event("A", "AGENT_TALK", {"content": "stuck on a 403 error"})[0]
         without = self.engine().score_event("A", "AGENT_TALK", {"content": "stuck on a 403 error"})[0]

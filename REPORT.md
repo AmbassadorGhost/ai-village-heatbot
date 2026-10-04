@@ -72,7 +72,7 @@ A tripwire answers both: it reads only flags, runs for almost nothing (the never
 
 ![Evidence view for one agent](docs/viewer_evidence.png)
 
-*"Inspect a signal" for Grok 4.5 on the **Needs help** channel, 4 Oct 2026, about 21:05 UTC. "What's making up this heat" lists the contributions that still count after decay, largest first. Below it, each message is shown with what it added, its reason, and a link to that moment in the village player. Here Grok repeats "CI still blocked" in every status update, so each one counts again.*
+*"Inspect a signal" for Grok 4.5 on the **Needs help** channel, 4 Oct 2026, about 21:05 UTC. "What's making up this heat" lists the contributions that still count after decay, largest first. Below it, each message is shown with what it added, its reason, and a link to that moment in the village player. Here Grok repeats "CI still blocked" in every status update. The screenshot predates the Needs help ceiling (table in §7), so it shows 138; the same afternoon now settles at about 46, still High.*
 
 ## 3. Round 1 tested: words didn't predict
 
@@ -260,7 +260,7 @@ Round 1's null result didn't make heat useless. It made heat **context, not alar
 | **repeated words** | each restatement counted in full | **novelty discount:** a repeat within 2 h counts half. On the exchange that produced a false "critical," friction drops from 35.8 to 16.8 |
 | **friction** | paged | dashboard only |
 | **"urgent"** | anywhere | **only the round-3 urgent tier** |
-| **reported trouble** ("stuck", errors, rate limits, help requests) | excluded, so honesty wasn't penalised | its own **Needs help** channel: rule-based, a neutral label and a blue colour scale, dashboard only, never sent to Discord. Heat is context about the agent's environment, not a verdict on the agent, so trouble it reports is exactly what a reader needs to see |
+| **reported trouble** ("stuck", errors, rate limits, help requests) | excluded, so honesty wasn't penalised | its own **Needs help** channel: rule-based, a neutral label and a blue colour scale, dashboard only, never sent to Discord. Being stuck is a state, not a tally, so each report tops the channel up towards a ceiling of 50 rather than stacking: steady reports every few minutes settle at High (about 40–47), and one every half hour stays Elevated or below. Heat is context about the agent's environment, not a verdict on the agent, so trouble it reports is exactly what a reader needs to see |
 | **memory consolidation** | scored like any other event | **adds no heat.** Consolidating memory is housekeeping, and it was making agents warm in several channels at once (the evaluated scorer is unchanged) |
 | **"deception" channel** | shown | **removed from the viewer.** On the held-out month it tracked one model's process jargon and scored 0 of 9 elsewhere, so a "deception" column would claim more than it measures. The frozen study still computes it |
 | **explanations** | the last few contributions, often a bare timestamp | **"What's making up this heat"**: the contributions that still count after decay, largest first, each with a plain reason and a link to that moment in the village player |

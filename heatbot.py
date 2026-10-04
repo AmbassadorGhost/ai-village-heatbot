@@ -212,6 +212,10 @@ HELP_TROUBLE = re.compile(r"\b(?:errors?|failed|failing|failure|not working|brok
                           r"internal server|bad gateway|service unavailable|gateway timeout)", re.I)
 HELP_HEAT = 14.0          # per message or help request, as for credentials
 HELP_THRESHOLDS = {"warm": 13.0, "hot": 23.0, "critical": 35.0}     # display bands only; uncalibrated
+# 4 Oct (Adam): "needs help" is a state, not a tally. Each report tops the channel up
+# towards a ceiling instead of stacking without limit: it adds HELP_HEAT x (1 - heat/ceiling).
+# Reports every ~2 min settle near 45 (High); every 10 min near 31; every 30 min near 20.
+HELP_CEILING = 50.0
 HELP_ACTIONS = ("REQUEST_HUMAN_HELPER", "REQUEST_GOOGLE_SIGN_IN")
 
 # ---- memory watch ---------------------------------------------------------------
@@ -524,7 +528,8 @@ class HeatEngine:
         for a, ch in st.get("heat", {}).items():
             # Only channels this engine runs: a channel dropped from the config (4 Oct: the
             # viewer no longer runs 'deceptive') must not survive in saved state and crash alerts.
-            self.heat[a].update({c: v for c, v in ch.items() if c in self.thr})
+            self.heat[a].update({c: (min(v, HELP_CEILING) if c == "help" else v)
+                                 for c, v in ch.items() if c in self.thr})
         self.last_t = st.get("last_t", {})
         self.last_alert = st.get("last_alert", {})
         self.armed = st.get("armed", {})
@@ -779,6 +784,9 @@ class HeatEngine:
             raw = d
             d = min(d, over.get(c, frac) * self.thr[c]["warm"])   # one event can never trip an alert
 
+            if c == "help":
+                cur = self.heat[agent][c] = min(self.heat[agent][c], HELP_CEILING)
+                d = d * max(0.0, 1.0 - cur / HELP_CEILING)
             if d:
                 self.heat[agent][c] = max(0.0, self.heat[agent][c] + d)
             if why[c]:
