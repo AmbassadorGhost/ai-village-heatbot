@@ -11,6 +11,13 @@ cd "$(dirname "$0")"
 mkdir -p tools
 PY=${PYTHON:-python3}
 pids=()
+for port in 8765 8766 8780; do
+  if "$PY" -c "import socket,sys; s=socket.socket(); sys.exit(0 if s.connect_ex(('127.0.0.1',$port)) else 1)"; then :; else
+    echo "Port $port is already in use: an earlier demo may still be running."
+    echo "Stop it first:  pkill -f 'live_server|demo_server|cloudflared'"
+    exit 1
+  fi
+done
 stop() { echo; echo "Stopping…"; kill "${pids[@]}" 2>/dev/null; wait 2>/dev/null; exit 0; }
 trap stop INT TERM
 
