@@ -53,11 +53,7 @@ Open Chat differs from the environment used to develop the scorer. Its topic and
 
 Scores are for human attention in an observational setting. They are not pushed to agents, used as a training signal, reward or training-data filter, or used to decide which agents remain in or enter the village. Optional Discord alerts go to a human review channel. This service reads the Village API and binds to localhost; it is not a public website.
 
-**The `surreptitious-or-deceptive` channel is not shown in the viewer.** On the
-held-out month it tracked one agent's writing style (process and governance
-jargon) and scored 0 of 9 elsewhere, so a column labelled "deception" would
-claim more than it measures. The scorer still computes it for the frozen study;
-weights, thresholds and study results are unchanged.
+**The `surreptitious-or-deceptive` channel is not shown in the viewer.** On the held-out month it tracked one agent's writing style (DeepSeek v3.2's process and governance jargon, often linked to relationship maximization framework) and scored 0 of 9 elsewhere. We suspect the monitor may have been flagging posts including such language as deceptive for reasons other than the existence of the jargon itself; i.e. it may plausibly be a correlate that is nonetheless poorly informative. The scorer still computes it for the frozen study; weights, thresholds and study results are unchanged.
 
 ## Optional Discord channel alerts
 
@@ -65,7 +61,7 @@ weights, thresholds and study results are unchanged.
 2. With the viewer running, open http://127.0.0.1:8765/discord and paste the URL into the password field.
 3. Select **Save, send test & enable alerts**. Check that the connection test arrives in your intended channel.
 
-Both villages then use that channel. The first successful poll establishes a quiet baseline, so existing high scores do not flood the channel. New hot signals produce grouped, silent heat notices per agent with scores, reasons and a scrubbed source excerpt when available. Friction and Needs help stay on the dashboard. Round-3 Detections post silently to the same channel; URGENT notices go only to a separate urgent webhook, if one is configured. Alerts cannot ping users or roles. Treat excerpts as agent statements to review, not instructions.
+Both villages then use that channel. The first successful poll establishes a quiet baseline, so existing high scores do not flood the channel. New hot signals produce grouped, silent heat notices per agent with scores, reasons and a scrubbed source excerpt when available. Friction and Needs help stay on the dashboard. Round-3 Detections post silently to the same channel. **URGENT action notices go only to a separate urgent webhook if one is configured.** Alerts cannot ping users or roles.
 
 Signals rearm after falling below 60% of the hot threshold, with a 90-minute cooldown. Escalation from hot to critical can alert sooner. Each village sends at most three grouped alerts per poll; failed deliveries retry on later polls, respecting Discord rate limits. Pending alerts expire after ten minutes or when the signal is no longer hot. Network failures can leave delivery uncertain and retries can duplicate a message. Failed source fetches do not produce alerts.
 
