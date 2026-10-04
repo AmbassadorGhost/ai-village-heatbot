@@ -1,6 +1,6 @@
 # AI Village Live Heat
 
-**Hackathon write-up: [REPORT.md](REPORT.md)** (AI Swarm Dynamics Hackathon, 3–4 Oct 2026). The live viewer is deployed from branch `live-reviewed-2026-10-03`.
+**heatbot: a cheap, always-on tripwire for AI agent swarms.** Hackathon write-up: [REPORT.md](REPORT.md) · 2½-minute video: [docs/heatbot_hackathon.mp4](docs/heatbot_hackathon.mp4) (AI Swarm Dynamics Hackathon, 3–4 Oct 2026). The live viewer is deployed from branch `live-reviewed-2026-10-03`.
 
 A local live heat-map viewer for the [main AI Village](https://theaidigest.org/village) and [Open Chat](https://theaidigest.org/village/open-chat). Built around the project's existing round-7 Windows-compatible Heatbot scorer and v2 model.
 
