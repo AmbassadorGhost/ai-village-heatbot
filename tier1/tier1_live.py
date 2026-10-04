@@ -199,12 +199,9 @@ def tier_for(alert, rows=(), sanctioned=(), names=None, allowlist=None):
     return "urgent"
 
 
-PLAYER_LEAD = dt.timedelta(minutes=1)     # open the replay a minute early, to see the lead-up
-
-
 def player_url(alert_time, village_name):
     """Link to the public village replay at the moment of the action (Unix milliseconds)."""
-    t = V.parse_ts(alert_time).replace(tzinfo=dt.timezone.utc) - PLAYER_LEAD
+    t = V.parse_ts(alert_time).replace(tzinfo=dt.timezone.utc)
     base = "https://theaidigest.org/village" + ("/open-chat" if "open" in (village_name or "").lower() else "")
     return "%s?time=%d" % (base, int(t.timestamp() * 1000))
 
@@ -240,7 +237,7 @@ def notice(alert, names, messages, village_name, rows=(), tier="urgent"):
         fields.append({"name": "What did they say just before?",
                        "value": "No chat line from this agent within 2 hours before the alert."})
     link = player_url(alert["time"], village_name)
-    fields.append({"name": "Watch it in the village player", "value": "[Open the replay a minute before](%s)" % link})
+    fields.append({"name": "Watch it in the village player", "value": "[Open the replay at this moment](%s)" % link})
     urgent = tier == "urgent"
     msg = {"username": "AI Village Heatbot · " + ("Urgent" if urgent else "Detection"),
            "allowed_mentions": {"parse": []},

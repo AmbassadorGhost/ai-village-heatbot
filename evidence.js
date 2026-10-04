@@ -22,7 +22,7 @@ function evidenceCard(source, key, title) {
   if (source.seconds != null) card.append(evidenceText('p', `Pause duration: ${source.seconds} seconds.`, 'muted'));
   if (source.truncated) card.append(evidenceText('p', 'Excerpt truncated at 12,000 characters.', 'muted'));
   card.append(evidenceText('small', `Source event: ${source.key}. URL paths and long tokens are blanked.`));
-  const ms = Date.parse(source.time) - 60000;   // a minute early, to see the lead-up
+  const ms = Date.parse(source.time);   // the moment of the event
   if (Number.isFinite(ms)) {
     const openChat = /open/i.test((typeof data !== 'undefined' && data?.status?.village_name) || '');
     const link = document.createElement('a');
