@@ -19,9 +19,26 @@ from zoneinfo import ZoneInfo
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import heatbot as hb          # noqa: E402
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "exporter_addon"))
+import action_features as AF  # noqa: E402
 import tier1_live as L        # noqa: E402
 
 PT = ZoneInfo("America/Los_Angeles")
+
+
+def explain(cmd):
+    """Which rules in action_features fired, with the matching text (local diagnostics only)."""
+    from urllib.parse import urlsplit
+    f = AF.extract(cmd)
+    print("  write_hosts:", f["write_hosts"], "| signup_endpoint_hosts:", f["signup_endpoint_hosts"])
+    for name, rx in (("python write call", AF._PY_WRITE_CALL), ("method= keyword", AF._PY_METHOD_KW),
+                     ("urllib Request with data", AF._URLLIB_WITH_DATA)):
+        for m in rx.finditer(cmd):
+            a, b = max(0, m.start() - 80), min(len(cmd), m.end() + 80)
+            print("  WRITE TRIGGER (%s): ...%s..." % (name, " ".join(cmd[a:b].split())))
+    for u in AF._URL.findall(cmd):
+        if AF._AUTH_PATH.search(urlsplit(u).path or ""):
+            print("  SIGN-UP PATH:", u[:160])
 
 
 def parse_when(s, zone):
@@ -42,6 +59,7 @@ def main(argv=None):
     p.add_argument("--zone", default="UTC", help="zone for a time without Z (default UTC)")
     p.add_argument("--minutes", type=int, default=10, help="window either side")
     p.add_argument("--slug", default="actual-launch-1")
+    p.add_argument("--explain", action="store_true", help="show which detector rules matched each command")
     a = p.parse_args(argv)
     zone = ZoneInfo(a.zone)
     when = parse_when(a.when, zone)
@@ -77,6 +95,8 @@ def main(argv=None):
                       % (tu.strftime("%H:%M:%S"), a.zone, tu.astimezone(zone).strftime("%I:%M:%S %p"), s.get("id")))
                 print("  player:", L.player_url(tu.replace(tzinfo=None).isoformat() + "Z", detail.get("name", "")))
                 print("  command:", " ".join(cmd.split())[:240] or "(none)")
+                if a.explain and cmd:
+                    explain(cmd)
     if not found:
         print("\nNo turns for that agent in the window.")
 
