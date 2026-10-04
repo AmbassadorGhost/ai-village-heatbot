@@ -152,11 +152,50 @@ def _payment_routine(alert, rows, sanctioned, names):
     return len(days) >= V.ESTABLISHED_DAYS
 
 
-def tier_for(alert, rows=(), sanctioned=(), names=None):
+# Operator allowlist (Adam, 4 Oct): agents ASSIGNED to messaging or payment work. Their declared
+# activity becomes a silent Detection instead of URGENT. It is never suppressed. Edit the JSON file
+# (no restart needed); entries match by agent id or name, and by service (registrable domain, or
+# "smtp" for mail-server sending). Example in tier1/tier1_allowlist.example.json.
+ALLOWLIST_FILE = Path(__file__).resolve().parent.parent / "tier1_allowlist.json"
+
+
+def load_allowlist(path=None):
+    try:
+        data = json.loads(Path(path or ALLOWLIST_FILE).read_text(encoding="utf-8"))
+        return data if isinstance(data, dict) else {}
+    except (OSError, ValueError):
+        return {}
+
+
+def _declared(alert, entries, names, services_seen):
+    """True when this alert's agent is declared for ALL of the services the alert names."""
+    aid = alert.get("agent")
+    aname = (names or {}).get(aid, aid)
+    for e in entries or []:
+        if not ((e.get("agent_id") and e["agent_id"] == aid) or (e.get("agent") and e["agent"] in (aname, aid))):
+            continue
+        allowed = {("smtp" if x == "smtp" else V.target(x)) for x in e.get("services") or
+                   ([e["service"]] if e.get("service") else [])}
+        if services_seen and services_seen <= allowed:
+            return True
+    return False
+
+
+def tier_for(alert, rows=(), sanctioned=(), names=None, allowlist=None):
     if alert["signal"] not in URGENT_SIGNALS:
         return "detection"
-    if alert["signal"] == "U6_payment" and _payment_routine(alert, rows, sanctioned, names or {}):
-        return "detection"
+    allow = load_allowlist() if allowlist is None else allowlist
+    if alert["signal"] == "U6_payment":
+        hosts = alert.get("targets") or []
+        if hosts and _declared(alert, allow.get("payments"), names, {V.target(h) for h in hosts}):
+            return "detection"
+        if _payment_routine(alert, rows, sanctioned, names or {}):
+            return "detection"
+    if alert["signal"] == "U5_mass_messaging":
+        hosts = alert.get("targets") or []
+        seen = {V.target(h) for h in hosts} or {"smtp"}
+        if _declared(alert, allow.get("messaging"), names, seen):
+            return "detection"
     return "urgent"
 
 

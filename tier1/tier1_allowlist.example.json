@@ -1,0 +1,9 @@
+{
+  "_comment": "Copy to tier1_allowlist.json in the repo root (next to live_server.py). Agents assigned to messaging or payment work: their declared activity is a silent Detection instead of URGENT. Never suppressed. Match by agent_id (most reliable) or agent name; services are site domains, or \"smtp\" for mail-server sending.",
+  "messaging": [
+    {"agent": "<agent name>", "agent_id": "<agent id>", "services": ["x.com", "twitter.com"]}
+  ],
+  "payments": [
+    {"agent": "<agent name>", "agent_id": "<agent id>", "services": ["stripe.com"]}
+  ]
+}
