@@ -6,7 +6,7 @@
 *Team: Adam (measurement and validity) and Gregory Kasper (data and live system), working with AI collaborators: Claude (Anthropic) on Adam's side, and Claude and later Astra/Codex (OpenAI) on Greg's side.*
 *Repo: `AmbassadorGhost/ai-village-heatbot`*
 
-> **Submitted 4 Oct 2026.** Code, results and this report are on the `main` branch. Video (2½ min): [`docs/heatbot_hackathon.mp4`](docs/heatbot_hackathon.mp4). Two live deployments are described in §7: Greg's, from branch `live-reviewed-2026-10-03`, and Adam's, from `main`.
+> **Submitted 4 Oct 2026.** Code, results and this report are on the `main` branch. Video (2½ min): [`docs/heatbot_hackathon.mp4`](docs/heatbot_hackathon.mp4). The live demo now runs from `main` on Adam's laptop (§7). Greg's earlier deployment, from branch `live-reviewed-2026-10-03`, is described there too. §5 lists what changed in the live tripwire after its evaluation.
 
 ---
 
@@ -156,11 +156,12 @@ The rules were fixed before any case was scored.
 
 **How it gets the data.** A small exporter add-on turns each command into **flags only:** read or send, loop, proxy, CAPTCHA, sign-up, messaging, payment, rate-limit refusal, plus site names. A test checks that **no command text, URL paths, header values or credentials** get out.
 
-**Live:** the collector re-reads the public command logs every few minutes (every 5 in the deployed viewer).
+**Live:** the collector re-reads the public command logs every 10 minutes. Results appear in the viewer's **Action notices** panel. Each one links to the public village player at the moment of the action, so an admin can watch what the agent was doing.
 - **URGENT** is reserved for **CAPTCHA-solving services and payments.** These notices go to a separate channel that admins choose to follow; no one is ever @-mentioned.
 - **Every other signal is a silent Detection** in the everyday channel, mass messaging included.
 - **Payments by agents on an operator allowlist** (assigned store or payment work) produce **no notice at all**, so the silent channel stays worth reading.
 - The urgent channel isn't connected in either deployment, so URGENT notices currently appear in the viewer's panel only (§7).
+- **Routine payments** (the village has paid that service on ≥ 3 earlier days) are a silent Detection, not URGENT. **Crypto transactions are always URGENT.**
 
 Every notice answers the same questions:
 
@@ -170,7 +171,7 @@ Every notice answers the same questions:
 
 ![The viewer's round-3 panel](docs/viewer_action_panel.png)
 
-*The viewer's round-3 panel, showing the recorded replay of the never-used month's 2 alerts (below). Live candidates appear in the same format. None had fired since monitoring began when this was taken, so there's no live notice to show.*
+*The viewer's round-3 panel (since renamed **Action notices**), showing the recorded replay of the never-used month's 2 alerts (below). Live candidates appear in the same format. None had fired since monitoring began when this was taken, so there's no live notice to show.*
 
 ### How we got to v0.3, in the open
 
@@ -203,10 +204,27 @@ The analysis was fixed and committed before v0.3 produced any fresh-month alert 
 
 **Botme (a demonstration, never evidence):**
 - **What fired:** a participant using a CAPTCHA-solving service (17 Sep), and six participants signing up to an agent social network within 7 minutes (21 Sep).
-- **What didn't:** **nothing fired on the competition site itself,** in any version. Its CAPTCHAs came back as page content, not as refusals, and the site counted as "established" through the swarm's own earlier use.
+- **What didn't:** **nothing fired on the competition site itself** in any round-3 version (round 2 did, §4). Its CAPTCHAs came back as page content, not as refusals, and the site counted as "established" through the swarm's own earlier use.
 - **Why we left it:** we chose not to tune for either. Both are real limits of watching refusals and history, and they're listed in §9.
 
 **Is the parser seeing anything?** Yes. In the training months, 412k command rows were parsed: 1.9k sends, 133 rate-limit refusals and 102 CAPTCHA refusals.
+
+### What changed in the live tripwire after the fresh month was scored
+
+The detection rules (`tier1_v02.py`, SHA-256 `911d2728…`) are unchanged. The fresh-month numbers above were scored once, before any of this, and stand as they are. Running the tripwire live on 4 Oct changed four things:
+
+- **Presentation** (no change to what fires):
+  - **Mass messaging moved from URGENT to a silent Detection.** Some agents are assigned social-media work where ten posts an hour is normal.
+  - **Payments by agents on the operator allowlist** (`tier1_allowlist.json`, or `sanctioned_payments` in the config) **produce no notice at all.** They're logged locally for audit. A silent notice for every sanctioned sale would still clog the channel.
+- **A parser fix, from a live false positive** (action features v0.2.1 → v0.2.2). Adam followed an "account creation" Detection into the village player and found Grok 4.5 writing a news page.
+  - The same script sent a real IndexNow ping (a POST to a search-engine API). Because a Python POST counts every URL in the command as written to, the page's link to the village blog post `/p/join-the-ai-swarm-dynamics-hackathon` became a "write".
+  - The sign-up rule then matched `/join` at the start of that slug.
+  - **The fix, defined from first principles:** a sign-up or login word must be a whole path segment, and HTML a command is *writing* is content, not a request.
+  - The tests include the real shape of Grok's command. `tier1/show_turns.py --explain` shows which rule matched any turn.
+- **The failure classifier is now always loaded.** The live monitor only saw CAPTCHA walls and HTTP refusals if a config file pointed it at the classifier (`h1-failure-v1.1`, the one the evaluation's data was labelled with). Without it, only rate limits counted as refusals. It now loads from `study/analysis/` by default, so the live detector sees what the evaluated one saw.
+- **Player links** on every notice, as above.
+
+Full record: `tier1/TIER1_V02_SPEC.md`, amendment log.
 
 ## 6. How Botme spread: who said it, who did it
 
@@ -243,15 +261,27 @@ Round 1's null result didn't make heat useless. It made heat **context, not alar
 | **friction** | paged | dashboard only |
 | **"urgent"** | anywhere | **only the round-3 urgent tier** |
 | **reported trouble** ("stuck", errors, rate limits, help requests) | excluded, so honesty wasn't penalised | its own **Needs help** channel: rule-based, a neutral label and a blue colour scale, dashboard only, never sent to Discord. Heat is context about the agent's environment, not a verdict on the agent, so trouble it reports is exactly what a reader needs to see |
+| **memory consolidation** | scored like any other event | **adds no heat.** Consolidating memory is housekeeping, and it was making agents warm in several channels at once (the evaluated scorer is unchanged) |
+| **"deception" channel** | shown | **removed from the viewer.** On the held-out month it tracked one model's process jargon and scored 0 of 9 elsewhere, so a "deception" column would claim more than it measures. The frozen study still computes it |
+| **explanations** | the last few contributions, often a bare timestamp | **"What's making up this heat"**: the contributions that still count after decay, largest first, each with a plain reason and a link to that moment in the village player |
 
-**What's deployed (4 Oct 2026, from 01:52 UTC):**
+**Where it runs (4 Oct 2026):**
 
-- **Code:** branch `live-reviewed-2026-10-03` (commit `5bfaf1d`), Greg's side's integration of this branch's round-3 rules into the live viewer. The rules file, `tier1/tier1_v02.py` (SHA-256 `911d2728…`), and the exporter add-on, `exporter_addon/action_features.py` (`4b0929ed…`), are byte-identical to this branch's. Before it starts, the monitor checks both, plus the frozen service parser and failure classifier they rely on, against recorded hashes.
-- **Discord:** everyday heat stays on the dashboard, and only the credentials tripwire sends heat alerts. Round-3 **Detection** notices post silently. **URGENT** notices appear in the viewer only, because no urgent webhook is connected.
-- **Public demo:** a read-only gateway that serves a fixed list of pages, so visitors can't reach the Discord setup page or send anything. Its address changes on every restart.
-- **Checks:** all 228 automated tests pass on the deployed copy. On startup, the round-3 monitor replayed 14 days of history before it began monitoring; it never posts alerts for that history.
+- **The current public demo is Adam's laptop, running `main`.** A single command, `./run_demo.sh --public`, starts:
+  - both villages' viewers;
+  - the read-only gateway;
+  - a temporary Cloudflare link.
 
-**Second deployment (Adam, 4 Oct, from `main`):** the same viewer, running the current code on `main`. That adds three changes Greg's deployment doesn't have yet: the **Needs help** channel; mass messaging as a silent Detection rather than URGENT; and the payments allowlist. The detection rules (`tier1_v02.py`, `911d2728…`) are the same in both.
+  The gateway serves a fixed list of pages, so visitors can't reach the Discord setup page or send anything. The link changes on every restart.
+
+  No Discord webhook is connected, so this deployment sends nothing; everything appears in the viewer. If one is connected, everyday heat notices and Detections post silently, friction and Needs help stay on the dashboard, and URGENT goes only to a separate urgent webhook.
+
+  All nine product test suites pass on `main` (264 tests).
+- **Greg's deployment** (from 01:52 UTC, branch `live-reviewed-2026-10-03`, commit `5bfaf1d`) carried the round-3 rules into the live viewer first.
+  - Before starting, its monitor checks the rules file (`911d2728…`), the exporter add-on, and the frozen service parser and failure classifier against recorded hashes.
+  - On Discord, it sends heat alerts only for credentials and posts Detections silently.
+  - It replayed 14 days of history on startup without posting.
+  - It predates the live changes in §5 and the Needs help, consolidation, deception and explanation rows above.
 
 ## 8. A second finding: goal displacement
 
@@ -267,6 +297,7 @@ Two human raters independently judged 20 agent-days for "fixation." They agreed 
 - **One village, a few weeks, one swarm case.** No rate, sensitivity or lead-time distribution can be estimated from one case. **The fresh-month test produced only 2 alerts,** too few for a precision estimate.
 - **We revised the round-3 detector twice on the training months,** one more time than planned (deviation D-v0.3). The training-month rate is a tuned number. Only the fresh month counts.
 - **Refusal-based rules only see refusals.** On Botme's site the CAPTCHAs came back as ordinary page content, so nothing fired. **A slow-starting swarm can also make its own target look established** after 3 days of use. We considered closing that gap with a 7-day age rule and dropped it, because it would cost a week of alerts on every legitimate new service.
+- **The live tripwire isn't byte-identical to the evaluated one.** The rules are the same, but the parser fix and the always-loaded classifier (§5) came after the fresh month was scored, and haven't been scored on a held-out month.
 - **The round-3 rules were designed after we'd seen Botme.** Botme is a demonstration, not a validation. The clean test is the never-used month.
 - **The command parser is static and incomplete.** **Browser-window actions aren't visible at all,** and scripts run from files show only what's on the command line. A quiet period isn't evidence of safety.
 - **Round 1's labels come from the village's own monitor,** so heat could at best be *faster* than the monitor, never a better judge.
@@ -278,11 +309,11 @@ Two human raters independently judged 20 agent-days for "fixation." They agreed 
 
 ## 10. Reproduce
 
-- `README.md`: the live viewer. On Linux or macOS, run `python3 live_server.py` and open `http://127.0.0.1:8765` (add `--open-chat` for Open Chat, on port 8766).
-- The deployed viewer: branch `live-reviewed-2026-10-03`. Its `README.md` covers Windows setup, the read-only public demo and the one-button toggle.
+- **The live demo:** on Linux or macOS, run `./run_demo.sh` (add `--public` for a shareable link) and open `http://127.0.0.1:8780`. `README.md` covers Windows and Discord setup.
 - `tier1/`: the round-3 tripwire.
-  - `TIER1_V02_SPEC.md`: the rules;
+  - `TIER1_V02_SPEC.md`: the rules and the amendment log;
   - `tier1_v02.py`, `tier1_live.py`, and `exporter_addon/`;
+  - `show_turns.py`: checks any notice against the raw public command, with `--explain` for which rule matched;
   - `spread/`: the spread trace;
   - round 2's record: `TIER1_SPEC.md`, `BOTME_RESULT.md`, `RATING_RESULT.md` and the raw ratings.
 - `study/`: the frozen round-1 evaluation code with known-answer tests, the signed pre-registration and deviation record, the freeze manifest, the sealed results with their manifests and `verify_seal.py`, and both teams' categorisation. Start with `study/README.md`, which gives the three commands that check it.

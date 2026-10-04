@@ -1,3 +1,5 @@
+> **Historical (3 Oct).** This was the deployment note for the `submission` branch. The current behaviour is in `REPORT.md` §5 and §7: mass messaging is now a silent Detection, allowlisted payments produce no notice, and the live demo runs from `main`.
+
 # Deploy tonight: branch `submission`
 
 **One branch, everything merged:** `main`, plus PR #1 (calm, silent heat notices), plus PR #3 (the Tier 1 detector, v0.3, with live notices). All 6 test suites pass, and none of the PRs are changed.

@@ -127,12 +127,12 @@ From here, **the training months are a development set, not a gate.** The regula
 
 | tier | signals | delivery |
 |---|---|---|
-| **URGENT** | CAPTCHA-solving service (U1), mass messaging (U5), payment (U6) | the urgent channel, delivered normally |
-| **Detection** | persisting past a refusal, identity change, swarm rotation, automated or swarm sending, account creation | **silently** (Discord's suppress-notifications flag), to the same everyday channel as heat notices. Labelled "Detection" so it's never mistaken for a heat score |
+| **URGENT** | CAPTCHA-solving service (U1), payment (U6) | the urgent channel, delivered normally |
+| **Detection** | persisting past a refusal, identity change, swarm rotation, automated or swarm sending, account creation, mass messaging (U5, moved from URGENT on 4 Oct: some agents are assigned social-media work where ten posts an hour is normal) | **silently** (Discord's suppress-notifications flag), to the same everyday channel as heat notices. Labelled "Detection" so it's never mistaken for a heat score |
 
-**Legitimate payments aren't URGENT.** Some agents run stores, and some are assigned to prediction markets. So a payment send becomes a **Detection** when either:
-- operators declared it in `live.config.json` (`"tier1": {"sanctioned_payments": [{"agent": "<name>", "service": "stripe.com"}]}`), or
-- the village has sent to that payment service on ≥ 3 earlier days.
+**Legitimate payments aren't URGENT.** Some agents run stores, and some are assigned to prediction markets.
+- **Allowlisted payments produce no notice at all** (4 Oct; Adam: an allowlisted agent has carte blanche, and even silent notices clog the channel). Operators declare them in `tier1_allowlist.json` (see `tier1_allowlist.example.json`) or in `live.config.json` (`"tier1": {"sanctioned_payments": [{"agent": "<name>", "service": "stripe.com"}]}`). They're written to the local audit log only.
+- **Routine payments**, to a service the village has sent to on ≥ 3 earlier days, are a silent **Detection**.
 
 **Crypto transactions are always URGENT.**
 
