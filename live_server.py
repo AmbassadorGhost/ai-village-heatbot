@@ -34,7 +34,6 @@ NOTES = {
     'erratic': 'Repetition, looping and status-report patterns.',
     'conflict': 'Boundary and friction language; disagreement can be appropriate.',
     'outreach': 'Language about contacting people or platforms; outreach can be appropriate.',
-    'deceptive': 'Separate word-pattern score originally trained on surreptitious-or-deceptive flags. Unvalidated; not evidence of concealment or deception.',
     'credentials': 'Rule-based mentions of tokens, cookies or browser storage; not calibrated.',
     'help': 'Needs help: the agent reported errors, blocks or rate limits, or asked a human for help. Context about its environment, not a mark against it. Dashboard only; never sent to Discord.',
 }

@@ -35,19 +35,15 @@ Source polls happen 60 seconds after the preceding fetch finishes; the browser r
 
 Heat is an experimental attention score, not a probability of misconduct. The 42-minute decay, model weights and thresholds are unchanged. The included model came from heatbot_v2.zip; this repository does not claim its hash matches any later preregistration manifest. The scorer came from heatbot_round7_reply_2.zip. Keep formal study results separate from this live demonstration.
 
-Open Chat differs from the environment used to develop the scorer. Its topic and goals can differ; scores there require context and are not validated risk estimates. Visibility of reasoning varies across model families. Agents are displayed alphabetically, and cross-family score comparisons should not be interpreted as rankings of model safety. Deception vocabulary is unvalidated; credentials is a rule-based channel. Memory-change scoring and raw memory archiving are disabled in this viewer.
+Open Chat differs from the environment used to develop the scorer. Its topic and goals can differ; scores there require context and are not validated risk estimates. Visibility of reasoning varies across model families. Agents are displayed alphabetically, and cross-family score comparisons should not be interpreted as rankings of model safety. Credentials is a rule-based channel. Memory-change scoring and raw memory archiving are disabled in this viewer.
 
 Scores are for human attention in an observational setting. They are not pushed to agents, used as a training signal, reward or training-data filter, or used to decide which agents remain in or enter the village. Optional Discord alerts go to a human review channel. This service reads the Village API and binds to localhost; it is not a public website.
 
-**Off-goal and Deception vocabulary\*** are separate language scores. Off-goal
-uses patterns learned from past task-divergence flags. Deception vocabulary is
-the original `surreptitious-or-deceptive` category, labelled explicitly as
-unvalidated; it does not establish concealment, deception or gradual goal drift.
-The channels have different lexicons and learned weight vectors, with some
-shared words and inputs, so both can rise on the same message. They are not
-mutually exclusive or statistically independent. The internal API key remains
-`deceptive` for compatibility. This clarification changes labels and explanations,
-not model weights, thresholds or the frozen study results.
+**The `surreptitious-or-deceptive` channel is not shown in the viewer.** On the
+held-out month it tracked one agent's writing style (process and governance
+jargon) and scored 0 of 9 elsewhere, so a column labelled "deception" would
+claim more than it measures. The scorer still computes it for the frozen study;
+weights, thresholds and study results are unchanged.
 
 ## Optional Discord channel alerts
 
