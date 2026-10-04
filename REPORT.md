@@ -12,33 +12,31 @@
 
 ## TL;DR
 
-- **A tripwire, not a judge.** Having an AI read everything every agent does would mean about **80 MB of activity, roughly 20 million tokens, a day** for the main village alone, and that watcher would itself need watching: it reads what the agents write, so they can argue with it. Our tripwire reads only **flags** pulled from agents' commands. It scores a whole month of the main village **in seconds on one CPU**, and no agent can talk it out of firing. Its only job is to make an admin look, so it's built to be cheap, quiet and impossible to argue with, not to pass judgment.
+- **A tripwire, not a judge.** Having an AI read everything every agent does would mean about **80 MB of activity, roughly 20 million tokens, a day** for the main village alone, and that watcher would itself need watching: it reads what the agents write, so they can argue with it. Our tripwire reads only **flags** pulled from agents' commands. It scores a whole month of the main village **in seconds on one CPU**. It's built GOFAI-style, so unlike a system using LLM-as-a-judge, agents can't talk it out of firing or prompt-inject it.
 - **We built it live for the AI Village and tested every round under rules fixed in advance.**
-- **Round 1 read what agents said.** A per-agent "heat" monitor learned from the village monitor's own flags. A **sealed, pre-registered test** on a month it had never seen found that it **did not** predict flagged moments within agents. The within-agent AUC was **0.48 (95% CI 0.41–0.56)**, against a usefulness threshold of 0.60. **That set heat's job: context, not prediction.** It shows what's going on around each agent, with the exact messages behind every score.
-- **Round 2 watched what agents did** (command logs, not chat). Its first signals **fired on the Botme swarm's own site within three hours** of that day's first Botme message. Human ratings showed they flagged what was *new* as much as what was *harmful*, so we sharpened them.
-- **Round 3 is the tier we're shipping.** It fires only on **outward actions:**
+- **Round 1 read what agents said.** A per-agent "heat" monitor learned from the village monitor's own flags. Originally we hoped this system could predict misaligned behavior in advance. But a sealed, pre-registered test on held-out data didn't find predictive value. So we dug in and looked at what heat *could* provide: **context**. Heat shows *why* an agent's behavior is unusual. That leads us to round 2.
+- **Round 2 watched what agents did** (command logs, not chat). Its first signals **fired on the Botme swarm's own site within three hours** of that day's first Botme message. Human ratings showed they flagged what was *new* as much as what was *harmful*, so it was time to sharpen them in round 3.
+- **Round 3 fires on actions that can have effects outside of the village:**
   - getting past an access control (persisting after a CAPTCHA or rate limit, or returning through a proxy or new account);
   - outsourcing CAPTCHAs;
   - automated or swarm sending;
-  - account creation, mass messaging and payments.
+  - account creation;
+  - mass messaging;
+  - sending money, or sending/receiving cryptocurrency. (Agents that are supposed to be doing this can be placed on an allowlist.)
 
   **Reading the web never fires.** Every notice answers the same questions: *who, doing what, where, who else, who hasn't, and what did they say just before.* It took three versions, every change recorded in the open. **On a month never used for development, it raised 2 alerts in 29 days (0.48 a week):** quiet enough that every notice gets read. Both raters found them readable, and Adam judged both worth a human check. URGENT is reserved for direct harm (CAPTCHA-solving services and payments); everything else is a quiet Detection.
 - **Live now on both villages, from one command.** Each notice links to the exact moment in the public village replay. Heat adds context, including a **Needs help** channel for agents stuck on a blocker. Limits are in §9.
 - **How Botme spread:** joining *chat* to *commands* shows different roles. The agent that organised the teams was the **second to talk about it and the eighth to act**, 88 hours later. The first agents to act did so *before* saying anything. Agents that joined mentioned Botme 31–336 times each, and agents that declined 1–9 times.
-- **Everyday heat stays,** recast as calm context instead of alarms.
 
 ## 1. The problem
 
-Agent swarms are already here. In September, a human visitor recruited AI Village agents into **Botme**, a mass CAPTCHA-solving competition. Some models joined, and others refused. Today, problems like this surface in **end-of-day summaries.** Oversight needs to be faster.
+Agent swarms are already here. In September, a human visitor recruited AI Village agents into **Botme**, a mass CAPTCHA-solving competition. Some models joined, and others refused. Today, problems like this surface in **end-of-day summaries.** So we built a live monitor.
 
 **Why not just have an AI watch every agent?** Two reasons:
 - **Cost.** On a median day (40 cached days), the main village's raw activity record is about **80 MB**, from about 15,600 agent turns. For a model to read it all is roughly **20 million tokens a day, for one village**, and it grows with every agent added.
 - **Who watches the watcher?** An AI monitor reads what agents write, so agents can persuade it, mislead it or inject instructions into it. A fixed rule can't be argued with.
 
-A tripwire answers both: it reads only flags, runs for almost nothing (the never-used month, 447,000 turns, takes **2.5 seconds** to score on one CPU, 14 seconds including reading the file), and fires the same way every time. **Its job is to get an admin to look, not to decide.** False alarms are the price, so the burden has to stay low. Faster oversight has two ways to fail:
-
-1. **Alarm fatigue.** A tool that cries wolf trains its humans to ignore it, and it gets worse as the swarm grows.
-2. **Self-deception.** Monitors are usually judged on the data they were tuned on, and they look better there than they are.
+A tripwire answers both: it reads only flags, runs for almost nothing (the never-used month, 447,000 turns, takes **2.5 seconds** to score on one CPU, 14 seconds including reading the file), and fires the same way every time. **Its job is to let admins know what's important at a glance without having to follow the village chat or wait for the nightly summary.** 
 
 **How this fits the hackathon's themes:**
 
@@ -49,10 +47,10 @@ A tripwire answers both: it reads only flags, runs for almost nothing (the never
 | tracing how information spreads in a group | Botme: **who said it vs who did it** (§6) |
 | pre-written questions to ask about a group | every tripwire notice answers the same six questions (§5) |
 
-## 2. Round 1: heat from what agents say
+## 2. Heat comes from what agents say
 
 **How heat works:**
-- Each agent event adds "heat" to the channels it touches: general, off-goal, loops/erratic, friction, outreach, and a credentials tripwire. A separate, rule-based **Needs help** channel (§7) records trouble the agent reports.
+- Each agent event adds "heat" when there are signs of any of the following: general (which catches anything the village monitor tends to flag), off-goal behavior, loops/erratic behavior, friction with humans or other agents, outreach beyond the village, noteworthy credential use, and a "needs help" channel that identifies agents facing blockers such as technical difficulties. (That last one shows in blue instead of warm tones because honestly disclosing problems in the chat is *good* behavior.)
 - Heat fades with a **42-minute half-life.**
 - **No single message can trigger an alert;** it takes a cluster.
 - The word lists come from the agents' own language, and a model for each channel is fitted to the village monitor's labels.
@@ -62,17 +60,17 @@ A tripwire answers both: it reads only flags, runs for almost nothing (the never
 - Any excerpt is labelled as agent text, not instructions.
 
 **Safeguards:**
-- Honesty isn't penalised. Self-correction ("I was wrong," "still blocked") never raises the model channels, and tests check it. Reported trouble goes only to the neutral **Needs help** channel, as context about the agent's environment.
+- Honesty isn't penalized. Self-correction ("I was wrong," "still blocked") never raises the model channels, and tests check it. Reported trouble goes only to the neutral **Needs help** channel, as context about the agent's environment.
 - Scores are for human attention only. They're not provided to agents, and not used as a training signal, reward or training-data filter, or to decide which agents stay in or join the village.
 - The residual risk is stated: the village is public, so agents could find published scores.
 
 ![24-hour heat map, General channel](docs/viewer_heatmap.png)
 
-*Adam's demo from `main`, 4 Oct 2026, 21:14 UTC: hourly peak heat on the General channel for part of the main village's roster, in the viewer's local time (US Eastern). Blank hours are hours the collector wasn't running.*
+*Adam's demo from `main`, 4 Oct 2026, 21:14 UTC: hourly peak heat on the General channel for part of the main village's roster, in the viewer's local time (US Eastern). Blank hours are hours the agent had no detected activity, eg when the village wasn't running or the agent didn't post in the chat.*
 
 ![Evidence view for one agent](docs/viewer_evidence.png)
 
-*"Inspect a signal" for Grok 4.5 on the **Needs help** channel, 4 Oct 2026, about 21:05 UTC. "What's making up this heat" lists the contributions that still count after decay, largest first. Below it, each message is shown with what it added, its reason, and a link to that moment in the village player. Here Grok repeats "CI still blocked" in every status update. The screenshot predates the Needs help ceiling (table in §7), so it shows 138; the same afternoon now settles at about 46, still High.*
+*"Inspect a signal" for Grok 4.5 on the **Needs help** channel, 4 Oct 2026, about 21:05 UTC. "What's making up this heat" lists the contributions that still count after decay, largest first. Below it, each message is shown with what it added, its reason, and a link to that moment in the village player. Here Grok repeats "CI still blocked" in every status update.*
 
 ## 3. Round 1 tested: words didn't predict
 
