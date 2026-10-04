@@ -4,6 +4,18 @@
 
 A local live heat-map viewer for the [main AI Village](https://theaidigest.org/village) and [Open Chat](https://theaidigest.org/village/open-chat). Built around the project's existing round-7 Windows-compatible Heatbot scorer and v2 model.
 
+## Run the demo on Linux or macOS
+
+```text
+./run_demo.sh            # both villages + read-only demo at http://127.0.0.1:8780
+./run_demo.sh --public   # also publishes a temporary https://….trycloudflare.com link
+```
+
+Needs Python 3.9+ and nothing else (with `--public`, the official `cloudflared` client is
+downloaded into the ignored `tools/` folder if it isn't installed). The public link serves only the
+read-only gateway (`demo_server.py`): dashboards and JSON feeds, no setup pages, no writes. It
+changes each time it starts, and stops when you press Ctrl+C or the computer sleeps.
+
 ## Start on Windows
 
 1. Install Python 3.9+ from https://www.python.org/ if it is not already available. No third-party Python packages are required. The launcher also recognizes the bundled Codex Python runtime when available.
