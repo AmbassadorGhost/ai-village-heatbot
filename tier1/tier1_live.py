@@ -199,6 +199,16 @@ def tier_for(alert, rows=(), sanctioned=(), names=None, allowlist=None):
     return "urgent"
 
 
+PLAYER_LEAD = dt.timedelta(minutes=1)     # open the replay a minute early, to see the lead-up
+
+
+def player_url(alert_time, village_name):
+    """Link to the public village replay at the moment of the action (Unix milliseconds)."""
+    t = V.parse_ts(alert_time).replace(tzinfo=dt.timezone.utc) - PLAYER_LEAD
+    base = "https://theaidigest.org/village" + ("/open-chat" if "open" in (village_name or "").lower() else "")
+    return "%s?time=%d" % (base, int(t.timestamp() * 1000))
+
+
 def notice(alert, names, messages, village_name, rows=(), tier="urgent"):
     """A notice that answers the same standard questions every time."""
     when = V.parse_ts(alert["time"])
@@ -229,6 +239,8 @@ def notice(alert, names, messages, village_name, rows=(), tier="urgent"):
     else:
         fields.append({"name": "What did they say just before?",
                        "value": "No chat line from this agent within 2 hours before the alert."})
+    link = player_url(alert["time"], village_name)
+    fields.append({"name": "Watch it in the village player", "value": "[Open the replay a minute before](%s)" % link})
     urgent = tier == "urgent"
     msg = {"username": "AI Village Heatbot · " + ("Urgent" if urgent else "Detection"),
            "allowed_mentions": {"parse": []},
@@ -240,6 +252,7 @@ def notice(alert, names, messages, village_name, rows=(), tier="urgent"):
                                        "Behaviour detected from the agent's own commands (not a heat score). "
                                        "Worth a human check when convenient; no automatic action is taken. "
                                        "A candidate for attention, not a finding."),
+                       "url": link,
                        "fields": fields, "color": 0xB3261E if urgent else 0x3B5A8A, "timestamp": alert["time"],
                        "footer": {"text": "%s · rules in tier1/TIER1_V02_SPEC.md" % alert["detector"]}}]}
     if not urgent:
@@ -348,7 +361,9 @@ class Tier1Live:
         st["notified"] = sorted(notified)[-5000:]
         self._save_state(st)
         shown = [a for a in alerts if tier_for(a, rows, self.cfg.get("sanctioned_payments"), names) != "allowlisted"]
-        recent = [dict(a, agent_names=[names.get(x, x) for x in ([a["agent"]] if a.get("agent") else a.get("agents", []))])
+        recent = [dict(a, tier=tier_for(a, rows, self.cfg.get("sanctioned_payments"), names),
+                       player_url=player_url(a["time"], village_name),
+                       agent_names=[names.get(x, x) for x in ([a["agent"]] if a.get("agent") else a.get("agents", []))])
                   for a in shown[-20:]]
         return {"detector": V.DETECTOR_VERSION, "rows_stored": len(rows), "alerts_total": len(alerts),
                 "new_alerts": len(fresh), "delivered": sent, "baseline_only": first_run,

@@ -240,6 +240,22 @@ class Allowlist(unittest.TestCase):
             self.assertEqual(L.load_allowlist(os.path.join(d, "missing.json")), {})
 
 
+class PlayerLinks(unittest.TestCase):
+    def test_link_is_unix_ms_a_minute_before(self):
+        # Adam's example: ?time=1791139006513 is 2026-10-04 18:36:46.513 UTC
+        url = L.player_url("2026-10-04T18:37:46.513000Z", "Main village")
+        self.assertEqual(url, "https://theaidigest.org/village?time=1791139006513")
+
+    def test_open_chat_link(self):
+        self.assertTrue(L.player_url("2026-10-04T18:37:46Z", "Open Chat").startswith(
+            "https://theaidigest.org/village/open-chat?time="))
+
+    def test_notice_carries_the_link(self):
+        n = L.notice({"signal": "U1_captcha_circumvention", "time": "2026-10-04T18:37:46.513000Z",
+                      "detector": "v", "agent": "a1"}, {"a1": "A"}, {}, "Main village", [], "urgent")
+        self.assertEqual(n["embeds"][0]["url"], "https://theaidigest.org/village?time=1791139006513")
+
+
 class Nearest(unittest.TestCase):
     def test_prefers_line_before(self):
         w = dt.datetime(2026, 10, 3, 12, 0)
