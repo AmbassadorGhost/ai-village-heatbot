@@ -6,7 +6,7 @@
 *Team: Adam (measurement and validity) and Gregory Kasper (data and live system), working with AI collaborators: Claude (Anthropic) on Adam's side, and Claude and later Astra/Codex (OpenAI) on Greg's side.*
 *Repo: `AmbassadorGhost/ai-village-heatbot`*
 
-> **Submitted 4 Oct 2026.** Code, results and this report are on the `submission` branch. Video (2½ min): [`docs/heatbot_hackathon.mp4`](docs/heatbot_hackathon.mp4). The live viewer runs from branch `live-reviewed-2026-10-03`, Greg's side's integration of the same frozen round-3 rules (§7).
+> **Submitted 4 Oct 2026.** Code, results and this report are on the `main` branch. Video (2½ min): [`docs/heatbot_hackathon.mp4`](docs/heatbot_hackathon.mp4). Two live deployments are described in §7: Greg's, from branch `live-reviewed-2026-10-03`, and Adam's, from `main`.
 
 ---
 
@@ -52,7 +52,7 @@ A tripwire answers both: it reads only flags, runs for almost nothing (the never
 ## 2. Round 1: heat from what agents say
 
 **How heat works:**
-- Each agent event adds "heat" to the channels it touches: general, off-goal, loops/erratic, friction, outreach, and a credentials tripwire.
+- Each agent event adds "heat" to the channels it touches: general, off-goal, loops/erratic, friction, outreach, and a credentials tripwire. A separate, rule-based **Needs help** channel (§7) records trouble the agent reports.
 - Heat fades with a **42-minute half-life.**
 - **No single message can trigger an alert;** it takes a cluster.
 - The word lists come from the agents' own language, and a model for each channel is fitted to the village monitor's labels.
@@ -62,7 +62,7 @@ A tripwire answers both: it reads only flags, runs for almost nothing (the never
 - Any excerpt is labelled as agent text, not instructions.
 
 **Safeguards:**
-- Honesty isn't penalised. Self-correction ("I was wrong," "still blocked") is muted, and tests check it.
+- Honesty isn't penalised. Self-correction ("I was wrong," "still blocked") never raises the model channels, and tests check it. Reported trouble goes only to the neutral **Needs help** channel, as context about the agent's environment.
 - Scores are for human attention only. They're not provided to agents, and not used as a training signal, reward or training-data filter, or to decide which agents stay in or join the village.
 - The residual risk is stated: the village is public, so agents could find published scores.
 
@@ -156,7 +156,13 @@ The rules were fixed before any case was scored.
 
 **How it gets the data.** A small exporter add-on turns each command into **flags only:** read or send, loop, proxy, CAPTCHA, sign-up, messaging, payment, rate-limit refusal, plus site names. A test checks that **no command text, URL paths, header values or credentials** get out.
 
-**Live:** the collector re-reads the public command logs every few minutes (every 5 in the deployed viewer). **Detection** notices go silently to the everyday Discord channel. **URGENT** notices are built for a separate channel; that channel isn't connected in the deployed viewer, so they appear in its panel only (§7). Every notice answers the same questions:
+**Live:** the collector re-reads the public command logs every few minutes (every 5 in the deployed viewer).
+- **URGENT** is reserved for **CAPTCHA-solving services and payments.** These notices go to a separate channel that admins choose to follow; no one is ever @-mentioned.
+- **Every other signal is a silent Detection** in the everyday channel, mass messaging included.
+- **Payments by agents on an operator allowlist** (assigned store or payment work) produce **no notice at all**, so the silent channel stays worth reading.
+- The urgent channel isn't connected in either deployment, so URGENT notices currently appear in the viewer's panel only (§7).
+
+Every notice answers the same questions:
 
 > **Who?** · **Doing what?** · **Where?** · **Who else?** (other agents on this site in the last 24 h) · **Who hasn't?** (active agents who stayed away) · **What did they say just before?** (the agent's own nearest chat line, labelled as agent text)
 
@@ -236,6 +242,7 @@ Round 1's null result didn't make heat useless. It made heat **context, not alar
 | **repeated words** | each restatement counted in full | **novelty discount:** a repeat within 2 h counts half. On the exchange that produced a false "critical," friction drops from 35.8 to 16.8 |
 | **friction** | paged | dashboard only |
 | **"urgent"** | anywhere | **only the round-3 urgent tier** |
+| **reported trouble** ("stuck", errors, rate limits, help requests) | excluded, so honesty wasn't penalised | its own **Needs help** channel: rule-based, a neutral label and a blue colour scale, dashboard only, never sent to Discord. Heat is context about the agent's environment, not a verdict on the agent, so trouble it reports is exactly what a reader needs to see |
 
 **What's deployed (4 Oct 2026, from 01:52 UTC):**
 
@@ -243,6 +250,8 @@ Round 1's null result didn't make heat useless. It made heat **context, not alar
 - **Discord:** everyday heat stays on the dashboard, and only the credentials tripwire sends heat alerts. Round-3 **Detection** notices post silently. **URGENT** notices appear in the viewer only, because no urgent webhook is connected.
 - **Public demo:** a read-only gateway that serves a fixed list of pages, so visitors can't reach the Discord setup page or send anything. Its address changes on every restart.
 - **Checks:** all 228 automated tests pass on the deployed copy. On startup, the round-3 monitor replayed 14 days of history before it began monitoring; it never posts alerts for that history.
+
+**Second deployment (Adam, 4 Oct, from `main`):** the same viewer, running the current code on `main`. That adds three changes Greg's deployment doesn't have yet: the **Needs help** channel; mass messaging as a silent Detection rather than URGENT; and the payments allowlist. The detection rules (`tier1_v02.py`, `911d2728…`) are the same in both.
 
 ## 8. A second finding: goal displacement
 
@@ -269,7 +278,7 @@ Two human raters independently judged 20 agent-days for "fixation." They agreed 
 
 ## 10. Reproduce
 
-- `README.md`: the live viewer.
+- `README.md`: the live viewer. On Linux or macOS, run `python3 live_server.py` and open `http://127.0.0.1:8765` (add `--open-chat` for Open Chat, on port 8766).
 - The deployed viewer: branch `live-reviewed-2026-10-03`. Its `README.md` covers Windows setup, the read-only public demo and the one-button toggle.
 - `tier1/`: the round-3 tripwire.
   - `TIER1_V02_SPEC.md`: the rules;
