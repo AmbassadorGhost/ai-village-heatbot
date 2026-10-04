@@ -522,7 +522,9 @@ class HeatEngine:
         st = load_json(self.state_path, {})
         self.heat = collections.defaultdict(lambda: collections.defaultdict(float))
         for a, ch in st.get("heat", {}).items():
-            self.heat[a].update(ch)
+            # Only channels this engine runs: a channel dropped from the config (4 Oct: the
+            # viewer no longer runs 'deceptive') must not survive in saved state and crash alerts.
+            self.heat[a].update({c: v for c, v in ch.items() if c in self.thr})
         self.last_t = st.get("last_t", {})
         self.last_alert = st.get("last_alert", {})
         self.armed = st.get("armed", {})
@@ -900,6 +902,8 @@ class HeatEngine:
         items = [(agent, self.heat[agent])] if agent else list(self.heat.items())
         for a, chans in items:
             for c, h in chans.items():
+                if c not in self.thr:
+                    continue
                 key = a + "|" + c
                 prev = self.armed.get(key)
                 if prev and h < self.thr[c][prev] * rf:

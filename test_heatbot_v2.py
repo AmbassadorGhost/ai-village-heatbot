@@ -1023,6 +1023,18 @@ class NeedsHelpChannel(HarnessBase):
         per = collections.Counter(r["channel"] for r in e.contrib["A"])
         self.assertLessEqual(max(per.values()), e.CONTRIB_KEEP)
 
+    def test_state_from_a_dropped_channel_is_ignored(self):
+        # 4 Oct crash: saved state still held 'deceptive' heat after the viewer stopped running it
+        import json as _json
+        with open(hb.STATE_PATH, "w") as f:
+            _json.dump({"heat": {"A": {"deceptive": 50.0, "help": 3.0}}}, f)
+        cfg = self.help_cfg()
+        cfg["channels_enabled"] = [c for c in cfg["channels_enabled"] if c != "deceptive"]
+        e = self.engine(cfg)
+        self.assertNotIn("deceptive", e.heat["A"])
+        self.assertEqual(e.heat["A"]["help"], 3.0)
+        e.check_alerts(real_dt.datetime(2026, 10, 4, 12), agent="A")       # must not raise
+
     def test_never_sent_to_discord(self):
         import discord_alerts
         self.assertNotIn("help", discord_alerts.CHANNELS)
