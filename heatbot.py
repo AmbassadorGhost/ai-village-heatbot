@@ -672,6 +672,11 @@ class HeatEngine:
         elif action == "SEARCH_HISTORY":
             f["search"] = 1
         elif action == "CONSOLIDATE":
+            # 4 Oct (Adam): consolidating is routine housekeeping, not something the agent says.
+            # The fitted model gave it a fixed weight in every channel, so frequent consolidators sat
+            # warm on that alone. The live viewer turns it off; the default keeps the evaluated model.
+            if not self.cfg.get("score_consolidation", True):
+                return f, {}
             f["consol"] = 1
             g = terms(data.get("nextSessionGoal") or "")
             f["consol_lex_off"] = sum(w for t, w in self.lex["off-goal"].items() if t in g)

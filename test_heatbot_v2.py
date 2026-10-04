@@ -1035,6 +1035,19 @@ class NeedsHelpChannel(HarnessBase):
         self.assertEqual(e.heat["A"]["help"], 3.0)
         e.check_alerts(real_dt.datetime(2026, 10, 4, 12), agent="A")       # must not raise
 
+    def test_consolidation_adds_no_heat_in_the_live_product(self):
+        cfg = self.help_cfg()
+        cfg["score_consolidation"] = False
+        d, why = self.engine(cfg).score_event("A", "CONSOLIDATE", {"nextSessionGoal": "keep going"})
+        self.assertEqual({c: v for c, v in d.items() if v}, {})
+        # the evaluated model's default is unchanged
+        d0, _ = self.engine().score_event("A", "CONSOLIDATE", {})
+        self.assertGreater(d0["erratic"], 0)
+
+    def test_live_server_turns_consolidation_scoring_off(self):
+        import live_server
+        self.assertIs(live_server.PRODUCT_DEFAULTS["score_consolidation"], False)
+
     def test_never_sent_to_discord(self):
         import discord_alerts
         self.assertNotIn("help", discord_alerts.CHANNELS)

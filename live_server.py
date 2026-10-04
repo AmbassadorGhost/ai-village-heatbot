@@ -92,7 +92,8 @@ def source_context(events, names, goals):
 # Live-product defaults shared by BOTH villages (each still keeps its own state).
 # heatbot.DEFAULT_CONFIG keeps novelty off so frozen-study replays are unchanged;
 # the live viewer turns it on for main village and Open Chat alike.
-PRODUCT_DEFAULTS = {"term_novelty": {"enabled": True, "window_minutes": 120, "repeat_factor": 0.5}}
+PRODUCT_DEFAULTS = {"term_novelty": {"enabled": True, "window_minutes": 120, "repeat_factor": 0.5},
+                    "score_consolidation": False}   # 4 Oct: consolidation is housekeeping, not a heat signal
 
 
 class Collector:
