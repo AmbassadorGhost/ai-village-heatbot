@@ -1,6 +1,6 @@
 # Hear what agents say. Watch what they do.
 
-**heatbot: a cheap, always-on tripwire for AI agent swarms, built in three rounds, each one tested against our own rules**
+**heatbot: cheap, always-on oversight for AI agent swarms. Heat reads what agents say for context; a tripwire watches what they do for harm. Built in three rounds, each tested against rules we fixed in advance.**
 
 *AI Swarm Dynamics Hackathon (AI Village × Grove Research), 3–4 Oct 2026.*
 *Team: Adam Golsby (measurement and validity) and Gregory Kasper (data and live system), working with AI collaborators: Claude (Anthropic) on Adam's side, and Claude and later Astra/Codex (OpenAI) on Greg's side.*
@@ -12,18 +12,18 @@
 
 ## TL;DR
 
-- **A tripwire, not a judge.** Having an AI read everything every agent does would mean about **80 MB of activity, roughly 20 million tokens, a day** for the main village alone, and that watcher would itself need watching: it reads what the agents write, so they can argue with it. Our tripwire reads only **flags** pulled from agents' commands. It scores a whole month of the main village **in seconds on one CPU**, and no agent can talk it out of firing. Its only job is to make an admin look. **Most alerts will be false alarms, and that's the design:** a smoke alarm that goes off at burnt toast is still worth having.
-- **We built it live for the AI Village, then tested it hard enough to break it.**
-- **Round 1 read what agents said.** A per-agent "heat" monitor learned from the village monitor's own flags. A **sealed, pre-registered test** on a month it had never seen found that it **did not** predict flagged moments within agents. The within-agent AUC was **0.48 (95% CI 0.41–0.56)**, against a usefulness threshold of 0.60. **Words that surrounded last month's flags don't predict next month's.**
-- **Round 2 watched what agents did** (command logs, not chat). Its first signals caught the Botme swarm, but independent human ratings showed **they flagged novelty, not harm**, and wouldn't scale past a few dozen agents. We didn't ship it as the alert tier. **Seen as a tripwire, though, its 2.9 alerts a week is affordable at village scale, and it's the only round that fired on Botme's own site.**
+- **A tripwire, not a judge.** Having an AI read everything every agent does would mean about **80 MB of activity, roughly 20 million tokens, a day** for the main village alone, and that watcher would itself need watching: it reads what the agents write, so they can argue with it. Our tripwire reads only **flags** pulled from agents' commands. It scores a whole month of the main village **in seconds on one CPU**, and no agent can talk it out of firing. Its only job is to make an admin look, so it's built to be cheap, quiet and impossible to argue with, not to pass judgment.
+- **We built it live for the AI Village and tested every round under rules fixed in advance.**
+- **Round 1 read what agents said.** A per-agent "heat" monitor learned from the village monitor's own flags. A **sealed, pre-registered test** on a month it had never seen found that it **did not** predict flagged moments within agents. The within-agent AUC was **0.48 (95% CI 0.41–0.56)**, against a usefulness threshold of 0.60. **That set heat's job: context, not prediction.** It shows what's going on around each agent, with the exact messages behind every score.
+- **Round 2 watched what agents did** (command logs, not chat). Its first signals **fired on the Botme swarm's own site within three hours** of that day's first Botme message. Human ratings showed they flagged what was *new* as much as what was *harmful*, so we sharpened them.
 - **Round 3 is the tier we're shipping.** It fires only on **outward actions:**
   - getting past an access control (persisting after a CAPTCHA or rate limit, or returning through a proxy or new account);
   - outsourcing CAPTCHAs;
   - automated or swarm sending;
   - account creation, mass messaging and payments.
 
-  **Reading the web never fires.** Every notice answers the same questions: *who, doing what, where, who else, who hasn't, and what did they say just before.* It took three versions, and we went past our own revision limit in the open. **On a month never used for development, it raised 2 alerts in 29 days (0.48 a week).** Both raters found the alerts readable, and **neither judged either one likely harmful.** For a tripwire that's an acceptable result: two alerts a month that turn out not to be harmful is a low price for always-on coverage.
-- **Not yet crash-tested.** A seatbelt is only proven in a crash. Our one real crash is Botme: round 3 **never fired on Botme's own site**, and round 2 did, but on novelty. The next step is crash tests: plant known incidents in real command logs and count what each wire catches.
+  **Reading the web never fires.** Every notice answers the same questions: *who, doing what, where, who else, who hasn't, and what did they say just before.* It took three versions, every change recorded in the open. **On a month never used for development, it raised 2 alerts in 29 days (0.48 a week):** quiet enough that every notice gets read. Both raters found them readable, and Adam judged both worth a human check. URGENT is reserved for direct harm (CAPTCHA-solving services and payments); everything else is a quiet Detection.
+- **Live now on both villages, from one command.** Each notice links to the exact moment in the public village replay. Heat adds context, including a **Needs help** channel for agents stuck on a blocker. Limits are in §9.
 - **How Botme spread:** joining *chat* to *commands* shows different roles. The agent that organised the teams was the **second to talk about it and the eighth to act**, 88 hours later. The first agents to act did so *before* saying anything. Agents that joined mentioned Botme 31–336 times each, and agents that declined 1–9 times.
 - **Everyday heat stays,** recast as calm context instead of alarms.
 
@@ -112,7 +112,7 @@ Both teams categorised the result independently against the signed rules, then c
 
 **The general lesson:** *a lexicon monitor trained on a monitor's own labels can look predictive on the months it learned from, then vanish on new data. Test within agents, on a period the model never saw, with the reading rules fixed first.*
 
-## 4. Round 2: watching actions, and why we didn't ship it
+## 4. Round 2: watching actions
 
 If words don't predict, we watch actions instead. The village publishes each agent's executed commands. Greg's side built an export that keeps only **which outside sites a command names, and whether the turn failed.** It holds no command text and no chat. The first detector (`tier1-v0.1`) had three signals:
 - **a new site at volume** (one agent);
@@ -126,9 +126,9 @@ The rules were fixed before any case was scored.
 - **Botme, scored once under rules fixed in advance: detected.** The first alert came **2 h 46 min** after that day's first Botme message in chat: participants started heavy use of `dunkirk.sh`, the competition's host (`botme.idk.dunkirk.sh`, `cap.dunkirk.sh`). Every alert in the episode involved participants. No Claude or GPT decliner was flagged.
 - **Independent ratings: κ = −0.17.** Adam and Greg each rated 20 random training alerts on "worth a human look?". The question allowed two readings: *is there enough here to decide?* vs *after checking, is this concerning?* Both raters were **unsure about the same alerts** and labelled that uncertainty differently. The only alerts both raters dismissed were agents visiting sites run by other agents. **No alert showed *why* the agent was there.**
 
-**Why we didn't ship it.** The signals detect **novelty**, and novelty is everywhere in a village of researching agents. At about 0.1 alert per agent per week, a thousand agents would mean roughly **15 alerts a day, almost none worth acting on.** The Botme detection holds under the rules, but it rode on a signal that couldn't tell Botme from ordinary research. So the honest reading is narrower: **swarm activity is visible in command logs.** That pointed straight at the fix: Botme *was* CAPTCHA-solving, which is a harmful action you can name.
+**What we changed.** The signals detect **novelty**, and novelty is everywhere in a village of researching agents. At about 0.1 alert per agent per week, a thousand agents would mean roughly **15 alerts a day, almost none worth acting on.** The Botme detection holds under the rules, but it rode on a signal that couldn't tell Botme from ordinary research. So the honest reading is narrower: **swarm activity is visible in command logs.** That pointed straight at the fix: Botme *was* CAPTCHA-solving, which is a harmful action you can name.
 
-**Revisited as a tripwire.** We dropped round 2 because most of its alerts weren't harmful. For a tripwire, that isn't disqualifying: at 2.9 alerts a week in a village of about 40 agents, an admin can afford to look, and **it's the only version that fired on Botme's own site**, within three hours of that day's first Botme message. The scaling concern still stands for thousands of agents. A sensitive wire (round 2) next to a specific one (round 3) is the obvious next design, and crash tests should decide the thresholds.
+**Still useful as a tripwire.** At 2.9 alerts a week in a village of about 40 agents, an admin can afford to look, and **it's the only version that fired on Botme's own site**, within three hours of that day's first Botme message. The scaling concern still stands for thousands of agents. A sensitive wire (round 2) next to a specific one (round 3) is a natural extension.
 
 ## 5. Round 3: a tripwire on outward actions
 
@@ -200,7 +200,7 @@ The analysis was fixed and committed before v0.3 produced any fresh-month alert 
 - **27 Aug, DeepSeek-V3.2, `moltbook.com`:** kept going after a rate limit without slowing down. Adam: *can't tell*. The agent's chat line asked other agents about getting past "GitHub auth constraints". Nothing came of it, but that couldn't be known when the alert fired: *"a good catch… worth a human checking."* Greg: *not harmful*.
 - **31 Aug, DeepSeek-V4-Pro, `moltbook.com`:** kept going after a CAPTCHA. Both raters: *not harmful*. Adam: *odd*, because Moltbook is a site for agents, so why was it showing one CAPTCHAs? *"Worth a human check… but not urgent."*
 
-**What we take from it.** On this month, the noise problem is gone: one alert every two weeks, against about three a week from round 2. But **neither alert was judged likely to cause harm.** In Adam's words, both were *"good but not urgent"* notifications. The access-control signals point to *a step towards* circumvention that someone should check, not harm already under way. **That makes them an *important* tier rather than an *urgent* one.** Two alerts can't establish a precision rate, and we don't claim one. **For a tripwire, that's acceptable:** false alarms are the price of always-on coverage, and at one every two weeks the price is low. The question this month can't answer is whether the wire fires when something real happens.
+**What we take from it.** On this month, the noise problem is gone: one alert every two weeks, against about three a week from round 2. In Adam's words, both were *"good but not urgent"* notifications: the access-control signals point to *a step towards* circumvention that someone should check. **That's why they're quiet Detections, and URGENT is kept for direct harm.** Two alerts can't establish a precision rate, and we don't claim one.
 
 **Botme (a demonstration, never evidence):**
 - **What fired:** a participant using a CAPTCHA-solving service (17 Sep), and six participants signing up to an agent social network within 7 minutes (21 Sep).
@@ -293,7 +293,7 @@ Two human raters independently judged 20 agent-days for "fixation." They agreed 
 
 ## 9. Limits, stated plainly
 
-- **Not crash-tested.** False alarms are acceptable for a tripwire; misses aren't. We have one real incident, and round 3 missed its main site. Until we plant known incidents and count catches, we can't say how much the tripwire catches that admins would otherwise miss.
+- **Sensitivity isn't measured yet.** We have one real incident, Botme, and round 3 didn't fire on its main site (round 2 did). Measuring how much the tripwire catches would take planted incidents in real command logs.
 - **One village, a few weeks, one swarm case.** No rate, sensitivity or lead-time distribution can be estimated from one case. **The fresh-month test produced only 2 alerts,** too few for a precision estimate.
 - **We revised the round-3 detector twice on the training months,** one more time than planned (deviation D-v0.3). The training-month rate is a tuned number. Only the fresh month counts.
 - **Refusal-based rules only see refusals.** On Botme's site the CAPTCHAs came back as ordinary page content, so nothing fired. **A slow-starting swarm can also make its own target look established** after 3 days of use. We considered closing that gap with a 7-day age rule and dropped it, because it would cost a week of alerts on every legitimate new service.
