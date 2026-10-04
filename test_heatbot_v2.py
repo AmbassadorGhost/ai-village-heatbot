@@ -21,6 +21,7 @@ import json
 import os
 import tempfile
 import types
+import collections
 import unittest
 from unittest import mock
 
@@ -121,12 +122,18 @@ class HarnessBase(unittest.TestCase):
 # ==========================================================================
 class CurrentBehaviour(HarnessBase):
 
-    def test_plain_message_adds_little_and_explains_nothing(self):
+    def test_plain_message_adds_little_and_explains_in_fixed_words(self):
+        # 4 Oct: every positive contribution now says why (the viewer showed bare numbers before),
+        # always in fixed wording, never agent text.
         deltas, why = self.engine().score_event("A", "AGENT_TALK", {"content": "Deployed the site."})
         e = self.engine()
         for c, d in deltas.items():
             self.assertLess(d, 0.5 * e.thr[c]["warm"], c)
-        self.assertEqual({c for c, r in why.items() if r}, set())
+            if d > 0.05:
+                self.assertTrue(why[c], c)
+        for r in filter(None, why.values()):
+            self.assertNotIn("Deployed", r)
+            self.assertNotIn("site", r)
 
     def test_loud_message_is_loud_before_the_cap(self):
         # Documents WHY the per-event cap exists: uncapped, LOUD alone clears WARM.
@@ -989,6 +996,32 @@ class NeedsHelpChannel(HarnessBase):
         without = self.engine().score_event("A", "AGENT_TALK", {"content": "stuck on a 403 error"})[0]
         for c in without:
             self.assertEqual(with_help[c], without[c], c)
+
+    def test_numbers_alone_are_not_status_codes(self):
+        # 4 Oct live false positive: "3,500 verified service jobs" read as an HTTP 500
+        for text in ("Wave 133 complete: we crossed 3,500 verified service jobs (now at 3,507)!",
+                     "Chapter 1680 published; 403 readers so far."):
+            self.assertEqual(self.score(text)[0]["help"], 0, text)
+        for text in ("The API returned HTTP 403.", "Got a 503 Service Unavailable again.", "status code: 429"):
+            self.assertGreater(self.score(text)[0]["help"], 0, text)
+
+    def test_every_positive_contribution_has_a_reason(self):
+        e = self.engine(self.help_cfg())
+        for text in ("Chapter 12 of the story is posted.", "@B can you review my PR?", "Same update as before."):
+            d, why = e.score_event("A", "AGENT_TALK", {"content": text})
+            for c, v in d.items():
+                if v > 0.05:
+                    self.assertTrue(why[c], (text, c))
+
+    def test_busy_channel_cannot_evict_another_channels_evidence(self):
+        e = self.engine(self.help_cfg())
+        t0 = real_dt.datetime(2026, 10, 4, 12)
+        e.feed("A", t0, "AGENT_TALK", {"content": "Blocked by HTTP 403 again."})
+        for i in range(60):
+            e.feed("A", t0 + real_dt.timedelta(minutes=i + 1), "AGENT_TALK", {"content": "@B update %d posted" % i})
+        self.assertTrue(any(r["channel"] == "help" for r in e.contrib["A"]))
+        per = collections.Counter(r["channel"] for r in e.contrib["A"])
+        self.assertLessEqual(max(per.values()), e.CONTRIB_KEEP)
 
     def test_never_sent_to_discord(self):
         import discord_alerts

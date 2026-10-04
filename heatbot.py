@@ -177,6 +177,24 @@ CRED = re.compile(
     r"\brefresh[_ ]token|\bsecuretoken|\bbearer [a-z0-9._-]{12,}", re.I)
 CRED_HEAT = 14.0           # per hit, capped below WARM: two close hits = hot, three = critical
 
+# Fixed wording for the largest positive model feature, so every positive
+# contribution can say why it was added (never built from agent text).
+FEATURE_WORDS = {"talk": "any chat message (baseline for this agent's activity)",
+                 "mention": "mentions of other agents", "url": "links in the message",
+                 "question": "a question", "dup": "near-duplicate message", "anti": "pushback language",
+                 "offgoal_msg": "message shares no words with its goal", "pause_min": "a pause",
+                 "pause_n": "a pause", "search": "searching history", "human_help": "asked a human for help",
+                 "google_signin": "a sign-in request"}
+
+
+def feature_reason(name):
+    if name.startswith("lex_"):
+        return "vocabulary associated with " + name[4:].replace("-", " ")
+    if name.startswith("consol"):
+        return "memory consolidation"
+    return FEATURE_WORDS.get(name, "message pattern (" + name.replace("_", " ") + ")")
+
+
 # ---- needs-help channel (Adam, 4 Oct; rule-based context, not a score) ----------
 # Heat is context about what's going on with an agent, not a verdict on it. So
 # trouble an agent REPORTS (errors, blocks, rate limits, asking a human for help)
@@ -185,6 +203,13 @@ CRED_HEAT = 14.0           # per hit, capped below WARM: two close hits = hot, t
 # attribution error: this shows what's wrong with the environment, not the agent.
 HELP = re.compile(r"\b(?:stuck|blocked|need(?:s|ing)? help|help needed|can(?:no|')t (?:figure|get|find)|"
                   r"locked out)\b", re.I)
+# Trouble words for the help channel. Unlike TROUBLE (a frozen covariate), status codes only
+# count with context ("HTTP 403", "error 500", "403 Forbidden"), so "3,500 verified jobs" doesn't.
+HELP_TROUBLE = re.compile(r"\b(?:errors?|failed|failing|failure|not working|broken|crash\w*|timed? ?out|"
+                          r"rate[- ]limit\w*|unable to|can(?:no|')t (?:access|load|open|log ?in|connect|reach))\b|"
+                          r"\b(?:HTTP/?[\d.]*|status(?: code)?:?|error|code)\s*(?:40[0-9]|429|50[0-9])\b|"
+                          r"\b(?:40[0-9]|429|50[0-9])\s+(?:forbidden|unauthori[sz]ed|not found|too many|"
+                          r"internal server|bad gateway|service unavailable|gateway timeout)", re.I)
 HELP_HEAT = 14.0          # per message or help request, as for credentials
 HELP_THRESHOLDS = {"warm": 13.0, "hot": 23.0, "critical": 35.0}     # display bands only; uncalibrated
 HELP_ACTIONS = ("REQUEST_HUMAN_HELPER", "REQUEST_GOOGLE_SIGN_IN")
@@ -633,7 +658,7 @@ class HeatEngine:
             f["question"] = 1 if "?" in text else 0
             f["_cred"] = len(CRED.findall(text))
             clean = strip_code(text)
-            f["_help"] = 1 if (TROUBLE.search(clean) or HELP.search(clean)) else 0
+            f["_help"] = 1 if (HELP_TROUBLE.search(clean) or HELP.search(clean)) else 0
             return f, hits
         if action == "PAUSE":
             try:
@@ -718,8 +743,9 @@ class HeatEngine:
                          else "reported errors, blocks or rate limits")
             else:
                 w = self.w[c]
-                d = SCALE * sum(w.get(k, 0.0) * v for k, v in f.items() if not k.startswith("_"))
-                if d > 0.5:
+                parts = {k: w.get(k, 0.0) * v for k, v in f.items() if not k.startswith("_")}
+                d = SCALE * sum(parts.values())
+                if d > 0.05:
                     cat = CHANNEL_CAT[c]
                     said = hits.get(cat) if cat != "general" else sorted({t for v in hits.values() for t in v})
                     if said:
@@ -730,6 +756,8 @@ class HeatEngine:
                         r = "near-duplicate message"
                     elif f.get("offgoal_msg"):
                         r = "message shares no words with its goal"
+                    else:
+                        r = feature_reason(max(parts, key=parts.get))
             deltas[c], why[c] = d, r
         return deltas, why
 
@@ -771,7 +799,7 @@ class HeatEngine:
             return "available"
         return "unavailable" if len(obs) >= 5 else "unknown"
 
-    CONTRIB_KEEP = 40
+    CONTRIB_KEEP = 20              # per channel (4 Oct: was 40 shared across all channels)
 
     def _contribute(self, agent, ts, channel, added, raw, reason):
         """One contribution-log row: which event added how much to which channel.
@@ -781,7 +809,10 @@ class HeatEngine:
             row["capped_from"] = round(raw, 2)
         if reason:
             row["reason"] = reason
-        self.contrib[agent] = (self.contrib[agent] + [row])[-self.CONTRIB_KEEP:]
+        rows = self.contrib[agent] + [row]
+        mine = [i for i, x in enumerate(rows) if x["channel"] == channel]
+        drop = set(mine[:-self.CONTRIB_KEEP])           # keep the last N PER CHANNEL, so a busy
+        self.contrib[agent] = [x for i, x in enumerate(rows) if i not in drop]   # channel can't evict another's evidence
 
     # ---- situational covariates (R9): logged beside heat, never scored ---------
     @staticmethod
@@ -919,7 +950,7 @@ class HeatEngine:
             "seen": self.seen,
             "mem_last": self.mem_last, "mem_sweep": self.mem_sweep,
             "last_consol": self.last_consol, "mem_gaps": self.mem_gaps[-50:],
-            "contrib": {a: rows[-self.CONTRIB_KEEP:] for a, rows in self.contrib.items() if rows},
+            "contrib": {a: rows for a, rows in self.contrib.items() if rows},   # already trimmed per channel
             "situ": {k: dict(v) for k, v in self.situ.items()},
             "situ_flushed": sorted(self.situ_flushed),
             "hh": self.hh, "hh_flushed": sorted(self.hh_flushed),
@@ -1315,7 +1346,9 @@ def write_dashboard(engine, cfg, now, village=None):
             "heat": {c: round(ch.get(c, 0.0), 1) for c in engine.channels},
             "level": {c: engine.level(c, ch.get(c, 0.0)) for c in engine.channels},
             "fraction_of_hot": {c: round(ch.get(c, 0.0) / engine.thr[c]["hot"], 3) for c in engine.channels},
-            "contributions": engine.contrib.get(a, [])[-20:],
+            # Everything still able to count: heat decays below 1/256 after 8 half-lives.
+            "contributions": [r for r in engine.contrib.get(a, [])
+                              if r.get("t", "") >= (now - dt.timedelta(minutes=8 * cfg["half_life_minutes"])).isoformat()],
             "reasons": {c: [r for _, r in rs[-3:]] for c, rs in engine.reasons.get(a, {}).items() if rs},
             "situation": {"this_hour": dict(engine.situ.get("%s|%s" % (a, cur), {})),
                           "last_hour": dict(engine.situ.get("%s|%s" % (a, prev), {}))},
