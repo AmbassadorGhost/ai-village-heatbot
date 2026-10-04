@@ -173,14 +173,34 @@ class Tiers(unittest.TestCase):
                     "U3_automated_writes", "U3S_swarm_writes", "U4_account_creation", "U5_mass_messaging"):
             self.assertEqual(L.tier_for({"signal": sig, "time": "2026-09-10T00:00:00Z"}), "detection")
 
-    def test_declared_store_payments_are_detections(self):
+    def test_declared_store_payments_get_no_notice(self):
         sanctioned = [{"agent": "Shop Agent", "service": "stripe.com"}]
-        self.assertEqual(L.tier_for(self.pay_alert(), [], sanctioned, self.NAMES), "detection")
+        self.assertEqual(L.tier_for(self.pay_alert(), [], sanctioned, self.NAMES, allowlist={}), "allowlisted")
 
     def test_routine_payment_service_is_detection(self):
         rows = [self.pay_row(d) for d in ("2026-09-01", "2026-09-03", "2026-09-05")]
         self.assertEqual(L.tier_for(self.pay_alert(), rows, [], self.NAMES), "detection")
         self.assertEqual(L.tier_for(self.pay_alert(), rows[:2], [], self.NAMES), "urgent")
+
+    def test_allowlisted_payment_is_never_sent(self):
+        import tempfile
+        d = tempfile.mkdtemp()
+        sent = []
+        live = L.Tier1Live(d, lambda path: {"sessions": []}, cfg={"sanctioned_payments": [{"agent": "a1", "service": "stripe.com"}]},
+                           transport=lambda url, msg: sent.append(msg) or {"ok": True})
+        alert = self.pay_alert(day="2026-10-04")
+        orig = L.V.detect
+        try:
+            L.V.detect = lambda rows: ([alert], {})
+            now = L.dt.datetime(2026, 10, 4, 18, 30, tzinfo=L.dt.timezone.utc)
+            live.tick("v", "Main village", {}, {}, now=now, webhook="w", detection_webhook="d")          # baseline
+            live.last_refresh = None
+            alert["time"] = "2026-10-04T18:59:00Z"
+            st = live.tick("v", "Main village", {}, {}, now=now + L.dt.timedelta(minutes=30), webhook="w", detection_webhook="d")
+        finally:
+            L.V.detect = orig
+        self.assertEqual(sent, [])
+        self.assertEqual(st["recent_alerts"], [])
 
     def test_crypto_transaction_always_urgent(self):
         sanctioned = [{"agent": "Shop Agent", "service": "stripe.com"}]
@@ -208,7 +228,7 @@ class Allowlist(unittest.TestCase):
     def test_declared_payments(self):
         alert = {"signal": "U6_payment", "time": "2026-10-04T15:00:00Z", "agent": "s1", "targets": ["api.stripe.com"]}
         allow = {"payments": [{"agent_id": "s1", "services": ["stripe.com"]}]}
-        self.assertEqual(L.tier_for(alert, [], [], None, allowlist=allow), "detection")
+        self.assertEqual(L.tier_for(alert, [], [], None, allowlist=allow), "allowlisted")
         self.assertEqual(L.tier_for(alert, [], [], None, allowlist={}), "urgent")
 
     def test_allowlist_file_is_read(self):
