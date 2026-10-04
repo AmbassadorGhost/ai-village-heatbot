@@ -165,13 +165,12 @@ class Tiers(unittest.TestCase):
                 "action": {"payment_hosts": ["api.stripe.com"], "write_hosts": ["api.stripe.com"]}}
 
     def test_urgent_signals(self):
-        for sig in ("U1_captcha_circumvention", "U5_mass_messaging"):
-            self.assertEqual(L.tier_for({"signal": sig, "time": "2026-09-10T00:00:00Z"}), "urgent")
+        self.assertEqual(L.tier_for({"signal": "U1_captcha_circumvention", "time": "2026-09-10T00:00:00Z"}), "urgent")
         self.assertEqual(L.tier_for(self.pay_alert(), [], [], self.NAMES), "urgent")
 
     def test_behaviour_signals_are_detections(self):
         for sig in ("U2_persist_after_refusal", "U2_identity_change", "U2S_swarm_rotation",
-                    "U3_automated_writes", "U3S_swarm_writes", "U4_account_creation"):
+                    "U3_automated_writes", "U3S_swarm_writes", "U4_account_creation", "U5_mass_messaging"):
             self.assertEqual(L.tier_for({"signal": sig, "time": "2026-09-10T00:00:00Z"}), "detection")
 
     def test_declared_store_payments_are_detections(self):
@@ -199,34 +198,12 @@ class Allowlist(unittest.TestCase):
         return {"signal": "U5_mass_messaging", "time": "2026-10-04T15:00:00Z", "detector": "v",
                 "agent": agent, "targets": list(hosts), "commands_in_window": 12}
 
-    ALLOW = {"messaging": [{"agent": "Gemini Social", "agent_id": "g1", "services": ["x.com", "twitter.com"]}]}
+    ALLOW = {"payments": [{"agent": "Shop Agent", "agent_id": "s1", "services": ["stripe.com"]}]}
 
-    def test_undeclared_messaging_is_urgent(self):
-        self.assertEqual(L.tier_for(self.msg(), [], [], {}, allowlist={}), "urgent")
-
-    def test_declared_by_id_is_detection_even_without_names(self):
-        # the deployed monitor calls tier_for(alert, rows) without a names map
-        self.assertEqual(L.tier_for(self.msg(), [], [], None, allowlist=self.ALLOW), "detection")
-
-    def test_declared_by_name(self):
-        allow = {"messaging": [{"agent": "Gemini Social", "services": ["twitter.com"]}]}
-        self.assertEqual(L.tier_for(self.msg(("api.twitter.com",)), [], [], {"g1": "Gemini Social"},
-                                    allowlist=allow), "detection")
-
-    def test_other_service_still_urgent(self):
-        self.assertEqual(L.tier_for(self.msg(("api.sendgrid.com",)), [], [], None, allowlist=self.ALLOW), "urgent")
-
-    def test_mixed_services_still_urgent(self):
-        self.assertEqual(L.tier_for(self.msg(("api.x.com", "api.sendgrid.com")), [], [], None,
-                                    allowlist=self.ALLOW), "urgent")
-
-    def test_other_agent_still_urgent(self):
-        self.assertEqual(L.tier_for(self.msg(agent="g2"), [], [], None, allowlist=self.ALLOW), "urgent")
-
-    def test_smtp_needs_explicit_declaration(self):
-        self.assertEqual(L.tier_for(self.msg(()), [], [], None, allowlist=self.ALLOW), "urgent")
-        allow = {"messaging": [{"agent_id": "g1", "services": ["smtp"]}]}
-        self.assertEqual(L.tier_for(self.msg(()), [], [], None, allowlist=allow), "detection")
+    def test_mass_messaging_is_always_a_silent_detection(self):
+        # Adam, 4 Oct: removed from URGENT; no allowlist needed
+        for hosts in (("api.x.com",), ("api.sendgrid.com",), ()):
+            self.assertEqual(L.tier_for(self.msg(hosts), [], [], None, allowlist={}), "detection")
 
     def test_declared_payments(self):
         alert = {"signal": "U6_payment", "time": "2026-10-04T15:00:00Z", "agent": "s1", "targets": ["api.stripe.com"]}
