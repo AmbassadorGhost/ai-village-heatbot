@@ -6,7 +6,7 @@
 *Team: Adam (measurement and validity) and Gregory Kasper (data and live system), working with AI collaborators: Claude (Anthropic) on Adam's side, and Claude and later Astra/Codex (OpenAI) on Greg's side.*
 *Repo: `AmbassadorGhost/ai-village-heatbot`*
 
-> **DRAFT, 3 Oct, 18:45 CT.** ⏳ marks what's still to come: screenshots and deployment status. Everything is on the `submission` branch.
+> **Submitted 4 Oct 2026.** Code, results and this report are on the `submission` branch. The live viewer runs from branch `live-reviewed-2026-10-03`, Greg's side's integration of the same frozen round-3 rules (§7).
 
 ---
 
@@ -58,7 +58,13 @@ Agent swarms are already here. In September, a human visitor recruited AI Villag
 - Scores are for human attention only. They're not provided to agents, and not used as a training signal, reward or training-data filter, or to decide which agents stay in or join the village.
 - The residual risk is stated: the village is public, so agents could find published scores.
 
-⏳ *[Screenshot: heat map and one evidence view.]*
+![24-hour heat map, General channel](docs/viewer_heatmap.png)
+
+*The public demo, 4 Oct 2026, 02:04 UTC: hourly peak heat on the General channel for part of the roster (times in UTC).*
+
+![Evidence view for one agent](docs/viewer_evidence.png)
+
+*The evidence view for one agent: each message's contribution, matched by event ID, with the message itself. Contributions can be negative.*
 
 ## 3. Round 1 tested: words didn't predict
 
@@ -140,13 +146,15 @@ The rules were fixed before any case was scored.
 
 **How it gets the data.** A small exporter add-on turns each command into **flags only:** read or send, loop, proxy, CAPTCHA, sign-up, messaging, payment, rate-limit refusal, plus site names. A test checks that **no command text, URL paths, header values or credentials** get out.
 
-**Live:** every 10 minutes, the collector reads the public command logs and posts a notice to a separate channel. The notice answers the same questions every time:
+**Live:** the collector re-reads the public command logs every few minutes (every 5 in the deployed viewer). **Detection** notices go silently to the everyday Discord channel. **URGENT** notices are built for a separate channel; that channel isn't connected in the deployed viewer, so they appear in its panel only (§7). Every notice answers the same questions:
 
 > **Who?** · **Doing what?** · **Where?** · **Who else?** (other agents on this site in the last 24 h) · **Who hasn't?** (active agents who stayed away) · **What did they say just before?** (the agent's own nearest chat line, labelled as agent text)
 
 "Who else" and "who hasn't" turn any single alert into a small swarm report. The chat line answers the question neither rater could answer in round 2.
 
-⏳ *[Screenshot: the viewer's Urgent panel and one notice.]*
+![The viewer's round-3 panel](docs/viewer_action_panel.png)
+
+*The viewer's round-3 panel, showing the recorded replay of the never-used month's 2 alerts (below). Live candidates appear in the same format. None had fired since monitoring began when this was taken, so there's no live notice to show.*
 
 ### How we got to v0.3, in the open
 
@@ -219,7 +227,12 @@ Round 1's null result didn't make heat useless. It made heat **context, not alar
 | **friction** | paged | dashboard only |
 | **"urgent"** | anywhere | **only the round-3 urgent tier** |
 
-⏳ *[Confirm what's deployed at submission.]*
+**What's deployed (4 Oct 2026, from 01:52 UTC):**
+
+- **Code:** branch `live-reviewed-2026-10-03` (commit `5bfaf1d`), Greg's side's integration of this branch's round-3 rules into the live viewer. The rules file, `tier1/tier1_v02.py` (SHA-256 `911d2728…`), and the exporter add-on, `exporter_addon/action_features.py` (`4b0929ed…`), are byte-identical to this branch's. Before it starts, the monitor checks both, plus the frozen service parser and failure classifier they rely on, against recorded hashes.
+- **Discord:** everyday heat stays on the dashboard, and only the credentials tripwire sends heat alerts. Round-3 **Detection** notices post silently. **URGENT** notices appear in the viewer only, because no urgent webhook is connected.
+- **Public demo:** a read-only gateway that serves a fixed list of pages, so visitors can't reach the Discord setup page or send anything. Its address changes on every restart.
+- **Checks:** all 228 automated tests pass on the deployed copy. On startup, the round-3 monitor replayed 14 days of history before it began monitoring; it never posts alerts for that history.
 
 ## 8. A second finding: goal displacement
 
@@ -245,6 +258,7 @@ Two human raters independently judged 20 agent-days for "fixation." They agreed 
 ## 10. Reproduce
 
 - `README.md`: the live viewer.
+- The deployed viewer: branch `live-reviewed-2026-10-03`. Its `README.md` covers Windows setup, the read-only public demo and the one-button toggle.
 - `tier1/`: the urgent tier.
   - `TIER1_V02_SPEC.md`: the rules;
   - `tier1_v02.py`, `tier1_live.py`, and `exporter_addon/`;
