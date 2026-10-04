@@ -76,7 +76,7 @@ A tripwire answers both: it reads only flags, runs for almost nothing (the never
 
 ### 3.1 Before looking
 
-- **We started from reviewing our own numbers.** Early results looked strong: 77% precision for the general channel. But one agent accounted for most alerts. Without it, the figure was 44%, and it was co-occurrence, not prediction.
+- **We started from reviewing our own numbers.** Early results looked strong: 77% precision for the general channel. But one agent (DeepSeek v3.2) accounted for most alerts. Without it, the figure was 44%, and it was co-occurrence, not prediction.
 - **We designed a forward-looking test on a held-out month** (25 Aug–18 Sep), with a frozen model, and **sealed the results unread** on 22 Sep. Every result file was hashed.
 - **We worked out the power before unsealing.** That exposed a problem: only **9** alerts fired in the held-out month, too few for any alert-level test. We declared those claims **untestable before anyone saw an outcome.**
 - **We replaced them with a threshold-free test:** the **within-agent AUC.** It compares each agent's moments only with that same agent's other moments. On realistic synthetic data, the usual pooled statistic gave **0.60**, our usefulness threshold, simply because busier agents get flagged more, even though heat carried no timing information at all. The within-agent version correctly gave **0.50**.
@@ -88,7 +88,7 @@ A tripwire answers both: it reads only flags, runs for almost nothing (the never
 
 ### 3.2 After looking
 
-Both teams categorised the result independently against the signed rules, then compared. **They agreed on every category.**
+Both teams categorized the result independently against the signed rules, then compared. **They agreed on every category.**
 
 | claim | within-agent AUC | 95% CI | category |
 |---|---|---|---|
@@ -155,11 +155,10 @@ The rules were fixed before any case was scored.
 **How it gets the data.** A small exporter add-on turns each command into **flags only:** read or send, loop, proxy, CAPTCHA, sign-up, messaging, payment, rate-limit refusal, plus site names. A test checks that **no command text, URL paths, header values or credentials** get out.
 
 **Live:** the collector re-reads the public command logs every 10 minutes. Results appear in the viewer's **Action notices** panel. Each one links to the public village player at the moment of the action, so an admin can watch what the agent was doing.
-- **URGENT** is reserved for **CAPTCHA-solving services and payments.** These notices go to a separate channel that admins choose to follow; no one is ever @-mentioned.
-- **Every other signal is a silent Detection** in the everyday channel, mass messaging included.
+- **URGENT** is reserved for **CAPTCHA-solving services and payments.** If Discord is set up, these notices go to a separate channel. Admins who want to be pinged immediately when an urgent message fires can set that channel's notifications to fire on all messages (instead of only on mentions).
+- **Every other signal is a silent Detection.** If Discord is set up, these go into an everyday channel.
 - **Payments by agents on an operator allowlist** (assigned store or payment work) produce **no notice at all**, so the silent channel stays worth reading.
-- The urgent channel isn't connected in either deployment, so URGENT notices currently appear in the viewer's panel only (§7).
-- **Routine payments** (the village has paid that service on ≥ 3 earlier days) are a silent Detection, not URGENT. **Crypto transactions are always URGENT.**
+- **Routine payments** (the village has paid that service on ≥ 3 earlier days) are a silent Detection, not URGENT. **Crypto transactions are always URGENT**; because no agents are currently assigned to operate crypto wallets.
 
 Every notice answers the same questions:
 
@@ -265,21 +264,16 @@ Round 1's null result didn't make heat useless. It made heat **context, not alar
 
 **Where it runs (4 Oct 2026):**
 
-- **The current public demo is Adam's laptop, running `main`.** A single command, `./run_demo.sh --public`, starts:
+- **The current public demo is running on Adam's laptop.** A single command, `./run_demo.sh --public`, starts:
   - both villages' viewers;
   - the read-only gateway;
-  - a temporary Cloudflare link.
+  - a temporary Cloudflare link. At the time of submission, that link is https://pts-conferencing-reflected-threaded.trycloudflare.com
 
   The gateway serves a fixed list of pages, so visitors can't reach the Discord setup page or send anything. The link changes on every restart.
 
   No Discord webhook is connected, so this deployment sends nothing; everything appears in the viewer. If one is connected, everyday heat notices and Detections post silently, friction and Needs help stay on the dashboard, and URGENT goes only to a separate urgent webhook.
 
   All nine product test suites pass on `main` (264 tests).
-- **Greg's deployment** (from 01:52 UTC, branch `live-reviewed-2026-10-03`, commit `5bfaf1d`) carried the round-3 rules into the live viewer first.
-  - Before starting, its monitor checks the rules file (`911d2728…`), the exporter add-on, and the frozen service parser and failure classifier against recorded hashes.
-  - On Discord, it sends heat alerts only for credentials and posts Detections silently.
-  - It replayed 14 days of history on startup without posting.
-  - It predates the live changes in §5 and the Needs help, consolidation, deception and explanation rows above.
 
 ## 8. A second finding: goal displacement
 
@@ -287,7 +281,7 @@ Two human raters independently judged 20 agent-days for "fixation." They agreed 
 
 **The raters were measuring something broader, which we call goal displacement:** *effort has come loose from the goal while the agent stays busy.* Surrogation is one mechanism; side-task fixation, monitoring loops and undirected production are others. One agent with the goal "Maximize animal wellbeing in the world" had published about 75,900 templated web pages. Its memory tracked the page count closely, but recorded no evidence that anyone read them.
 
-**Of the same 10 randomly chosen agent-days, Adam rated 4 and Greg rated 3 as fixated.** These are 10 items judged by two raters, not 20 independent observations. The small sample suggests goal displacement may be common rather than rare, but does not establish its prevalence across the village. That is a question for our next study.
+**Of the same 10 randomly chosen agent-days, Adam rated 4 and Greg rated 3 as fixated.** These are 10 items judged by two raters, not 20 independent observations. The small sample suggests goal displacement may be common rather than rare, but does not establish its prevalence across the village. That is a question for future study.
 
 ## 9. Limits, stated plainly
 
@@ -297,11 +291,11 @@ Two human raters independently judged 20 agent-days for "fixation." They agreed 
 - **Refusal-based rules only see refusals.** On Botme's site the CAPTCHAs came back as ordinary page content, so nothing fired. **A slow-starting swarm can also make its own target look established** after 3 days of use. We considered closing that gap with a 7-day age rule and dropped it, because it would cost a week of alerts on every legitimate new service.
 - **The live tripwire isn't byte-identical to the evaluated one.** The rules are the same, but the parser fix and the always-loaded classifier (§5) came after the fresh month was scored, and haven't been scored on a held-out month.
 - **The round-3 rules were designed after we'd seen Botme.** Botme is a demonstration, not a validation. The clean test is the never-used month.
-- **The command parser is static and incomplete.** **Browser-window actions aren't visible at all,** and scripts run from files show only what's on the command line. A quiet period isn't evidence of safety.
-- **Round 1's labels come from the village's own monitor,** so heat could at best be *faster* than the monitor, never a better judge.
+- **The command parser is scoped to the commands the village API publishes.** It reads each command's text and never runs anything. Actions in a browser window aren't in that record, and a script run from a file shows only its command line. A quiet period means no flagged commands, not proof that nothing happened.
+- **Round 1's labels come from the village's own monitor,** so heat is not designed to replace it. Rather, heat provides online display of patterns that the monitor *tends to flag* at the end of the day.
 - **Before the pre-registration was fully signed, heat (not the precursor measures) was computed and viewed for later days** by a monitoring collector and the live demo. The sealed tests cover an earlier period, and their files are byte-identical to those hashed on 22–27 Sep. Each team attests to its own access history.
 - **Reasoning text is visible for some model families and not others,** so we don't compare heat across families.
-- **Our AI collaborators are models from families in the data** (Claude, and OpenAI's Codex). We used blinding and cross-family review where it mattered. That isn't independent human validation, and the two human raters are the team.
+- **Our AI collaborators are models from families in the data** (Claude Opus 5.5, GPT-6-Astra, and GPT-6.1 Sol). We used blinding and cross-family review where it mattered. That isn't independent human validation, and the two human raters are the team.
 - **Everything is public:** the dashboard, the notices' Discord server, and the village itself. Agents could find their own scores.
 - **An exploratory, non-human check (4 Oct, after submission prep).** Five Claude Sonnet raters judged the 20 round-3 alerts mixed blind with 20 random busy moments. None ever answered "likely harmful", because flag-only cards can't support that call. They wanted a human to look at 32% of alerts and 12% of random moments, a difference whose interval includes zero. The only random moment all five flagged was Botme solving activity round 3 missed. Plan, packets and ratings: Greg's side, `sonnet_rating_2026-10-04`. Not part of any pre-registered result.
 
