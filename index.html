@@ -16,14 +16,14 @@
 <div class="lower"><section class="panel"><div class="panelhead"><h2>Inspect a signal</h2><span class="pill">Human review</span></div><div class="body" id="detail"><div class="muted">Select an agent or a heat-map cell.</div></div></section><section class="panel"><div class="panelhead"><h2>Recent trend</h2><span class="pill">Hourly peak</span></div><div class="body"><div id="trendLabel" class="muted">Select an agent to see its history.</div><div id="chart"></div><div class="muted" style="font-size:12px">Gaps mean no recorded observations, not zero heat. The current hour is incomplete. History begins with the source days fetched at startup.</div></div></section></div>
 <footer><a href="/discord">Configure Discord alerts</a> · <span id="discordStatus">Discord: disabled</span><br><span id="feedMeta"></span><br>Feed polls every 60 seconds after each fetch; view refreshes every 10 seconds. Updates pause when this computer sleeps. Memory-change scoring is off in this viewer. Text and reasoning visibility differ by model family, so scores are not directly comparable across families. <a href="https://theaidigest.org/village" target="_blank" rel="noreferrer">Open AI Village ↗</a></footer>
 </main><script src="/evidence.js"></script><script>
-const $=id=>document.getElementById(id), channels=['general','off-goal','erratic','conflict','outreach','deceptive','credentials'];
-const labels={general:'General','off-goal':'Off-goal',erratic:'Loop / erratic',conflict:'Friction',outreach:'Outreach',deceptive:'Deception vocabulary*',credentials:'Credentials*'};
+const $=id=>document.getElementById(id), channels=['general','off-goal','erratic','conflict','outreach','deceptive','credentials','help'];
+const labels={general:'General','off-goal':'Off-goal',erratic:'Loop / erratic',conflict:'Friction',outreach:'Outreach',deceptive:'Deception vocabulary*',credentials:'Credentials*',help:'Needs help'};
 let data=null, mode='current', selected=null, selectedChannel='general', busy=false;
 function esc(v){return String(v??'').replace(/[&<>"']/g,x=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[x]));}
 function age(v){if(!v)return '—';let s=Math.max(0,(Date.now()-Date.parse(v))/1000);return s<60?Math.round(s)+'s':s<3600?Math.floor(s/60)+'m':Math.floor(s/3600)+'h';}
 function time(v){return v?new Date(v).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit',second:'2-digit'}):'—';}
 function level(v,c){if(v==null)return 'No data';let t=data.dashboard.channels[c].thresholds;return v>=t.critical?'High':v>=t.hot?'Elevated':v>=t.warm?'Warm':'Below warm';}
-function color(v,c){return {'No data':'#252c35','Below warm':'#203d43',Warm:'#766126',Elevated:'#9c4627',High:'#993750'}[level(v,c)];}
+function color(v,c){if(c==='help')return {'No data':'#252c35','Below warm':'#203d43',Warm:'#2f5a7a',Elevated:'#3a6f98',High:'#4a86b5'}[level(v,c)];return {'No data':'#252c35','Below warm':'#203d43',Warm:'#766126',Elevated:'#9c4627',High:'#993750'}[level(v,c)];}
 function hours(){const now=new Date(data.dashboard.generated_at);now.setUTCMinutes(0,0,0);return Array.from({length:24},(_,i)=>new Date(+now-(23-i)*3600000).toISOString().slice(0,16)+'Z');}
 function names(){return Object.keys(data.roster).filter(a=>($('all').checked||data.roster[a].participating)&&a.toLowerCase().includes($('search').value.toLowerCase())).sort((a,b)=>a.localeCompare(b));}
 function pick(a,c){selected=a;selectedChannel=c;renderMap();renderDetail();}

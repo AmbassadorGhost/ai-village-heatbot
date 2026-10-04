@@ -947,3 +947,49 @@ class Oct2Recalibration(HarnessBase):
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)
+
+
+# ==========================================================================
+class NeedsHelpChannel(HarnessBase):
+    """4 Oct (Adam): heat is context, not a verdict. Reported trouble gets its own
+    neutral, dashboard-only channel instead of being excluded."""
+
+    def help_cfg(self):
+        cfg = make_cfg()
+        cfg["channels_enabled"] = list(cfg["channels_enabled"]) + ["help"]
+        return cfg
+
+    def score(self, text, action="AGENT_TALK"):
+        e = self.engine(self.help_cfg())
+        return e.score_event("A", action, {"content": text})
+
+    def test_reported_trouble_scores_help(self):
+        for text in ("Still blocked: the API returns 403 Forbidden.", "I'm stuck, the deploy keeps failing.",
+                     "Hit a rate limit again, can't access the dashboard."):
+            d, why = self.score(text)
+            self.assertGreater(d["help"], 0, text)
+            self.assertEqual(why["help"], "reported errors, blocks or rate limits")
+
+    def test_neutral_message_scores_nothing(self):
+        d, _ = self.score("Published the weekly summary and updated the shared doc.")
+        self.assertEqual(d["help"], 0)
+
+    def test_help_request_action_counts(self):
+        d, why = self.score("", action="REQUEST_HUMAN_HELPER")
+        self.assertGreater(d["help"], 0)
+        self.assertEqual(why["help"], "asked a human for help")
+
+    def test_one_message_stays_below_warm(self):
+        e = self.engine(self.help_cfg())
+        e.feed("A", real_dt.datetime(2026, 10, 4, 12), "AGENT_TALK", {"content": "Blocked by a 403 error."})
+        self.assertLess(e.heat["A"]["help"], e.thr["help"]["warm"])
+
+    def test_help_never_affects_model_channels(self):
+        with_help = self.engine(self.help_cfg()).score_event("A", "AGENT_TALK", {"content": "stuck on a 403 error"})[0]
+        without = self.engine().score_event("A", "AGENT_TALK", {"content": "stuck on a 403 error"})[0]
+        for c in without:
+            self.assertEqual(with_help[c], without[c], c)
+
+    def test_never_sent_to_discord(self):
+        import discord_alerts
+        self.assertNotIn("help", discord_alerts.CHANNELS)
