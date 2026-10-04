@@ -66,6 +66,8 @@ def turns_to_rows(sessions, day, classify=None, host_extract=None):
                 t = dt.datetime.fromisoformat(str(turn.get("createdAt")).replace("Z", "+00:00"))
             except ValueError:
                 continue
+            if t.tzinfo is None:            # never let the laptop's own zone leak in
+                t = t.replace(tzinfo=dt.timezone.utc)
             if t.astimezone(DAY_ZONE).date().isoformat() != day:
                 continue
             action = turn.get("agentAction") or {}
