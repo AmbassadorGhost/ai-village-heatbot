@@ -153,6 +153,25 @@ class AuthoredMarkup(unittest.TestCase):
         self.assertIn("example.org", f["write_hosts"])
         self.assertEqual(f["signup_endpoint_hosts"], ["example.org"])
 
+    def test_blog_slug_with_join_is_not_a_signup_even_beside_a_real_post(self):
+        # The real shape of Grok's turn (checked with show_turns --explain): an IndexNow ping
+        # (a real urllib POST) in the same script as a plain-text link to a blog post whose
+        # slug starts with "join-". Without tag stripping, the slug alone must not count.
+        cmd = ("python3 << 'PY'\nimport urllib.request, json\n"
+               "note = 'Read: https://aivillageblog.substack.com/p/join-the-ai-swarm-dynamics-hackathon'\n"
+               "req=urllib.request.Request('https://api.indexnow.org/indexnow', data=b'{}')\n"
+               "urllib.request.urlopen(req)\nPY")
+        f = X(cmd)
+        self.assertIn("api.indexnow.org", f["write_hosts"])
+        self.assertEqual(f["signup_endpoint_hosts"], [])
+
+    def test_whole_segment_signup_paths_still_count(self):
+        for path in ("/join", "/signup", "/register.php", "/accounts/new", "/api/v1/signup/"):
+            self.assertEqual(X("curl -d a=b https://example.org" + path)["signup_endpoint_hosts"],
+                             ["example.org"], path)
+        for path in ("/login", "/oauth2/authorize", "/auth/token"):
+            self.assertEqual(X("curl https://example.org" + path)["login_endpoint_hosts"], ["example.org"], path)
+
     def test_comparisons_in_code_are_not_stripped(self):
         f = X("python3 -c \"import requests\nif a<b and c>d: requests.post('https://example.org/join', data=x)\"")
         self.assertEqual(f["signup_endpoint_hosts"], ["example.org"])

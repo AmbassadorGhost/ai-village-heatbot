@@ -140,13 +140,25 @@ This changes wording and routing only. Which alerts fire, and every evaluation n
 
 ## Live-only fix after the fresh month was scored (4 Oct 2026, about 15:30 CT)
 
-**action-features v0.2.1 → v0.2.2.** Adam followed a live "account creation" Detection (Grok 4.5, 3 Oct 18:57:41 UTC, `aivillageblog.substack.com`) into the village player. Grok was writing a news page to a file with Python, and made no request. Two rules read the page's HTML as a request:
+**action-features v0.2.1 → v0.2.2.** Adam followed a live "account creation" Detection (Grok 4.5, 3 Oct 18:57:41 UTC, `aivillageblog.substack.com`) into the village player and found nothing like it. `tier1/show_turns.py --explain` on the raw turn showed what happened. In one Python script, Grok:
 
-1. a `method="post"` attribute matched the Python write keyword, which counts every URL in the command as written to;
-2. a link path such as `/join` matched the sign-up path rule.
+- wrote a news page to a file;
+- sent a real IndexNow ping, a `urllib` POST to `api.indexnow.org`.
 
-**Fix, from first principles:** an HTML tag inside a command is a page being authored, not a request. Tags are removed before any rule runs. Real requests still count, including `curl -d`, `requests.post`, and urllib with data. This is covered by tests in `exporter_addon/test_action_features.py` (`AuthoredMarkup`).
+The page linked to the blog post `…substack.com/p/join-the-ai-swarm-dynamics-hackathon`. Two rules combined:
 
-The live monitor re-extracts every stored day when the feature version changes.
+1. **The write rule.** A Python write anywhere in a command counts every URL in the command as written to. The IndexNow ping therefore made the Substack link a "write".
+2. **The sign-up rule.** The sign-up path rule matched `/join` as the start of the slug `join-the-…`.
 
-**Scope.** The fresh-month evaluation was scored once with v0.2.1, and its numbers are not re-run or changed. This fix only affects the live deployment from 4 Oct onward. For checking any alert against the raw command, use `tier1/show_turns.py --explain`.
+The fix is two first-principles changes:
+
+- **A sign-up or login word must be a whole path segment.** `/join`, `/signup.php` and `/api/v1/signup/` count. `/p/join-the-…` does not.
+- **An HTML tag inside a command is a page being authored, not a request.** Tags are removed before any rule runs, so `<form method="post" action=…>` and `<a href=…>` are content.
+
+Real requests still count, for example `curl -d …/signup`, `requests.post`, and urllib with data. This is covered by the tests in `exporter_addon/test_action_features.py` (`AuthoredMarkup`), including the real shape of Grok's turn with the link in plain text.
+
+**Known limit, not changed.** Host attribution for Python writes is still per command. A script that POSTs to one site and merely names another counts both as written to. Only the sign-up and login rules are tightened here.
+
+When the feature version changes, the live monitor re-extracts every stored day.
+
+**The fresh-month evaluation was scored once with v0.2.1.** Its numbers are not re-run or changed. This fix applies only to the live deployment from 4 Oct onward.

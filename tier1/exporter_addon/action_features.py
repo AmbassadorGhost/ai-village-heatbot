@@ -17,7 +17,8 @@ import shlex
 from urllib.parse import urlsplit
 
 VERSION = "action-features-v0.2.2"   # v0.2.1: proxy flag only from network-tool options, env vars, wrappers
-                                     # v0.2.2: HTML markup the agent is authoring is content, not a request
+                                     # v0.2.2: HTML markup the agent is authoring is content, not a request;
+                                     #         sign-up/login words must be a whole path segment
 
 WRITE_METHODS = {"POST", "PUT", "PATCH", "DELETE"}
 
@@ -50,8 +51,9 @@ _CAPTCHA_TERMS = re.compile(r"(?i)captcha|g-recaptcha-response|h-captcha-respons
 _CAPTCHA_SOLVERS = ("2captcha.com", "anti-captcha.com", "capsolver.com", "capmonster.cloud",
                     "deathbycaptcha.com", "nopecha.com", "rucaptcha.com", "azcaptcha.com", "solvecaptcha.com")
 
-_AUTH_PATH = re.compile(r"(?i)/(?:sign[-_]?up|register|registration|create[-_]?account|accounts?/new|join)\b")
-_LOGIN_PATH = re.compile(r"(?i)/(?:log[-_]?in|sign[-_]?in|oauth2?|session[s]?|auth/token|token)\b")
+_SEG_END = r"(?:\.\w+)?(?=/|$)"     # v0.2.2: the whole path segment, e.g. /join or /signup.php, not /p/join-the-...
+_AUTH_PATH = re.compile(r"(?i)/(?:sign[-_]?up|register|registration|create[-_]?account|accounts?/new|join)" + _SEG_END)
+_LOGIN_PATH = re.compile(r"(?i)/(?:log[-_]?in|sign[-_]?in|oauth2?|session[s]?|auth/token|token)" + _SEG_END)
 _CREDENTIAL = re.compile(r"(?i)authorization['\"]?\s*[:=]|\bbearer\s+[\w.$-]|\bapi[_-]?key\s*[=:]|"
                          r"(?:^|\s)(?:-u|--user)\s+\S+:\S+|\bpassword\s*[=:]|\bx-api-key\b")
 
