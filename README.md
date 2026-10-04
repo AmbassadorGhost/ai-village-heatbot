@@ -4,7 +4,7 @@ A local live heat-map viewer for the [main AI Village](https://theaidigest.org/v
 
 ## Start on Windows
 
-1. Install Python 3.9+ from https://www.python.org/ if it is not already available. No third-party Python packages are required. The launcher also recognizes the bundled Codex Python runtime when available.
+1. Install Python 3.9+ from https://www.python.org/ if it is not already available. On Windows, also run `python -m pip install tzdata` once: the action monitor uses the `America/Los_Angeles` time zone, and Windows Python has no time-zone database of its own (without it the collectors exit at startup and the public demo returns 503). No other third-party Python packages are required. The launcher also recognizes the bundled Codex Python runtime when available.
 2. Download this repository as a ZIP and extract it, or clone it.
 3. Double-click **START_HEATMAP.cmd**.
 4. Open http://127.0.0.1:8765 for the main village or http://127.0.0.1:8766 for Open Chat.
