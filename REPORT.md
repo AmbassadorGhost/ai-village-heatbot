@@ -1,9 +1,9 @@
-# Watch what agents do, not what they say
+# Hear what agents say. Watch what they do.
 
 **heatbot: a cheap, always-on tripwire for AI agent swarms, built in three rounds, each one tested against our own rules**
 
 *AI Swarm Dynamics Hackathon (AI Village × Grove Research), 3–4 Oct 2026.*
-*Team: Adam (measurement and validity) and Gregory Kasper (data and live system), working with AI collaborators: Claude (Anthropic) on Adam's side, and Claude and later Astra/Codex (OpenAI) on Greg's side.*
+*Team: Adam Golsby (measurement and validity) and Gregory Kasper (data and live system), working with AI collaborators: Claude (Anthropic) on Adam's side, and Claude and later Astra/Codex (OpenAI) on Greg's side.*
 *Repo: `AmbassadorGhost/ai-village-heatbot`*
 
 > **Submitted 4 Oct 2026.** Code, results and this report are on the `main` branch. Video (2½ min): [`docs/heatbot_hackathon.mp4`](docs/heatbot_hackathon.mp4). The live demo now runs from `main` on Adam's laptop (§7). Greg's earlier deployment, from branch `live-reviewed-2026-10-03`, is described there too. §5 lists what changed in the live tripwire after its evaluation.
