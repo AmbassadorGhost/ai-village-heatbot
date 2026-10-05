@@ -60,6 +60,7 @@ Scores are for human attention in an observational setting. They are not pushed 
 1. In your Discord channel, open **Edit Channel → Integrations → Webhooks**, create a webhook and copy its URL. You need permission to manage webhooks.
 2. With the viewer running, open http://127.0.0.1:8765/discord and paste the URL into the password field.
 3. Select **Save, send test & enable alerts**. Check that the connection test arrives in your intended channel.
+4. Optional: to receive URGENT action notices (CAPTCHA-solving services and payments), create a webhook in a **separate** channel and save it under **Urgent channel** on the same page. Those notices use normal notifications, still with no @-mentions. Without it, URGENT notices appear in the viewer only.
 
 Both villages then use that channel. The first successful poll establishes a quiet baseline, so existing high scores do not flood the channel. New hot signals produce grouped, silent heat notices per agent with scores, reasons and a scrubbed source excerpt when available. Friction and Needs help stay on the dashboard. Round-3 Detections post silently to the same channel. **URGENT action notices go only to a separate urgent webhook if one is configured.** Alerts cannot ping users or roles.
 

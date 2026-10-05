@@ -141,6 +141,38 @@ class Routes(unittest.TestCase):
             h.do_POST()
             self.assertFalse(json.loads(path.read_text())['enabled'])
 
+    def test_urgent_channel_is_separate_and_survives_everyday_setup(self):
+        with tempfile.TemporaryDirectory() as folder, patch.object(live, 'ROOT', Path(folder)):
+            path = Path(folder) / 'discord.local.json'
+            urgent = 'https://discord.com/api/webhooks/999/urgent-secret'
+            with patch.object(live.discord_alerts, 'post', return_value={'ok': True}) as send:
+                h = self.post_handler({'csrf': live.SETUP_TOKEN, 'action': 'urgent_enable', 'webhook_url': urgent})
+                h.do_POST()
+                self.assertEqual(h.code, 200)
+                self.assertEqual(send.call_args[0][0], urgent)
+                self.assertNotIn(b'urgent-secret', h.wfile.getvalue())
+                # saving the everyday webhook afterwards must not wipe the urgent one
+                h = self.post_handler({'csrf': live.SETUP_TOKEN, 'action': 'enable',
+                                       'webhook_url': 'https://discord.com/api/webhooks/123/everyday'})
+                h.do_POST()
+            cfg = json.loads(path.read_text())
+            self.assertEqual(cfg['urgent_webhook_url'], urgent)
+            self.assertTrue(cfg['urgent_enabled'])
+            self.assertEqual(live.Collector.urgent_webhook(None), urgent)
+            h = self.post_handler({'csrf': live.SETUP_TOKEN, 'action': 'urgent_disable'})
+            h.do_POST()
+            self.assertIsNone(live.Collector.urgent_webhook(None))
+            self.assertTrue(json.loads(path.read_text())['enabled'])     # everyday alerts untouched
+
+    def test_urgent_setup_saves_nothing_if_test_fails(self):
+        with tempfile.TemporaryDirectory() as folder, patch.object(live, 'ROOT', Path(folder)):
+            with patch.object(live.discord_alerts, 'post', return_value={'ok': False}):
+                h = self.post_handler({'csrf': live.SETUP_TOKEN, 'action': 'urgent_enable',
+                                       'webhook_url': 'https://discord.com/api/webhooks/999/x'})
+                h.do_POST()
+            self.assertEqual(h.code, 400)
+            self.assertFalse((Path(folder) / 'discord.local.json').exists())
+
     def test_setup_rejects_non_discord_url_without_delivery(self):
         h = self.post_handler({'csrf': live.SETUP_TOKEN, 'action': 'enable', 'webhook_url': 'https://example.com/secret'})
         with patch.object(live.discord_alerts, 'post') as send:

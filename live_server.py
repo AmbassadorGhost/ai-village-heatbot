@@ -92,6 +92,7 @@ def source_context(events, names, goals):
 # Live-product defaults shared by BOTH villages (each still keeps its own state).
 # heatbot.DEFAULT_CONFIG keeps novelty off so frozen-study replays are unchanged;
 # the live viewer turns it on for main village and Open Chat alike.
+URGENT_KEYS = ('urgent_webhook_url', 'urgent_enabled')
 PRODUCT_DEFAULTS = {"term_novelty": {"enabled": True, "window_minutes": 120, "repeat_factor": 0.5},
                     "score_consolidation": False}   # 4 Oct: consolidation is housekeeping, not a heat signal
 
@@ -320,11 +321,31 @@ class Handler(BaseHTTPRequestHandler):
                 delivery = discord_alerts.post(url, test)
                 if not delivery['ok']:
                     raise ValueError(delivery.get('error', 'Test message delivery failed.'))
+                old = discord_alerts.load(path, {})
+                keep = {k: old[k] for k in URGENT_KEYS if k in old}     # never wipe the urgent channel
                 discord_alerts.save(path, {'enabled': True, 'webhook_url': url,
                                           'generation': secrets.token_hex(16),
                                           'villages': ['actual-launch-1', 'open-chat'],
-                                          'channels': list(discord_alerts.CHANNELS)})
+                                          'channels': list(discord_alerts.CHANNELS), **keep})
                 result = {'message': 'Test delivered. Alerts enabled for both villages. The first poll establishes a quiet baseline; subsequent new hot signals can alert.'}
+            elif body.get('action') == 'urgent_enable':
+                url = discord_alerts.validate_url(str(body.get('webhook_url', '')).strip())
+                test = {'username': 'AI Village Heatbot', 'allowed_mentions': {'parse': []},
+                        'content': 'Heatbot connection test: this channel will receive URGENT action notices only '
+                                   '(CAPTCHA-solving services and payments), with normal notifications and no @-mentions. '
+                                   'This is a test, not an alert.'}
+                delivery = discord_alerts.post(url, test)
+                if not delivery['ok']:
+                    raise ValueError(delivery.get('error', 'Test message delivery failed.'))
+                cfg = discord_alerts.load(path, {})
+                cfg.update({'urgent_webhook_url': url, 'urgent_enabled': True})
+                discord_alerts.save(path, cfg)
+                result = {'message': 'Test delivered. URGENT action notices will go to this channel.'}
+            elif body.get('action') == 'urgent_disable':
+                cfg = discord_alerts.load(path, {})
+                cfg['urgent_enabled'] = False
+                discord_alerts.save(path, cfg)
+                result = {'message': 'Urgent channel disabled. URGENT notices will show in the viewer only.'}
             else:
                 raise ValueError('Unknown action.')
         except (ValueError, TypeError):
