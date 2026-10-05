@@ -216,6 +216,7 @@ HELP_THRESHOLDS = {"warm": 13.0, "hot": 23.0, "critical": 35.0}     # display ba
 # towards a ceiling instead of stacking without limit: it adds HELP_HEAT x (1 - heat/ceiling).
 # Reports every ~2 min settle near 45 (High); every 10 min near 31; every 30 min near 20.
 HELP_CEILING = 50.0
+PAUSE_GRACE = dt.timedelta(minutes=10)   # village-wide silence longer than this counts as a pause
 HELP_ACTIONS = ("REQUEST_HUMAN_HELPER", "REQUEST_GOOGLE_SIGN_IN")
 
 # ---- memory watch ---------------------------------------------------------------
@@ -531,6 +532,11 @@ class HeatEngine:
             self.heat[a].update({c: (min(v, HELP_CEILING) if c == "help" else v)
                                  for c, v in ch.items() if c in self.thr})
         self.last_t = st.get("last_t", {})
+        # Village clock (live viewer only, cfg "pause_aware_decay"): heat cools only while the
+        # village is running. A village-wide silence longer than PAUSE_GRACE is a pause.
+        self.pause_aware = bool(cfg.get("pause_aware_decay"))
+        self.village_last = st.get("village_last")
+        self.pauses = [tuple(p) for p in st.get("pauses", [])]
         self.last_alert = st.get("last_alert", {})
         self.armed = st.get("armed", {})
         self.seen = dict(st.get("seen", {}))            # event key -> createdAt
@@ -719,12 +725,37 @@ class HeatEngine:
             self.term_seen[agent].setdefault(t, []).append(ts)
 
     # ---- decay and feed ----------------------------------------------------
+    def note_village_times(self, times):
+        """Record village-wide pauses from event times (any agent or human), oldest first."""
+        for t in sorted(times):
+            last = dt.datetime.fromisoformat(self.village_last) if self.village_last else None
+            if last and t - last > PAUSE_GRACE:
+                self.pauses.append(((last + PAUSE_GRACE).isoformat(), t.isoformat()))
+            if not last or t > last:
+                self.village_last = t.isoformat()
+        cutoff = (dt.datetime.fromisoformat(self.village_last) - dt.timedelta(days=3)).isoformat() \
+            if self.village_last else ""
+        self.pauses = [p for p in self.pauses if p[1] >= cutoff]
+
+    def paused_seconds(self, a, b):
+        """Seconds of [a, b] that fall inside village pauses, including one still under way."""
+        if not self.pause_aware:
+            return 0.0
+        spans = [(dt.datetime.fromisoformat(x), dt.datetime.fromisoformat(y)) for x, y in self.pauses]
+        if self.village_last:
+            open_from = dt.datetime.fromisoformat(self.village_last) + PAUSE_GRACE
+            if b > open_from:
+                spans.append((open_from, b))
+        return sum(max(0.0, (min(b, y) - max(a, x)).total_seconds()) for x, y in spans)
+
     def _decay_to(self, agent, now):
         prev = self.last_t.get(agent)
         if prev:
-            s = (now - dt.datetime.fromisoformat(prev)).total_seconds()
+            p = dt.datetime.fromisoformat(prev)
+            s = (now - p).total_seconds()
             if s <= 0:
                 return          # late-arriving event: never move the clock backwards
+            s -= self.paused_seconds(p, now)
             k = 0.5 ** (s / self.hl)
             for c in self.heat[agent]:
                 self.heat[agent][c] *= k
@@ -964,7 +995,7 @@ class HeatEngine:
             "heat": {a: {c: round(v, 3) for c, v in ch.items() if v > 0.05}
                      for a, ch in self.heat.items()},
             "last_t": self.last_t, "last_alert": self.last_alert, "armed": self.armed,
-            "seen": self.seen,
+            "seen": self.seen, "village_last": self.village_last, "pauses": self.pauses,
             "mem_last": self.mem_last, "mem_sweep": self.mem_sweep,
             "last_consol": self.last_consol, "mem_gaps": self.mem_gaps[-50:],
             "contrib": {a: rows for a, rows in self.contrib.items() if rows},   # already trimmed per channel
@@ -1104,6 +1135,8 @@ def run_events(engine, cfg, events, id2name, goals, live=True, trace=None, now=N
         rows.append((parse_ts(e["createdAt"]), e.get("eventIndex", 0), id2name[aid],
                      d.get("actionType"), d, k))
     rows.sort(key=lambda r: (r[0], r[1]))
+    if engine.pause_aware:
+        engine.note_village_times([r[0] for r in rows] + [h[0] for h in human])
     for when, d in human:
         engine.note_human(when, d)
     fresh = dt.timedelta(minutes=cfg.get("alert_freshness_minutes", 30))

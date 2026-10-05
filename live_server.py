@@ -94,7 +94,8 @@ def source_context(events, names, goals):
 # the live viewer turns it on for main village and Open Chat alike.
 URGENT_KEYS = ('urgent_webhook_url', 'urgent_enabled')
 PRODUCT_DEFAULTS = {"term_novelty": {"enabled": True, "window_minutes": 120, "repeat_factor": 0.5},
-                    "score_consolidation": False}   # 4 Oct: consolidation is housekeeping, not a heat signal
+                    "score_consolidation": False,   # 4 Oct: consolidation is housekeeping, not a heat signal
+                    "pause_aware_decay": True}      # 4 Oct: heat holds while the village is paused
 
 
 class Collector:

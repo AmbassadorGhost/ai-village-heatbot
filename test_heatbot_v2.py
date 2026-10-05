@@ -957,6 +957,58 @@ if __name__ == "__main__":
 
 
 # ==========================================================================
+class VillagePause(HarnessBase):
+    """4 Oct (Adam): heat kept dropping while the village was paused, though nothing had changed."""
+
+    def eng(self, aware=True):
+        cfg = make_cfg()
+        cfg["channels_enabled"] = list(cfg["channels_enabled"]) + ["help"]
+        cfg["pause_aware_decay"] = aware
+        return self.engine(cfg)
+
+    def talk(self, e, minutes):
+        t0 = real_dt.datetime(2026, 10, 4, 12)
+        for m in minutes:
+            t = t0 + real_dt.timedelta(minutes=m)
+            e.note_village_times([t])
+            e.feed("A", t, "AGENT_TALK", {"content": "CI still blocked."})
+        return t0
+
+    def test_heat_holds_while_paused_and_cools_while_running(self):
+        e = self.eng()
+        t0 = self.talk(e, range(0, 30, 2))                 # active until 12:28
+        h = e.heat["A"]["help"]
+        self.assertGreater(h, 20)
+        e.decay_all(t0 + real_dt.timedelta(hours=10))      # paused overnight, still paused
+        # only the 10-minute grace before the pause counts
+        self.assertAlmostEqual(e.heat["A"]["help"], h * 0.5 ** (10 / 42), places=3)
+
+    def test_resume_after_pause_does_not_decay_the_gap(self):
+        e = self.eng()
+        t0 = self.talk(e, range(0, 30, 2))
+        h = e.heat["A"]["help"]
+        resume = t0 + real_dt.timedelta(hours=10)
+        e.note_village_times([resume])
+        e.decay_all(resume)
+        self.assertAlmostEqual(e.heat["A"]["help"], h * 0.5 ** (10 / 42), places=3)
+
+    def test_quiet_agent_in_a_running_village_still_cools(self):
+        e = self.eng()
+        t0 = self.talk(e, [0])
+        h = e.heat["A"]["help"]
+        later = t0 + real_dt.timedelta(minutes=84)
+        e.note_village_times([t0 + real_dt.timedelta(minutes=m) for m in range(1, 85, 3)])   # others busy
+        e.decay_all(later)
+        self.assertAlmostEqual(e.heat["A"]["help"], h * 0.25, places=3)
+
+    def test_off_by_default_for_the_frozen_scorer(self):
+        e = self.eng(aware=False)
+        t0 = self.talk(e, [0])
+        h = e.heat["A"]["help"]
+        e.decay_all(t0 + real_dt.timedelta(minutes=84))
+        self.assertAlmostEqual(e.heat["A"]["help"], h * 0.25, places=3)
+
+
 class NeedsHelpChannel(HarnessBase):
     """4 Oct (Adam): heat is context, not a verdict. Reported trouble gets its own
     neutral, dashboard-only channel instead of being excluded."""
