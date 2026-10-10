@@ -63,6 +63,24 @@ class CollectorTests(unittest.TestCase):
         self.assertTrue(self.collector.cfg['term_novelty']['enabled'])
         self.assertFalse(hb.DEFAULT_CONFIG['term_novelty']['enabled'])   # frozen study default
 
+    def test_model_path_from_config(self):
+        # 10 Oct: the main village's live.config.json points the viewer at v3; without it, v2 (the study model)
+        (self.folder / 'live.config.json').write_text(json.dumps({'model_path': 'v3/heatbot_model_v3.json'}))
+        c = live.Collector()
+        self.assertEqual(c.model.get('version'), 3)
+        self.assertEqual(c.model_file.name, 'heatbot_model_v3.json')
+        with patch.object(c, 'fetch', side_effect=self.source):
+            c.collect()
+        self.assertEqual(c.bundle['model_version'], 3)
+        self.assertEqual(self.collector.model.get('version'), 2)     # no config in this folder: v2
+
+    def test_repo_live_config_model_runs_every_live_channel(self):
+        cfg = json.loads((live.ROOT / 'live.config.json').read_text())
+        model = hb.load_model(str(live.ROOT / cfg['model_path']))
+        eng = hb.HeatEngine(self.collector.cfg, model, state_path=str(self.folder / 's.json'))
+        for c in eng.channels:
+            self.assertLess(eng.thr[c]['warm'], 1e9, c)
+
     def test_observation_only_defaults(self):
         cfg = self.collector.cfg
         self.assertFalse(cfg['memory_watch']['enabled'])

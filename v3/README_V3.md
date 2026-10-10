@@ -1,7 +1,10 @@
 # heatbot v3 (10 Oct 2026): fixed label timing + a year of Haiku labels
 
-**Status: local branch `heatbot-v3`, not pushed** (hackathon judging is still under way). `heatbot.py` is unchanged; v3 is
-a new model file, `heatbot_model_v3.json`, for the same engine.
+**Status: local branch `heatbot-v3`, not pushed** (hackathon judging is still under way).
+- **Base.** The branch sits on Adam's `post-submission` branch, so it includes Adam's two changes: the optional separate urgent webhook, and heat that holds while the village is paused (decay runs on village time in the live viewer).
+- **What v3 is.** A new model file, `heatbot_model_v3.json`, for the same engine.
+- **Live viewer.** The main village's live viewer runs v3 through `live.config.json` → `"model_path"`. `heatbot_model.json` stays the frozen v2 study model, and Open Chat keeps v2.
+- **When switching models, delete `heatbot.state.json`** so v2-scale heat doesn't carry over. With pause-aware decay, heat no longer cools overnight.
 
 ## 1. A timestamp bug in v2's training labels
 - **What happened.** Monitor findings from 6 Apr to 27 Jul 2026 are stamped with a bare UTC clock time (`18:43:15`, `[20:39:31]`). From 22 Jul the monitor writes `YYYY-MM-DD HH:MM:SS PT`. v2's pipeline (`build_dataset`, `calibrate_v2`, `forward_eval.load_truth`) read **every** stamp as Pacific, which put 1,682 findings (522 of them misalignment) 7 hours late.
@@ -60,7 +63,22 @@ All three models share one pipeline (`e3_fit.fit`) and one engine, and are score
   - Method: we took 82 alert episodes that no misalignment finding covered and mixed them blind with 82 random control moments. Haiku then labelled ±20 min excerpts.
   - Result: it found verified misalignment in 47.6% of both (p = 0.56). The alerts the monitor didn't flag are no richer than random moments.
 - **Labels are noisy.** The labels are an LLM monitor's and Haiku's: about half of either survives a strict audit.
-- **Not done.** Live-viewer settings (novelty, consolidation off, deception hidden) were not re-evaluated with v3.
+- **Live settings** (added after the pre-registered runs; descriptive).
+  - **Adam's engine with its defaults** gives identical results.
+  - **With the live viewer's settings** (pause-aware decay, term novelty, consolidation off, live channel list), v3 does as well or better.
+
+    | period | v2 | v3 | fixed sequence |
+    |---|---|---|---|
+    | 25 Aug–6 Oct | 0.46 | 0.59 (0.54–0.63) | all three claims demonstrated, including lead time (0.55, 0.51–0.60) |
+    | 19 Sep–6 Oct | 0.48 | 0.70 (0.57–0.78) | |
+
+    The paired difference, v3 − v2, is +0.13 (+0.04 to +0.20).
+  - **Live alert burden** is about 31 HOT+ per village-week:
+    - conflict: 23 a week, 20% precision. The conflict channel is the one to quieten first.
+    - off-goal: 5 a week.
+    - general: 1.4 a week.
+
+  Results are in `results_live/`.
 
 ## 4. Reproduce
 The scripts in `scripts/` use this session's paths: the HF export `aidigestorg/ai-village` (gated; research use only) split by Pacific day, and the round-4 calibration package.

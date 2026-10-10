@@ -1496,10 +1496,13 @@ def watch_memory(engine, cfg, name, agent_id, goals, now, live=True):
     return alerts
 
 
-def load_model():
-    m = load_json(MODEL_PATH, None)
+def load_model(path=None):
+    """The calibrated weights. Default: heatbot_model.json (v2, the frozen study model).
+    path lets the live viewer run another model file, e.g. v3/heatbot_model_v3.json."""
+    p = path or MODEL_PATH
+    m = load_json(p, None)
     if not m:
-        sys.exit("heatbot_model.json not found next to heatbot.py - it holds the calibrated weights.")
+        sys.exit("%s not found - it holds the calibrated weights." % p)
     return m
 
 

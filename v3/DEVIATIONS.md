@@ -9,3 +9,12 @@
    within +-2 h, merged per agent within 60 min. An equal number of control moments was added (same agents, active
    moments, no finding and no alert within +-2 h). Haiku labelled both blind. Without controls, a "found something" rate
    can't be read.
+4. **Added after the pre-registered runs (descriptive, not pre-registered):** the models were re-scored on Adam's
+   post-submission engine (`HB_ENGINE`). With default settings the results are identical to the frozen engine. They
+   were also re-scored with the live viewer's settings (`HB_LIVE`):
+   - pause-aware decay on;
+   - term novelty on;
+   - consolidation off;
+   - the live channel list.
+
+   Results are in `results_live/`.

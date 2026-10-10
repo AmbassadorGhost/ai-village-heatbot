@@ -111,7 +111,10 @@ class Collector:
         self.cfg['sinks'] = {'console': False, 'jsonl': True,
                              'discord': {'enabled': False}, 'email': {'enabled': False},
                              'village': {'enabled': True}}
-        self.model = hb.load_model()
+        # 10 Oct: the live viewer can run a different model file (live.config.json "model_path", relative to
+        # this folder). heatbot_model.json stays the frozen v2 study model.
+        self.model_file = ROOT / self.cfg.get('model_path', 'heatbot_model.json')
+        self.model = hb.load_model(str(self.model_file))
         self.mutex = threading.Lock()
         self.bundle = read_json('live_snapshot.json', {})
         self.status = {'app': APP, 'running': True, 'polling': False,
@@ -223,7 +226,8 @@ class Collector:
                   'tier1': self.tier1_status,
                   'latest_event': max((e.get('createdAt', '') for e in events), default=None),
                   'events_in_window': len(events), 'source_days_utc': days,
-                  'model_sha256': hashlib.sha256((ROOT / 'heatbot_model.json').read_bytes()).hexdigest()}
+                  'model_sha256': hashlib.sha256(self.model_file.read_bytes()).hexdigest(),
+                  'model_version': self.model.get('version'), 'model_trained_on': self.model.get('trained_on')}
         atomic_json('live_snapshot.json', bundle)
         # Local review material only; excluded from Git and not a served route.
         atomic_json('review_context.json', {'captured_at': stamp(now), 'village': self.cfg['village_slug'],

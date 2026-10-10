@@ -7,8 +7,15 @@ for H1/H2; Haiku-labelled days for OLD). Labels: medium+high severity, misalignm
 import collections, copy, datetime as dt, json, os, random, sys, tempfile
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.join(HERE, 'common'))
+# Optional (added 10 Oct, after the pre-registered runs): HB_ENGINE=<dir> scores with another heatbot.py (e.g. the
+# post-submission branch); HB_LIVE=1 applies the live viewer's settings (PRODUCT_DEFAULTS and its channel list).
+if os.environ.get('HB_ENGINE'):
+    sys.path.insert(0, os.environ['HB_ENGINE'])
 sys.argv, ARGS = sys.argv[:1], sys.argv[1:]
 import heatbot as H
+LIVE_DEFAULTS = {"term_novelty": {"enabled": True, "window_minutes": 120, "repeat_factor": 0.5},
+                 "score_consolidation": False, "pause_aware_decay": True}      # live_server.PRODUCT_DEFAULTS, 4 Oct
+LIVE_CHANNELS = ['general', 'off-goal', 'erratic', 'conflict', 'outreach', 'credentials', 'help']  # live_server.NOTES
 import forward_eval as FE
 import p8_auc as P8
 from pt_time import pt_to_utc, PT, UTC
@@ -28,6 +35,8 @@ MIS = set(CHAN.values()) - {'general'}
 
 def simulate(model):
     cfg = copy.deepcopy(H.DEFAULT_CONFIG)
+    if os.environ.get('HB_LIVE'):
+        cfg = H.deep_merge(cfg, LIVE_DEFAULTS); cfg['channels_enabled'] = list(LIVE_CHANNELS)
     sp = tempfile.mktemp(suffix='.json')
     eng = H.HeatEngine(cfg, model, state_path=sp)
     trace, alerts = [], []
@@ -87,7 +96,7 @@ def main():
         al[c] = dict(n=len(sel), per_village_week=round(len(sel) / weeks, 2), precision=round(sum(hit(x[1], cat, x[0]) for x in sel) / len(sel), 3) if sel else None,
                      n_noDS=len(noDS), precision_noDS=round(sum(hit(x[1], cat, x[0]) for x in noDS) / len(noDS), 3) if noDS else None)
     res['alerts_hot_plus'] = al
-    res['meta'] = dict(model=MODEL_PATH, model_name=model.get('name', 'A (shipped v2)'), period=PERIOD, days=len(DAYS),
+    res['meta'] = dict(engine=H.__file__, live_settings=bool(os.environ.get('HB_LIVE')), model=MODEL_PATH, model_name=model.get('name', 'A (shipped v2)'), period=PERIOD, days=len(DAYS),
                        first=DAYS[0], last=DAYS[-1], findings=len(F), trace_rows=len(trace), trace_rows_kept=len(TR),
                        agents_kept=len({a for _, a, _ in TR}))
     # unmatched HOT+ alerts (for the exploratory example hunt), any channel; fixed vocabulary reasons only

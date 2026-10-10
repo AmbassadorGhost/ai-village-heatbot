@@ -73,6 +73,7 @@ Your computer and collector must remain running and awake for alerts to arrive. 
 ## Files and provenance
 
 - `heatbot.py`, `heatbot_model.json`, `pt_time.py`: imported scorer, model and helper.
+- `v3/`: heatbot v3 (10 Oct, branch `heatbot-v3`): a retrained model, `v3/heatbot_model_v3.json`, for the same scorer. The main village's `live.config.json` selects it with `"model_path"`. Remove that line to go back to v2. `heatbot_model.json` stays the frozen v2 study model, and Open Chat (no config) keeps v2. See `v3/README_V3.md`.
 - `live_server.py`, `index.html`, `evidence.js`: live collector and local viewer.
 - `discord_alerts.py`, `discord_setup.html`: optional webhook delivery and local setup.
 - `live.config.json`: main-village configuration.
