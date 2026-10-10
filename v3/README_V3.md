@@ -1,6 +1,6 @@
 # heatbot v3 (10 Oct 2026): fixed label timing + a year of Haiku labels
 
-**Status: local branch `heatbot-v3`, not pushed** (hackathon judging is still under way).
+**Status:** post-deadline work, on the `post-submission` branch (also as `heatbot-v3`), kept separate from the submitted `main`.
 - **Base.** The branch sits on Adam's `post-submission` branch, so it includes Adam's two changes: the optional separate urgent webhook, and heat that holds while the village is paused (decay runs on village time in the live viewer).
 - **What v3 is.** A new model file, `heatbot_model_v3.json`, for the same engine.
 - **Live viewer.** The main village's live viewer runs v3 through `live.config.json` → `"model_path"`. `heatbot_model.json` stays the frozen v2 study model, and Open Chat keeps v2.
