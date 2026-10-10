@@ -134,7 +134,7 @@ class Notifier:
         allowed = [c for c in cfg.get('channels', list(CHANNELS)) if c in CHANNELS]
         active = dashboard['agents']
         for a, info in active.items():
-            if not info.get('participating'):
+            if not info.get('participating') or info.get('quiet'):     # quiet agents: dashboard only (10 Oct)
                 continue
             for c in allowed:
                 h = info['heat'].get(c, 0)
@@ -159,7 +159,7 @@ class Notifier:
             info = active.get(a, {})
             h = info.get('heat', {}).get(c, 0)
             th = dashboard['channels'].get(c, {}).get('thresholds', {})
-            if now - item['created'] > 600 or not info.get('participating') or c not in allowed or h < th.get('hot', float('inf')):
+            if now - item['created'] > 600 or not info.get('participating') or info.get('quiet') or c not in allowed or h < th.get('hot', float('inf')):
                 del state['pending'][key]
                 continue
             level = 2 if h >= th['critical'] else 1

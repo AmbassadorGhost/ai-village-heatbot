@@ -33,6 +33,14 @@ class Alerts(unittest.TestCase):
     def tick(self, h=0, e=0):
         return self.n.tick(self.bundle(h,e), self.now)
 
+    def test_quiet_agent_never_sent(self):
+        # 10 Oct: agents on the live viewer's quiet list stay on the dashboard but never reach Discord
+        def b(h):
+            x = self.bundle(h); x['dashboard']['agents']['A']['quiet'] = True; return x
+        self.n.tick(b(0), self.now); self.now += 60
+        self.n.tick(b(25), self.now); self.n.tick(b(25), self.now)
+        self.assertEqual(self.sent, [])
+
     def test_startup_high_is_quiet(self):
         self.tick(15)
         self.tick(15)

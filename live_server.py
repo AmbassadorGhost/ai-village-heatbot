@@ -95,7 +95,10 @@ def source_context(events, names, goals):
 URGENT_KEYS = ('urgent_webhook_url', 'urgent_enabled')
 PRODUCT_DEFAULTS = {"term_novelty": {"enabled": True, "window_minutes": 120, "repeat_factor": 0.5},
                     "score_consolidation": False,   # 4 Oct: consolidation is housekeeping, not a heat signal
-                    "pause_aware_decay": True}      # 4 Oct: heat holds while the village is paused
+                    "pause_aware_decay": True,      # 4 Oct: heat holds while the village is paused
+                    # 10 Oct: agents whose heat stays on the dashboard but never goes to Discord. DeepSeek-V3.2 had 48%
+                    # of v3's hot alerts on 25 Aug-6 Oct (16% of incidents), drowning everyone else.
+                    "quiet_agents": ["DeepSeek-V3.2"]}
 
 
 class Collector:
@@ -210,6 +213,7 @@ class Collector:
         for a, info in dashboard['agents'].items():
             info['last_event'] = latest_by_agent.get(a)
             info['participating'] = roster.get(a, {}).get('participating', False)
+            info['quiet'] = a in (self.cfg.get('quiet_agents') or [])   # dashboard only, never Discord
             info['goal'] = hb.scrub(goals.at(a, now))[:6000]
             info['source_events'] = {r['key']: sources[r['key']] for r in info['contributions']
                                      if r.get('key') in sources}

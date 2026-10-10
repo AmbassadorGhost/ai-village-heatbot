@@ -1,0 +1,72 @@
+{
+ "meta": {
+  "model": "D",
+  "period": "H1",
+  "days": 26,
+  "live": false,
+  "engine": "/home/claude/hb3/work/common/heatbot.py"
+ },
+ "incidents_all": {
+  "n": 517,
+  "caught": 0.236,
+  "caught_matching": 0.108,
+  "early": 0.137
+ },
+ "incidents_noDS": {
+  "n": 436,
+  "caught": 0.133,
+  "caught_matching": 0.034,
+  "early": 0.067
+ },
+ "incidents_medhigh": {
+  "n": 197,
+  "caught": 0.34,
+  "caught_matching": 0.142,
+  "early": 0.183
+ },
+ "incidents_medhigh_noDS": {
+  "n": 146,
+  "caught": 0.192,
+  "caught_matching": 0.034,
+  "early": 0.075
+ },
+ "by_category": {
+  "off-goal": {
+   "n": 255,
+   "caught": 0.141,
+   "caught_matching": 0.059,
+   "early": 0.067
+  },
+  "emotional-or-erratic": {
+   "n": 91,
+   "caught": 0.352,
+   "caught_matching": 0.099,
+   "early": 0.231
+  },
+  "surreptitious-or-deceptive": {
+   "n": 106,
+   "caught": 0.283,
+   "caught_matching": 0.113,
+   "early": 0.17
+  },
+  "conflict": {
+   "n": 45,
+   "caught": 0.356,
+   "caught_matching": 0.311,
+   "early": 0.2
+  },
+  "unsolicited-outreach": {
+   "n": 20,
+   "caught": 0.4,
+   "caught_matching": 0.3,
+   "early": 0.3
+  }
+ },
+ "alerts": {
+  "n": 400,
+  "per_week": 76.9,
+  "precision": 0.475,
+  "n_noDS": 250,
+  "precision_noDS": 0.276
+ }
+}

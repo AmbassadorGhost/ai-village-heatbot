@@ -81,6 +81,12 @@ class CollectorTests(unittest.TestCase):
         for c in eng.channels:
             self.assertLess(eng.thr[c]['warm'], 1e9, c)
 
+    def test_deepseek_is_quiet_by_default(self):
+        self.assertEqual(self.collector.cfg['quiet_agents'], ['DeepSeek-V3.2'])
+        with patch.object(self.collector, 'fetch', side_effect=self.source):
+            self.collector.collect()
+        self.assertFalse(self.collector.bundle['dashboard']['agents']['Agent A']['quiet'])
+
     def test_observation_only_defaults(self):
         cfg = self.collector.cfg
         self.assertFalse(cfg['memory_watch']['enabled'])
