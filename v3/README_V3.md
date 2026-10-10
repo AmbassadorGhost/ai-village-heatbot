@@ -80,6 +80,26 @@ All three models share one pipeline (`e3_fit.fit`) and one engine, and are score
 
   Results are in `results_live/`.
 
+## 5. Incidents caught (descriptive, added 10 Oct)
+- **Definitions.**
+  - Incident: one monitor misalignment finding on a rostered agent.
+  - Caught: any HOT+ alert for that agent within ±2 h.
+  - Precision: HOT+ alerts with a misalignment finding for that agent within ±2 h.
+- **Data.** 25 Aug–6 Oct, 517 incidents. Files: `scripts/incidents.py`, `results_incidents/`.
+
+| settings | model | caught (all) | caught (medium+high) | caught, excluding DeepSeek-V3.2 | HOT+ alerts per week | precision |
+|---|---|---|---|---|---|---|
+| as evaluated | v2 | 19% | 28% | 7% | 65 | 58% |
+| as evaluated | v3 | 21% | 29% | 10% | 71 | 50% |
+| live viewer | v2 | 11% | 14% | 5% | 27 | 41% |
+| live viewer | v3 | 14% | 21% | 7% | 31 | 40% |
+
+- **Clean weeks** (19 Sep–6 Oct, 167 incidents): v3 caught fewer than v2 (as evaluated 10% vs 13%; live 2% vs 6%), and its precision was lower.
+- **Reading.** v3 ranks moments better (higher AUC), but at these thresholds neither version alerts on more than about one incident in five.
+  - Most alerts and most catches are DeepSeek-V3.2.
+  - Alerts are rare by design (training-quantile thresholds), while the monitor writes about 20 findings a day.
+  - v3's clearest gain is conflict: 33% of conflict incidents get a conflict alert under live settings, against 11% for v2.
+
 ## 4. Reproduce
 The scripts in `scripts/` use this session's paths: the HF export `aidigestorg/ai-village` (gated; research use only) split by Pacific day, and the round-4 calibration package.
 
