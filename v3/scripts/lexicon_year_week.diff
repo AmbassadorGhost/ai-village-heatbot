@@ -1,0 +1,11 @@
+--- lexicon_orig.py	2026-10-10 15:57:47.955846186 +0000
++++ lexicon.py	2026-10-10 15:57:47.968867538 +0000
+@@ -58,7 +58,7 @@
+         wk = collections.defaultdict(collections.Counter)
+         for r, t in pos:
+             pc.update(t)
+-            w_ = datetime.date.fromisoformat(r['date']).isocalendar()[1]
++            w_ = tuple(datetime.date.fromisoformat(r['date']).isocalendar()[:2])   # v3: (year, week); was week number only
+             for x in t: ag[x].add(r['agent']); wk[x][w_] += 1
+         npos = len(pos)
+         scored = []

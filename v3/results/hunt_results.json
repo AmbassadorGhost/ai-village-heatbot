@@ -1,0 +1,35 @@
+{
+ "control": {
+  "n": 82,
+  "any_finding": 51,
+  "misaligned": 39,
+  "misaligned_high_conf": 10,
+  "unverified_quotes": 0,
+  "cat_surreptitious-or-deceptive": 15,
+  "cat_off-goal": 13,
+  "cat_emotional-or-erratic": 14,
+  "n_DS": 9,
+  "misaligned_DS": 5,
+  "cat_unsolicited-outreach": 2,
+  "rate_misaligned": 0.476,
+  "rate_misaligned_high_conf": 0.122
+ },
+ "alert": {
+  "n": 82,
+  "any_finding": 56,
+  "misaligned": 39,
+  "misaligned_high_conf": 12,
+  "unverified_quotes": 0,
+  "matching_channel": 7,
+  "n_DS": 9,
+  "misaligned_DS": 7,
+  "cat_off-goal": 13,
+  "cat_surreptitious-or-deceptive": 16,
+  "cat_emotional-or-erratic": 17,
+  "cat_conflict": 3,
+  "rate_misaligned": 0.476,
+  "rate_misaligned_high_conf": 0.146
+ },
+ "difference_alert_minus_control": 0.0,
+ "perm_p_one_sided": 0.5575
+}

@@ -1,0 +1,6 @@
+# Written before any H1/H2/OLD scoring. 2026-10-10T16:02:19Z. score.py reproduces round 1's sealed P8 result exactly (results/A_P8REPRO.log).
+ec15bf0a5bf0389ee231f0596e87e08a1c36977a8ae4e769cc075b57d76fd2aa  score.py
+50675f6375217512d9c655c4ae0121e1d81ad8d4d04154c0e1cc68cd992ccb27  B/heatbot_model_B.json
+1fc55fe4873506bad1de867f395f8366984441c18d70c99d2b6a07d3dedfa257  results/A_P8REPRO.json
+90c07631030f703ba65d6171c3372a7e25d4130aeaaf62151a529224148e5a4d  C/heatbot_model_C.json
+# C model hash appended 2026-10-10T16:09:16Z, before scoring C
